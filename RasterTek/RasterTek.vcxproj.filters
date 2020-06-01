@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{e072d13a-e169-4f59-911e-6524c0dbe65e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameObjStucture">
+      <UniqueIdentifier>{ef718a6c-d296-4f28-8844-8b8c43925c8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Math">
+      <UniqueIdentifier>{e48758c5-f250-4f64-91df-c6013730931c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Exception">
+      <UniqueIdentifier>{2d6f18b7-0c48-4883-9b8b-0fb0afb78e27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Exception">
+      <UniqueIdentifier>{e1c33896-7c02-4f55-99f9-2f17ce90a234}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Timing">
+      <UniqueIdentifier>{268b1e2b-b58c-442f-ac20-5e4d49421aff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Timing">
+      <UniqueIdentifier>{1e2dc4f3-271f-4af6-92fe-86002094917d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameObjStructure">
+      <UniqueIdentifier>{f216bfb0-5299-4197-aadc-1f18929b8626}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameObjStucture\Geometries">
+      <UniqueIdentifier>{1b4bc2e8-ac54-45ee-ace5-c65f4817c9af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DataTypes">
+      <UniqueIdentifier>{a2677ae7-49b0-48fd-9398-e269f459186b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Enums">
+      <UniqueIdentifier>{860cb4b5-c14b-4468-996d-8393b683aae9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Miscellaneous">
+      <UniqueIdentifier>{d8ec54a9-66d7-4f6e-8ccc-3ec66597135e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameObjStucture\Material">
+      <UniqueIdentifier>{72772824-b58f-41b1-a9d8-cf7a6bafdc72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameObjStucture\Mesh">
+      <UniqueIdentifier>{94ee4c5b-b3fb-462c-99d9-21c3764d675e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Phong-Blinn">
+      <UniqueIdentifier>{cb022c33-461d-469d-b0cd-ca1474b6521b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\PN-Triangles">
+      <UniqueIdentifier>{9651d339-6039-48bb-a4eb-179e983eac56}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SystemClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HResultException.cpp">
+      <Filter>Source Files\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files\GameObjStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="CBufferNotFoundException.cpp">
+      <Filter>Source Files\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\GameObjStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FloorObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SystemClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleDXMath.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="HResultException.h">
+      <Filter>Header Files\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files\Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files\GameObjStucture</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeGeometry.h">
+      <Filter>Header Files\GameObjStucture\Geometries</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>Header Files\GameObjStucture\Geometries</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadGeometry.h">
+      <Filter>Header Files\GameObjStucture\Geometries</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexDataType.h">
+      <Filter>Header Files\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="CBufferDataType.h">
+      <Filter>Header Files\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedEnums.h">
+      <Filter>Header Files\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="CBufferNotFoundException.h">
+      <Filter>Header Files\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Files\Miscellaneous</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\GameObjStucture\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="AssimpModel.h">
+      <Filter>Header Files\GameObjStucture\Geometries</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FloorObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="PhongBlinnVertexShader.hlsl">
+      <Filter>Shaders\Phong-Blinn</Filter>
+    </FxCompile>
+    <FxCompile Include="PhongBlinnPixelShader.hlsl">
+      <Filter>Shaders\Phong-Blinn</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShader.hlsl">
+      <Filter>Shaders\PN-Triangles</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShader.hlsl">
+      <Filter>Shaders\PN-Triangles</Filter>
+    </FxCompile>
+    <FxCompile Include="HullShader.hlsl">
+      <Filter>Shaders\PN-Triangles</Filter>
+    </FxCompile>
+    <FxCompile Include="DomainShader.hlsl">
+      <Filter>Shaders\PN-Triangles</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="PhongBlinn_VS_PS_transfer.hlsli">
+      <Filter>Shaders\Phong-Blinn</Filter>
+    </None>
+    <None Include="VS_HS_transfer.hlsli">
+      <Filter>Shaders\PN-Triangles</Filter>
+    </None>
+    <None Include="HS_DS_transfer.hlsli">
+      <Filter>Shaders\PN-Triangles</Filter>
+    </None>
+    <None Include="DS_PS_transfer.hlsli">
+      <Filter>Shaders\PN-Triangles</Filter>
+    </None>
+  </ItemGroup>
+</Project>
