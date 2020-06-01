@@ -2,14 +2,11 @@
 
 class Camera;
 class GameObject;
+class RenderTargetTexture;
 class ShaderProgram;
 
 class Graphics
 {
-	static constexpr UINT	MSAALevel		= 4;
-	static constexpr bool	FULLSCREEN		= false;
-	static constexpr bool	VSYNC_ENABLED	= true;
-
 	UINT screenWidth;
 	UINT screenHeight;
 	HWND hwnd;
@@ -22,13 +19,20 @@ class Graphics
 
 	std::unique_ptr<Camera>						camera;
 	std::vector<std::unique_ptr<GameObject>>	gameObjects;
-	std::unique_ptr<ShaderProgram>				shaderProgram;
+
+	std::unique_ptr<ShaderProgram>				shaderProgramPhongBlinn;
+	std::unique_ptr<ShaderProgram>				shaderProgramMirror;
+
+	std::unique_ptr<GameObject> mirror;
 
 	void CreateSwapChain(IDXGIFactory1*);
 	void CreateRenderTarget();
 	void CreateAndSetRasterizerState();
 	void CreateAndSetDepthStencilState();
 	void Initialize();
+
+	void SetRenderTargetToBackBuffer();
+	void SetRenderTargetToTexture(RenderTargetTexture&);
 
 public:
 	Graphics(UINT, UINT, HWND);

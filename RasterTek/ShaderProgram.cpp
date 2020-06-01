@@ -172,6 +172,33 @@ void ShaderProgram::SetTexture(Texture* texture, TEXTURE_LOCATION location /* PI
 	}
 }
 
+void ShaderProgram::SetTexture(ID3D11ShaderResourceView* texture, UINT bindingSlot, TEXTURE_LOCATION location)
+{
+	switch (location)
+	{
+		case TEXTURE_LOCATION::VERTEX_SHADER_TEXTURE:
+			deviceContext->VSSetShaderResources(bindingSlot, 1, &texture);
+			break;
+		case TEXTURE_LOCATION::HULL_SHADER_TEXTURE:
+			deviceContext->HSSetShaderResources(bindingSlot, 1, &texture);
+			break;
+		case TEXTURE_LOCATION::DOMAIN_SHADER_TEXTURE:
+			deviceContext->DSSetShaderResources(bindingSlot, 1, &texture);
+			break;
+		case TEXTURE_LOCATION::GEOMETRY_SHADER_TEXTURE:
+			deviceContext->GSSetShaderResources(bindingSlot, 1, &texture);
+			break;
+		case TEXTURE_LOCATION::PIXEL_SHADER_TEXTURE:
+			deviceContext->PSSetShaderResources(bindingSlot, 1, &texture);
+			break;
+		case TEXTURE_LOCATION::COMPUTE_SHADER_TEXTURE:
+			deviceContext->CSSetShaderResources(bindingSlot, 1, &texture);
+			break;
+		default:
+			throw;
+	}
+}
+
 void ShaderProgram::SetSampler(FILTERING filtering, UINT bindingSlot, SAMPLER_LOCATION location /* PIXEL SHADER */)
 {
 	HRESULT result;

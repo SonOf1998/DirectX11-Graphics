@@ -14,7 +14,7 @@ class Mesh
 
 public:
 
-	Mesh(Geometry*, Material*);
+	Mesh(Geometry*, Material* = nullptr);
 	~Mesh() = default;
 
 	void SetTexture(Texture*);

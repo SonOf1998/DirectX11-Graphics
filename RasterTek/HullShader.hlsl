@@ -76,7 +76,7 @@ PatchTess ConstFun(InputPatch<HS_IN, 3> cps, uint patchId : SV_PrimitiveID)
 [outputtopology("triangle_ccw")]
 [outputcontrolpoints(3)]
 [patchconstantfunc("ConstFun")]
-[maxtessfactor(64)]
+[maxtessfactor(64.0)]
 HS_OUT main(InputPatch<HS_IN, 3> cp, uint i : SV_OutputControlPointID, uint patchId : SV_PrimitiveID)
 {
     HS_OUT hso;

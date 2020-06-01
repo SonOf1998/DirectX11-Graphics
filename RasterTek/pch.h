@@ -5,6 +5,7 @@
 // standard library //
 #include <cmath>
 #include <cstring>
+#include <limits>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -37,7 +38,15 @@
 #pragma comment (lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
+// own //
+#include "HResultException.h"
+
+
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
 using uint = unsigned int;
+
+constexpr UINT	MSAALevel = 1;
+constexpr bool	FULLSCREEN = false;
+constexpr bool	VSYNC_ENABLED = true;

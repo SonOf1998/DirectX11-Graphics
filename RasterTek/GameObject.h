@@ -28,6 +28,6 @@ public:
 	virtual void Animate(float t, float dt) = 0;
 
 	XMMATRIX GetModelMatrix() const;
-	void addMesh(Mesh*);
-	void addMesh(std::unique_ptr<Mesh>&&);
+	void AddMesh(Mesh*);
+	void AddMesh(std::unique_ptr<Mesh>&&);
 };

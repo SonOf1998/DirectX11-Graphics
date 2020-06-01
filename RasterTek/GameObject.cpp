@@ -21,12 +21,12 @@ XMMATRIX GameObject::GetModelMatrix() const
 	return modelMatrix;
 }
 
-void GameObject::addMesh(Mesh* mesh)
+void GameObject::AddMesh(Mesh* mesh)
 {
 	meshes.emplace_back(mesh);
 }
 
-void GameObject::addMesh(std::unique_ptr<Mesh>&& newMesh)
+void GameObject::AddMesh(std::unique_ptr<Mesh>&& newMesh)
 {
 	meshes.push_back(std::move(newMesh));
 }

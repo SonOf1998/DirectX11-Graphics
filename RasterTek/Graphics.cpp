@@ -15,6 +15,9 @@
 #include "FloorObject.h"
 #include "ShaderProgram.h"
 #include "Camera.h"
+#include "RenderTargetTexture.h"
+#include "FullScreenQuadObject.h"
+#include "FullScreenQuadGeometry.h"
 
 Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth(screenWidth), screenHeight(screenHeight), hwnd(hwnd)
 {
@@ -30,7 +33,7 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 	Material* planeMaterial = new Material{ XMFLOAT3(0.1,0.1,0.1), XMFLOAT3(0,0,0), 0.0 };
 	Mesh* planeMesh = new Mesh(planeGeometry, planeMaterial);
 	planeMesh->SetTexture(planeTexture);
-	plane->addMesh(planeMesh);
+	plane->AddMesh(planeMesh);
 	
 
 	std::unique_ptr<GameObject> monkey = std::make_unique<SphereObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 0, 0));
@@ -39,7 +42,13 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 	Material* monkeyMaterial = new Material{ XMFLOAT3(0.1,0.1,0.1), XMFLOAT3(1,1,1), 50.0 };
 	Mesh* monkeyMesh = new Mesh(monkeyGeometry, monkeyMaterial);
 	monkeyMesh->SetTexture(monkeyTexture);
-	monkey->addMesh(monkeyMesh);
+	monkey->AddMesh(monkeyMesh);
+
+	std::unique_ptr<GameObject> fullScreenQuad = std::make_unique<FullScreenQuadObject>(dev.Get(), devcon.Get(), XMVectorSet(-0.75f, 0.75f, 0, 1), XMVectorSet(0.5, 0.5, 1, 1));
+	Geometry* fullScreenQuadGeometry = FullScreenQuadGeometry::Create<PNT>(dev.Get());
+	Mesh* fullScreenMesh = new Mesh(fullScreenQuadGeometry);
+	fullScreenQuad->AddMesh(fullScreenMesh);
+	mirror = std::move(fullScreenQuad);
 
 	//for (int i = 0; i < 7; ++i)
 	//{
@@ -61,7 +70,9 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 	
 
 	
-	shaderProgram.reset(ShaderProgram::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"PhongBlinnVertexShader.cso", L"PhongBlinnPixelShader.cso"));
+	shaderProgramPhongBlinn.reset(ShaderProgram::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/x64/Debug/PhongBlinnVertexShader.cso", L"C:/DX11/RasterTek/x64/Debug/PhongBlinnPixelShader.cso"));
+	shaderProgramMirror.reset(ShaderProgram::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/x64/Debug/FullScreenQuadPT_VertexShader.cso", L"C:/DX11/RasterTek/x64/Debug/FullScreenQuadPT_PixelShader.cso"));
+	shaderProgramMirror->SetSampler(FILTERING::NEAREST, 0);
 }
 
 Graphics::~Graphics() = default;
@@ -72,7 +83,7 @@ void Graphics::CreateSwapChain(IDXGIFactory1* factory)
 	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
 	UINT quality;
-	dev->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, MSAALevel, &(quality));
+	dev->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, MSAALevel, &quality);
 
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.BufferDesc.Width = screenWidth;
@@ -159,7 +170,7 @@ void Graphics::CreateAndSetDepthStencilState()
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthBufferDesc.SampleDesc.Count = 4;
+	depthBufferDesc.SampleDesc.Count = MSAALevel;
 	depthBufferDesc.SampleDesc.Quality = quality - 1;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
@@ -206,9 +217,6 @@ void Graphics::CreateAndSetDepthStencilState()
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	THROW_IF_HRESULT_FAILED(dev->CreateDepthStencilView(depthStencilBuffer.Get(), &depthStencilViewDesc, depthStencilView.ReleaseAndGetAddressOf()));
-
-	// output merger
-	devcon->OMSetRenderTargets(1, renderTargetView.GetAddressOf(), depthStencilView.Get());
 }
  
 void Graphics::Initialize()
@@ -250,6 +258,16 @@ void Graphics::Initialize()
 	devcon->RSSetViewports(1, &viewport);
 }
 
+void Graphics::SetRenderTargetToBackBuffer()
+{
+	devcon->OMSetRenderTargets(1, renderTargetView.GetAddressOf(), depthStencilView.Get());
+}
+
+void Graphics::SetRenderTargetToTexture(RenderTargetTexture& renderTargetTexture)
+{
+	devcon->OMSetRenderTargets(1, renderTargetTexture.GetRenderTargetViewAddress(), depthStencilView.Get());
+}
+
 IDXGIAdapter1* Graphics::GetBestVideoCard(IDXGIFactory1* factory)
 {
 	IDXGIAdapter1* adapter;
@@ -278,17 +296,32 @@ IDXGIAdapter1* Graphics::GetBestVideoCard(IDXGIFactory1* factory)
 void Graphics::RenderFrame(float t, float dt)
 {
 	float color[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
-	devcon->ClearRenderTargetView(renderTargetView.Get(), color);
-	devcon->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+	// Rendering to texture //
+	RenderTargetTexture rtt(dev.Get(), screenWidth, screenHeight, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	SetRenderTargetToTexture(rtt);
+	devcon->ClearRenderTargetView(rtt.GetRenderTargetView(), color);
+	devcon->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	
 	camera->Animate(t, dt);
 
 	for (auto& gameObject : gameObjects)
 	{
 		gameObject->Animate(t, dt);
-		gameObject->Render(devcon.Get(), shaderProgram.get(), camera.get());
+		gameObject->Render(devcon.Get(), shaderProgramPhongBlinn.get(), camera.get());
 	}
+	
+
+	// Rendering to backbuffer //
+	SetRenderTargetToBackBuffer();
+	devcon->ClearRenderTargetView(renderTargetView.Get(), color);
+	devcon->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	camera->Animate(t, dt);
+
+
+	shaderProgramMirror->Use();
+	shaderProgramMirror->SetTexture(rtt.GetShaderResourceView(), 0);
+	mirror->Render(devcon.Get(), shaderProgramMirror.get(), camera.get());
 	
 	if (VSYNC_ENABLED)
 	{

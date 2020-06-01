@@ -1,6 +1,7 @@
 #include "PhongBlinn_VS_PS_transfer.hlsli"
 
-Texture2D diffuseMap : TEXTURE : register(t0);
+Texture2D diffuseMap : TEXTURE0 : register(t0);
+Texture2D rendTarg : TEXTURE1 : register(t1);
 SamplerState samplerState : SAMPLER : register(s0);
 
 cbuffer Material : register(b0)
@@ -26,7 +27,7 @@ float4 main(PS_IN input) : SV_TARGET
     float3 normal = normalize(input.normal);
     
     float3 outputColor = float3(0, 0, 0);
-    float3 diffuseColor = diffuseMap.Sample(samplerState, input.tex).xyz;
+    float3 diffuseColor = diffuseMap.Sample(samplerState, input.texcoord).xyz;
     
     outputColor += ka * diffuseColor;
     outputColor += saturate(dot(lightDir, normal)) * diffuseColor;
@@ -35,5 +36,7 @@ float4 main(PS_IN input) : SV_TARGET
     halfway = normalize(halfway);
     
     outputColor += ks.xyz * pow(saturate(dot(halfway, normal)), shine);
+    float3 rendTargCol = rendTarg.Sample(samplerState, input.texcoord).xyz;
+    
     return float4(outputColor, 1);
 }

@@ -84,6 +84,12 @@ struct PC : public VertexDataStructure
 	XMFLOAT3 color;
 };
 
+struct PT : public  VertexDataStructure
+{
+	XMFLOAT3 position;
+	XMFLOAT2 texcoord;
+};
+
 struct PNT : public VertexDataStructure
 {
 	XMFLOAT3 position;
