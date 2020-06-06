@@ -68,31 +68,147 @@ using InputLayoutPNT = typename VertexDataType<DataTypes::Texture, DataTypes::No
 * binormal
 */
 
+
+
 struct VertexDataStructure
-{
+{	
+	virtual ~VertexDataStructure() = default;
+
+	virtual bool HandlesPosition()		{ return false; }
+	virtual bool HandlesColor()			{ return false; }
+	virtual bool HandlesNormal()		{ return false; }
+	virtual bool HandlesTexcoordUV()	{ return false; }
 	
+	virtual void SetPosition	(const XMFLOAT3&) { throw std::runtime_error("Cannot set Position");	}
+	virtual void SetColor		(const XMFLOAT3&) { throw std::runtime_error("Cannot set Color");		}
+	virtual void SetNormal		(const XMFLOAT3&) { throw std::runtime_error("Cannot set Normal");		}
+	virtual void SetTexcoordUV	(const XMFLOAT2&) { throw std::runtime_error("Cannot set TexcoordUV");	}
 };
 
-struct P : public VertexDataStructure
+class P : public VertexDataStructure
 {
-	XMFLOAT3 position;
+	struct DATA
+	{
+		XMFLOAT3 position;
+	};
+
+private:
+
+	DATA data;
+	
+public:
+	static size_t GetSizeInBytes()  { return sizeof(DATA); }
+	
+	bool HandlesPosition()  final	{ return true; }
+
+	void SetPosition(const XMFLOAT3& position) final
+	{
+		data.position = position;
+	}
 };
 
-struct PC : public VertexDataStructure
+class PC : public VertexDataStructure
 {
-	XMFLOAT3 position;
-	XMFLOAT3 color;
+	struct DATA
+	{
+		XMFLOAT3 position;
+		XMFLOAT3 color;
+	};
+
+private:
+
+	DATA data;
+	
+public:
+	static size_t GetSizeInBytes()  { return sizeof(DATA); }
+
+	bool HandlesPosition()  final	{ return true; }
+	bool HandlesColor()     final	{ return true; }
+
+	void SetPosition(const XMFLOAT3& position) final
+	{
+		data.position = position;
+	}
+
+	void SetColor(const XMFLOAT3& color) final
+	{
+		data.color = color;
+	}
 };
 
-struct PT : public  VertexDataStructure
+struct PT : public VertexDataStructure
 {
-	XMFLOAT3 position;
-	XMFLOAT2 texcoord;
+	struct DATA
+	{
+		XMFLOAT3 position;
+		XMFLOAT2 texcoordUV;
+	};
+
+private:
+
+	DATA data;
+
+public:
+	
+	static size_t GetSizeInBytes()  { return sizeof(DATA); }
+
+	bool HandlesPosition()   final	{ return true; }
+	bool HandlesTexcoordUV() final	{ return true; }
+
+	void SetPosition(const XMFLOAT3& position) final
+	{
+		data.position = position;
+	}
+
+	void SetTexcoordUV(const XMFLOAT2& texcoordUV) final
+	{
+		data.texcoordUV = texcoordUV;
+	}
+
+	DATA GetData()
+	{
+		return data;
+	}
 };
 
 struct PNT : public VertexDataStructure
 {
-	XMFLOAT3 position;
-	XMFLOAT3 normal;
-	XMFLOAT2 texcoord;
+	struct DATA
+	{
+		XMFLOAT3 position;
+		XMFLOAT3 normal;
+		XMFLOAT2 texcoordUV;
+	};
+
+private:
+
+	DATA data;
+
+public:
+	
+	static size_t GetSizeInBytes() { return sizeof(DATA); }
+
+	bool HandlesPosition()   final  { return true; }
+	bool HandlesNormal()	 final	{ return true; }
+	bool HandlesTexcoordUV() final	{ return true; }
+
+	void SetPosition(const XMFLOAT3& position) final
+	{
+		data.position = position;
+	}
+
+	void SetNormal(const XMFLOAT3& normal) final
+	{
+		data.normal = normal;
+	}
+
+	void SetTexcoordUV(const XMFLOAT2& texcoordUV) final
+	{
+		data.texcoordUV = texcoordUV;
+	}
+
+	DATA GetData()
+	{
+		return data;
+	}
 };

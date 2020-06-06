@@ -2,13 +2,18 @@
 
 #include "Geometry.h"
 
-class AssimpModel : public GeometryDerived<AssimpModel>
+template <typename DATA_TYPE>
+class AssimpModel : public GeometryDerived<DATA_TYPE>
 {
 	void GenerateVertexData() override { /*empty*/ }
 
 public:
 
-	using GeometryDerived::GeometryDerived;
+	AssimpModel(ID3D11Device* device, const char* filename)
+	{
+		GenerateVertexData(filename, 0);
+		this->CreateBuffers(device);
+	}
 
 	void GenerateVertexData(const char* fileName, unsigned int meshIndex)
 	{
@@ -16,27 +21,38 @@ public:
 		auto model = importer.ReadFile(fileName, aiProcess_JoinIdenticalVertices | aiProcess_FlipWindingOrder);
 		auto mesh = model->mMeshes[meshIndex];
 
-		vertices.reserve(mesh->mNumVertices);
+		this->vertices.reserve(mesh->mNumVertices);
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
 			auto vertex = mesh->mVertices[i];
 			auto normal = mesh->mNormals[i];
 			auto texcoord = mesh->mTextureCoords[0][i];
 
-			VertexData vd;
-			vd.position = XMFLOAT3(static_cast<float>(vertex.x), static_cast<float>(vertex.y), static_cast<float>(vertex.z));
-			vd.normal = XMFLOAT3(static_cast<float>(normal.x), static_cast<float>(normal.y), static_cast<float>(normal.z));
-			vd.textureUV = XMFLOAT2(static_cast<float>(texcoord.x), static_cast<float>(texcoord.y));
-			vertices.push_back(vd);
+			DATA_TYPE vertexData;
+
+			if (vertexData.HandlesPosition())
+			{
+				vertexData.SetPosition(XMFLOAT3(static_cast<float>(vertex.x), static_cast<float>(vertex.y), static_cast<float>(vertex.z)));
+			}
+			if (vertexData.HandlesNormal())
+			{
+				vertexData.SetNormal(XMFLOAT3(static_cast<float>(normal.x), static_cast<float>(normal.y), static_cast<float>(normal.z)));
+			}
+			if (vertexData.HandlesTexcoordUV())
+			{
+				vertexData.SetTexcoordUV(XMFLOAT2(static_cast<float>(texcoord.x), static_cast<float>(texcoord.y)));
+			}
+
+			this->vertices.push_back(vertexData.GetData());
 		}
 
-		indices.reserve(mesh->mNumFaces * 3);
+		this->indices.reserve(mesh->mNumFaces * 3);
 		for (uint i = 0; i < mesh->mNumFaces; ++i)
 		{
 			auto face = mesh->mFaces[i];
-			indices.push_back(face.mIndices[0]);
-			indices.push_back(face.mIndices[1]);
-			indices.push_back(face.mIndices[2]);
+			this->indices.push_back(face.mIndices[0]);
+			this->indices.push_back(face.mIndices[1]);
+			this->indices.push_back(face.mIndices[2]);
 		}
 	}
 };

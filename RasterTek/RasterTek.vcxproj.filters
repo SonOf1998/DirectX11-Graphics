@@ -61,6 +61,12 @@
     <Filter Include="Shaders\PN-Triangles">
       <UniqueIdentifier>{9651d339-6039-48bb-a4eb-179e983eac56}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\FullScreenQuadPT">
+      <UniqueIdentifier>{906c222d-ca6f-43c2-bd72-e4f81f368511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\ShadowMap-Directional">
+      <UniqueIdentifier>{b6f5910b-e71e-4281-9dc5-c97d4e654c10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemClass.cpp">
@@ -108,6 +114,12 @@
     <ClCompile Include="FloorObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RenderTargetTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FullScreenQuadObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -136,9 +148,6 @@
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Header Files\GameObjStucture</Filter>
-    </ClInclude>
-    <ClInclude Include="CubeGeometry.h">
-      <Filter>Header Files\GameObjStucture\Geometries</Filter>
     </ClInclude>
     <ClInclude Include="Geometry.h">
       <Filter>Header Files\GameObjStucture\Geometries</Filter>
@@ -179,40 +188,52 @@
     <ClInclude Include="FloorObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderTargetTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FullScreenQuadObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FullScreenQuadGeometry.h">
+      <Filter>Header Files\GameObjStucture\Geometries</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PhongBlinnVertexShader.hlsl">
+    <FxCompile Include="Shaders\FullScreenQuadPT\ps.hlsl" />
+    <FxCompile Include="Shaders\FullScreenQuadPT\vs.hlsl" />
+    <FxCompile Include="Shaders\Phong-Blinn\vs.hlsl">
       <Filter>Shaders\Phong-Blinn</Filter>
     </FxCompile>
-    <FxCompile Include="PhongBlinnPixelShader.hlsl">
+    <FxCompile Include="Shaders\Phong-Blinn\ps.hlsl">
       <Filter>Shaders\Phong-Blinn</Filter>
     </FxCompile>
-    <FxCompile Include="PixelShader.hlsl">
+    <FxCompile Include="Shaders\PN-Triangles\ds.hlsl">
       <Filter>Shaders\PN-Triangles</Filter>
     </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
+    <FxCompile Include="Shaders\PN-Triangles\hs.hlsl">
       <Filter>Shaders\PN-Triangles</Filter>
     </FxCompile>
-    <FxCompile Include="HullShader.hlsl">
+    <FxCompile Include="Shaders\PN-Triangles\ps.hlsl">
       <Filter>Shaders\PN-Triangles</Filter>
     </FxCompile>
-    <FxCompile Include="DomainShader.hlsl">
+    <FxCompile Include="Shaders\PN-Triangles\vs.hlsl">
       <Filter>Shaders\PN-Triangles</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="PhongBlinn_VS_PS_transfer.hlsli">
+    <None Include="Shaders\PN-Triangles\DS_PS_transfer.hlsli">
+      <Filter>Shaders\PN-Triangles</Filter>
+    </None>
+    <None Include="Shaders\PN-Triangles\HS_DS_transfer.hlsli">
+      <Filter>Shaders\PN-Triangles</Filter>
+    </None>
+    <None Include="Shaders\PN-Triangles\VS_HS_transfer.hlsli">
+      <Filter>Shaders\PN-Triangles</Filter>
+    </None>
+    <None Include="Shaders\FullScreenQuadPT\vs_ps_transfer.hlsli" />
+    <None Include="Shaders\Phong-Blinn\vs_ps_transfer.hlsli">
       <Filter>Shaders\Phong-Blinn</Filter>
-    </None>
-    <None Include="VS_HS_transfer.hlsli">
-      <Filter>Shaders\PN-Triangles</Filter>
-    </None>
-    <None Include="HS_DS_transfer.hlsli">
-      <Filter>Shaders\PN-Triangles</Filter>
-    </None>
-    <None Include="DS_PS_transfer.hlsli">
-      <Filter>Shaders\PN-Triangles</Filter>
     </None>
   </ItemGroup>
 </Project>

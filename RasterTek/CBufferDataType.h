@@ -15,7 +15,7 @@ public:
 
 	virtual ~CBufferDataType() = default;
 	virtual void FillCBufferWithData(D3D11_MAPPED_SUBRESOURCE& mappedResource) = 0;
-	virtual size_t GetDataSize() = 0;
+	virtual UINT GetDataSize() = 0;
 
 	virtual void SetAsShaderCBuffer(ID3D11Device* device, ID3D11DeviceContext* deviceContext, CBUFFER_LOCATION location, UINT bindingSlot)
 	{
@@ -88,7 +88,7 @@ struct MVP : public CBufferDataType
 		cbufferData->viewProj = data.viewProj;
 	}
 
-	size_t GetDataSize()
+	UINT GetDataSize()
 	{
 		return sizeof(data);
 	}
@@ -119,7 +119,7 @@ struct MMInv : public CBufferDataType
 		cbufferData->modelInv = data.modelInv;
 	}
 
-	size_t GetDataSize()
+	UINT GetDataSize()
 	{
 		return sizeof(data);
 	}
@@ -152,7 +152,7 @@ struct MVPMInv : public CBufferDataType
 		cbufferData->modelInv = data.modelInv;
 	}
 
-	size_t GetDataSize()
+	UINT GetDataSize()
 	{
 		return sizeof(data);
 	}
@@ -180,7 +180,7 @@ struct ViewProj : public CBufferDataType
 		cbufferData->viewProj = data.viewProj;
 	}
 	
-	size_t GetDataSize()
+	UINT GetDataSize()
 	{
 		return sizeof(data);
 	}
@@ -215,7 +215,7 @@ struct Material : public CBufferDataType
 		cbufferData->shininess = data.shininess;
 	}
 
-	size_t GetDataSize()
+	UINT GetDataSize()
 	{
 		return sizeof(data);
 	}
@@ -246,7 +246,7 @@ struct CameraCBuffer : public CBufferDataType
 		cbufferData->position = data.position;
 	}
 
-	size_t GetDataSize()
+	UINT GetDataSize()
 	{
 		return sizeof(data);
 	}

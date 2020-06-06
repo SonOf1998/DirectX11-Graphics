@@ -15,7 +15,10 @@ class Graphics
 	ComPtr<ID3D11Device>			dev;
 	ComPtr<ID3D11DeviceContext>		devcon;
 	ComPtr<ID3D11RenderTargetView>	renderTargetView;
+	ComPtr<ID3D11DepthStencilState> depthStencilState;
 	ComPtr<ID3D11DepthStencilView>	depthStencilView;
+
+	D3D11_VIEWPORT					viewport;
 
 	std::unique_ptr<Camera>						camera;
 	std::vector<std::unique_ptr<GameObject>>	gameObjects;

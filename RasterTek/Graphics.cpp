@@ -4,7 +4,6 @@
 
 #include "HResultException.h"
 #include "Geometry.h"
-#include "CubeGeometry.h"
 #include "AssimpModel.h"
 #include "QuadGeometry.h"
 #include "Logger.h"
@@ -29,8 +28,8 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 
 	std::unique_ptr<GameObject> plane = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(10, 10, 1, 1), XMVectorSet(1, 0, 0, 0), -XM_PI / 2);
 	Texture* planeTexture = new Texture(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/pavement.jpg", 0);
-	Geometry* planeGeometry = QuadGeometry::Create<PNT>(dev.Get());
-	Material* planeMaterial = new Material{ XMFLOAT3(0.1,0.1,0.1), XMFLOAT3(0,0,0), 0.0 };
+	Geometry* planeGeometry = new QuadGeometry<PNT>(dev.Get());
+	Material* planeMaterial = new Material{ XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(0,0,0), 0.0f };
 	Mesh* planeMesh = new Mesh(planeGeometry, planeMaterial);
 	planeMesh->SetTexture(planeTexture);
 	plane->AddMesh(planeMesh);
@@ -38,14 +37,14 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 
 	std::unique_ptr<GameObject> monkey = std::make_unique<SphereObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 0, 0));
 	Texture* monkeyTexture = new Texture(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/monkey.jpg", 0);
-	Geometry* monkeyGeometry = AssimpModel::Create<PNT>(dev.Get(), "Models/sphere.obj", 0);
-	Material* monkeyMaterial = new Material{ XMFLOAT3(0.1,0.1,0.1), XMFLOAT3(1,1,1), 50.0 };
+	Geometry* monkeyGeometry = new AssimpModel<PNT>(dev.Get(), "Models/sphere.obj");
+	Material* monkeyMaterial = new Material{ XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(1,1,1), 50.0f };
 	Mesh* monkeyMesh = new Mesh(monkeyGeometry, monkeyMaterial);
 	monkeyMesh->SetTexture(monkeyTexture);
 	monkey->AddMesh(monkeyMesh);
 
 	std::unique_ptr<GameObject> fullScreenQuad = std::make_unique<FullScreenQuadObject>(dev.Get(), devcon.Get(), XMVectorSet(-0.75f, 0.75f, 0, 1), XMVectorSet(0.5, 0.5, 1, 1));
-	Geometry* fullScreenQuadGeometry = FullScreenQuadGeometry::Create<PNT>(dev.Get());
+	Geometry* fullScreenQuadGeometry = new FullScreenQuadGeometry<PT>(dev.Get());
 	Mesh* fullScreenMesh = new Mesh(fullScreenQuadGeometry);
 	fullScreenQuad->AddMesh(fullScreenMesh);
 	mirror = std::move(fullScreenQuad);
@@ -70,8 +69,8 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 	
 
 	
-	shaderProgramPhongBlinn.reset(ShaderProgram::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/x64/Debug/PhongBlinnVertexShader.cso", L"C:/DX11/RasterTek/x64/Debug/PhongBlinnPixelShader.cso"));
-	shaderProgramMirror.reset(ShaderProgram::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/x64/Debug/FullScreenQuadPT_VertexShader.cso", L"C:/DX11/RasterTek/x64/Debug/FullScreenQuadPT_PixelShader.cso"));
+	shaderProgramPhongBlinn.reset(ShaderProgram::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"Shaders/Phong-Blinn/bin/vs.cso", L"Shaders/Phong-Blinn/bin/ps.cso"));
+	shaderProgramMirror.reset(ShaderProgram::Create<InputLayoutPT>(dev.Get(), devcon.Get(), L"Shaders/FullScreenQuadPT/bin/vs.cso", L"Shaders/FullScreenQuadPT/bin/ps.cso"));
 	shaderProgramMirror->SetSampler(FILTERING::NEAREST, 0);
 }
 
@@ -158,9 +157,10 @@ void Graphics::CreateAndSetRasterizerState()
 
 void Graphics::CreateAndSetDepthStencilState()
 {
+	HRESULT result;
+
 	// depth map
-	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
+	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
 
 	UINT quality;
 	dev->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, MSAALevel, &(quality));
@@ -176,17 +176,14 @@ void Graphics::CreateAndSetDepthStencilState()
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
-
 	
 	ComPtr<ID3D11Texture2D> depthStencilBuffer;
-	HRESULT result;
 	THROW_IF_HRESULT_FAILED(dev->CreateTexture2D(&depthBufferDesc, NULL, depthStencilBuffer.GetAddressOf()));
+	
 
 	
 	// Z testing
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
-
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
 	depthStencilDesc.DepthEnable = true;
 	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
@@ -203,19 +200,13 @@ void Graphics::CreateAndSetDepthStencilState()
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	
-	ComPtr<ID3D11DepthStencilState> depthStencilState;
 	THROW_IF_HRESULT_FAILED(dev->CreateDepthStencilState(&depthStencilDesc, depthStencilState.GetAddressOf()));
-
-	devcon->OMSetDepthStencilState(depthStencilState.Get(), 1);
-
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-
+	   
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
-	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
+	
 	THROW_IF_HRESULT_FAILED(dev->CreateDepthStencilView(depthStencilBuffer.Get(), &depthStencilViewDesc, depthStencilView.ReleaseAndGetAddressOf()));
 }
  
@@ -245,8 +236,6 @@ void Graphics::Initialize()
 	CreateAndSetDepthStencilState();
 	CreateAndSetRasterizerState();
 
-	D3D11_VIEWPORT viewport;
-	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 	viewport.Width = static_cast<float>(screenWidth);
 	viewport.Height = static_cast<float>(screenHeight);
 	viewport.MinDepth = 0.0f;
@@ -260,12 +249,16 @@ void Graphics::Initialize()
 
 void Graphics::SetRenderTargetToBackBuffer()
 {
+	devcon->RSSetViewports(1, &viewport);
+	devcon->OMSetDepthStencilState(depthStencilState.Get(), 0);
 	devcon->OMSetRenderTargets(1, renderTargetView.GetAddressOf(), depthStencilView.Get());
 }
 
 void Graphics::SetRenderTargetToTexture(RenderTargetTexture& renderTargetTexture)
 {
-	devcon->OMSetRenderTargets(1, renderTargetTexture.GetRenderTargetViewAddress(), depthStencilView.Get());
+	devcon->RSSetViewports(1, &(renderTargetTexture.GetViewport()));
+	devcon->OMSetDepthStencilState(renderTargetTexture.GetDepthStencilState(), 0);
+	devcon->OMSetRenderTargets(1, renderTargetTexture.GetRenderTargetViewAddress(), renderTargetTexture.GetDepthStencilView());
 }
 
 IDXGIAdapter1* Graphics::GetBestVideoCard(IDXGIFactory1* factory)
@@ -298,10 +291,10 @@ void Graphics::RenderFrame(float t, float dt)
 	float color[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
 
 	// Rendering to texture //
-	RenderTargetTexture rtt(dev.Get(), screenWidth, screenHeight, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	RenderTargetTexture rtt(dev.Get(), screenWidth / 10, screenHeight / 10, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	SetRenderTargetToTexture(rtt);
 	devcon->ClearRenderTargetView(rtt.GetRenderTargetView(), color);
-	devcon->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	devcon->ClearDepthStencilView(rtt.GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	
 	camera->Animate(t, dt);
 
@@ -351,15 +344,14 @@ void Graphics::Resize(UINT newWidth, UINT newHeight)
 	CreateAndSetDepthStencilState();
 
 	// Set up the viewport.
-	D3D11_VIEWPORT vp;
-	vp.Width  = static_cast<float>(newWidth);
-	vp.Height = static_cast<float>(newHeight);
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
+	viewport.Width  = static_cast<float>(newWidth);
+	viewport.Height = static_cast<float>(newHeight);
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
 
-	devcon->RSSetViewports(1, &vp);
+	devcon->RSSetViewports(1, &viewport);
 }
 
 

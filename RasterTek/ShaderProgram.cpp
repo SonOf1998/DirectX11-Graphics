@@ -92,9 +92,8 @@ ShaderProgram::ShaderProgram(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 }
 
 ShaderProgram::~ShaderProgram()
-{
-	/*
-	ComPtr<ID3D11Debug> debug;
+{	
+	/*ComPtr<ID3D11Debug> debug;
 	device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(debug.GetAddressOf()));
 	debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);*/
 }
