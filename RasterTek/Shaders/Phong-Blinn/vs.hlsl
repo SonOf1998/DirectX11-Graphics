@@ -7,6 +7,11 @@ cbuffer MVPMInv : register(b0)
     matrix modelMatrixInv;
 };
 
+cbuffer DirLightVP : register(b1)
+{
+    matrix dirViewProj;
+}
+
 struct VS_IN
 {
     float3 position : POSITION;
@@ -24,6 +29,7 @@ VS_OUT main(VS_IN input)
     output.normal = mul(float4(input.normal, 0), modelMatrixInv).xyz;
     output.worldPos = mul(float4(input.position, 1), modelMatrix).xyz;
     output.position = mul(mul(float4(input.position, 1), modelMatrix), viewProjMatrix);
+    output.posFromLight = mul(mul(float4(input.position, 1), modelMatrix), dirViewProj).xyz;
     
     return output;
 }

@@ -5,6 +5,6 @@ SamplerState samplerState : SAMPLER : register(s0);
 
 float4 main(PS_IN input) : SV_TARGET
 {
-    float3 outputColor = lastPassMap.Sample(samplerState, input.texcoord);    
-    return float4(outputColor, 1);
+    float outputColor = lastPassMap.Sample(samplerState, input.texcoord).x;    
+    return float4(outputColor, outputColor, outputColor, 1);
 }
