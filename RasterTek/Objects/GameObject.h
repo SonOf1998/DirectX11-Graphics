@@ -4,6 +4,7 @@
 class Camera;
 class ShaderProgram;
 class Mesh;
+class Light;
 
 class GameObject
 {
@@ -24,7 +25,10 @@ public:
 	GameObject(const GameObject&)	= delete;
 	virtual ~GameObject()			= default;
 
-	virtual void Render(ID3D11DeviceContext*, ShaderProgram*, Camera* = nullptr) = 0;
+	virtual void Render(ID3D11DeviceContext*, ShaderProgram*, Camera* = nullptr, Light* = nullptr) = 0;
+	virtual void RenderToShadowMap(ID3D11DeviceContext*, ShaderProgram*, Light*);
+
+
 	virtual void Animate(float t, float dt) = 0;
 
 	XMMATRIX GetModelMatrix() const;

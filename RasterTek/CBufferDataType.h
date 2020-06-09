@@ -67,6 +67,36 @@ public:
 	}
 };
 
+struct M : public CBufferDataType
+{
+	struct MData
+	{
+		XMMATRIX model;
+	} data;
+
+
+	M() : CBufferDataType("M")
+	{
+
+	}
+
+	void FillCBufferWithData(D3D11_MAPPED_SUBRESOURCE& mappedResource) override
+	{
+		MData* cbufferData = reinterpret_cast<MData*>(mappedResource.pData);
+		cbufferData->model = data.model;
+	}
+
+	UINT GetDataSize()
+	{
+		return sizeof(data);
+	}
+
+	MData& GetData()
+	{
+		return data;
+	}
+};
+
 struct MVP : public CBufferDataType
 {
 	struct MVPData
@@ -163,14 +193,14 @@ struct MVPMInv : public CBufferDataType
 	}
 };
 
-struct ViewProj : public CBufferDataType
+struct VP : public CBufferDataType
 {
 	struct VPData
 	{
 		XMMATRIX viewProj;
 	} data;
 
-	ViewProj() : CBufferDataType("VP")
+	VP() : CBufferDataType("VP")
 	{
 	}
 
@@ -186,6 +216,34 @@ struct ViewProj : public CBufferDataType
 	}
 
 	VPData& GetData()
+	{
+		return data;
+	}
+};
+
+struct DirLightVP : public CBufferDataType
+{
+	struct DirLightVPData
+	{
+		XMMATRIX viewProj;
+	} data;
+
+	DirLightVP() : CBufferDataType("DirLightVP")
+	{
+	}
+
+	void FillCBufferWithData(D3D11_MAPPED_SUBRESOURCE& mappedResource)
+	{
+		DirLightVPData* cbufferData = reinterpret_cast<DirLightVPData*>(mappedResource.pData);
+		cbufferData->viewProj = data.viewProj;
+	}
+
+	UINT GetDataSize()
+	{
+		return sizeof(data);
+	}
+
+	DirLightVPData& GetData()
 	{
 		return data;
 	}

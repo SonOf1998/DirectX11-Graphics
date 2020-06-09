@@ -40,6 +40,7 @@
 
 // own //
 #include "HResultException.h"
+#include "SimpleDXMath.h"
 
 
 using namespace DirectX;

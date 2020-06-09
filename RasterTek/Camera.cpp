@@ -108,7 +108,7 @@ void Camera::Update()
 	XMMATRIX rotation = XMMatrixTranspose(XMMatrixRotationRollPitchYaw(pitch, yaw, roll));
 	XMMATRIX invTranslate = XMMatrixTranslationFromVector(-position);
 
-	XMMATRIX view = XMMatrixMultiply(invTranslate, rotation);
+	XMMATRIX view = invTranslate * rotation;
 	XMMATRIX projection = XMMatrixPerspectiveFovRH(fovy, aspectRatio, zNear, zFar);
 	
 	viewProjMatrix = XMMatrixMultiply(view, projection);

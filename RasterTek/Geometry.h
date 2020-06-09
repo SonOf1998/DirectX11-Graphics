@@ -31,9 +31,6 @@ protected:
 	virtual void GenerateVertexData() = 0;
 	void CreateBuffers(ID3D11Device* dev)
 	{
-		int bytelen = sizeof(DATA_TYPE);
-		int bytelentrue = DATA_TYPE::GetSizeInBytes();
-
 		// vertex buffer
 		D3D11_BUFFER_DESC vertexBufferDesc		= {};
 		D3D11_SUBRESOURCE_DATA vertexBufferData	= {};

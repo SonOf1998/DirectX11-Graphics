@@ -7,6 +7,7 @@
 #include "AssimpModel.h"
 #include "QuadGeometry.h"
 #include "Logger.h"
+#include "DirectionalLight.h"
 #include "VertexDataType.h"
 #include "Mesh.h"
 #include "GameObject.h"
@@ -20,7 +21,7 @@
 
 Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth(screenWidth), screenHeight(screenHeight), hwnd(hwnd)
 {
-	Initialize();
+	InitializeDirectX11();
 
 	camera = std::make_unique<Camera>(XMVectorSet(0, 1, 4, 1), XMVectorSet(0, 0, 0, 1), static_cast<float>(screenWidth) / screenHeight);
 
@@ -35,15 +36,22 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 	plane->AddMesh(planeMesh);
 	
 
-	std::unique_ptr<GameObject> monkey = std::make_unique<SphereObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 0, 0));
-	Texture* monkeyTexture = new Texture(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/monkey.jpg", 0);
+	std::unique_ptr<GameObject> monkey = std::make_unique<SphereObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0.5, 0, 0));
+	std::shared_ptr<Texture> monkeyTexture = new Texture(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/monkey.jpg", 0);
 	Geometry* monkeyGeometry = new AssimpModel<PNT>(dev.Get(), "Models/sphere.obj");
 	Material* monkeyMaterial = new Material{ XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(1,1,1), 50.0f };
 	Mesh* monkeyMesh = new Mesh(monkeyGeometry, monkeyMaterial);
 	monkeyMesh->SetTexture(monkeyTexture);
 	monkey->AddMesh(monkeyMesh);
 
-	std::unique_ptr<GameObject> fullScreenQuad = std::make_unique<FullScreenQuadObject>(dev.Get(), devcon.Get(), XMVectorSet(-0.75f, 0.75f, 0, 1), XMVectorSet(0.5, 0.5, 1, 1));
+	std::unique_ptr<GameObject> torus = std::make_unique<SphereObject>(dev.Get(), devcon.Get(), XMVectorSet(3.0, 0.3, 0.0, 0.0), XMVectorSet(1, 1, 1, 1));
+	Geometry* torusGeometry = new AssimpModel<PNT>(dev.Get(), "Models/torus.obj");
+	Material* torusMaterial = new Material{ XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(1,0,0), 100.0f };
+	Mesh* torusMesh = new Mesh(torusGeometry, torusMaterial);
+	torusMesh->SetTexture(monkeyTexture);
+	torus->AddMesh(torusMesh);
+
+	std::unique_ptr<GameObject> fullScreenQuad = std::make_unique<FullScreenQuadObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 0, 1), XMVectorSet(1, 1, 1, 1));
 	Geometry* fullScreenQuadGeometry = new FullScreenQuadGeometry<PT>(dev.Get());
 	Mesh* fullScreenMesh = new Mesh(fullScreenQuadGeometry);
 	fullScreenQuad->AddMesh(fullScreenMesh);
@@ -66,13 +74,64 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 
 	gameObjects.push_back(std::move(plane));
 	gameObjects.push_back(std::move(monkey));
+	gameObjects.push_back(std::move(torus));
 	
-
+	dirLight = std::make_unique<DirectionalLight>(XMFLOAT3(6, 8, 3), XMFLOAT3(1,1,1));
+	shadowMap.reset(new RenderTargetTexture(dev.Get(), screenWidth, screenHeight, DXGI_FORMAT_R32_FLOAT));
 	
 	shaderProgramPhongBlinn.reset(ShaderProgram::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"Shaders/Phong-Blinn/bin/vs.cso", L"Shaders/Phong-Blinn/bin/ps.cso"));
 	shaderProgramMirror.reset(ShaderProgram::Create<InputLayoutPT>(dev.Get(), devcon.Get(), L"Shaders/FullScreenQuadPT/bin/vs.cso", L"Shaders/FullScreenQuadPT/bin/ps.cso"));
 	shaderProgramMirror->SetSampler(FILTERING::NEAREST, 0);
+	shaderProgramShadowMap.reset(ShaderProgram::Create<InputLayoutP>(dev.Get(), devcon.Get(), L"Shaders/ShadowMap-Directional/bin/vs.cso", L"Shaders/ShadowMap-Directional/bin/ps.cso"));
 }
+
+
+void Graphics::RenderFrame(float t, float dt)
+{
+	float color[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	float black[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float white[4] = { 10.0f, 10.0f, 10.0f, 1.0f };
+
+	// Rendering to texture //
+	//RenderTargetTexture rtt(dev.Get(), screenWidth / 10, screenHeight / 10, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	SetRenderTargetToTexture(*(shadowMap.get()));
+	devcon->ClearRenderTargetView(shadowMap->GetRenderTargetView(), white);
+	devcon->ClearDepthStencilView(shadowMap->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	camera->Animate(t, dt);
+
+	for (auto& gameObject : gameObjects)
+	{
+		gameObject->Animate(t, dt);
+		gameObject->RenderToShadowMap(devcon.Get(), shaderProgramShadowMap.get(), dirLight.get());
+	}
+
+
+	// Rendering to backbuffer //
+	SetRenderTargetToBackBuffer();
+	devcon->ClearRenderTargetView(renderTargetView.Get(), color);
+	devcon->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	camera->Animate(t, dt);
+
+
+	shaderProgramPhongBlinn->Use();
+	shaderProgramPhongBlinn->SetTexture(shadowMap->GetShaderResourceView(), 1);
+	for (auto& gameObject : gameObjects)
+	{
+		gameObject->Animate(t, dt);
+		gameObject->Render(devcon.Get(), shaderProgramPhongBlinn.get(), camera.get(), dirLight.get());
+	}
+
+	if (VSYNC_ENABLED)
+	{
+		swapchain->Present(1, 0);
+	}
+	else
+	{
+		swapchain->Present(0, 0);
+	}
+}
+
 
 Graphics::~Graphics() = default;
 
@@ -128,7 +187,7 @@ void Graphics::CreateRenderTarget()
 
 	HRESULT result;
 	THROW_IF_HRESULT_FAILED(swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf())));
-	THROW_IF_HRESULT_FAILED(dev->CreateRenderTargetView(backBuffer.Get(), NULL, renderTargetView.GetAddressOf()));
+	THROW_IF_HRESULT_FAILED(dev->CreateRenderTargetView(backBuffer.Get(), NULL, renderTargetView.ReleaseAndGetAddressOf()));
 }
 
 void Graphics::CreateAndSetRasterizerState()
@@ -200,7 +259,7 @@ void Graphics::CreateAndSetDepthStencilState()
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	
-	THROW_IF_HRESULT_FAILED(dev->CreateDepthStencilState(&depthStencilDesc, depthStencilState.GetAddressOf()));
+	THROW_IF_HRESULT_FAILED(dev->CreateDepthStencilState(&depthStencilDesc, depthStencilState.ReleaseAndGetAddressOf()));
 	   
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -210,7 +269,7 @@ void Graphics::CreateAndSetDepthStencilState()
 	THROW_IF_HRESULT_FAILED(dev->CreateDepthStencilView(depthStencilBuffer.Get(), &depthStencilViewDesc, depthStencilView.ReleaseAndGetAddressOf()));
 }
  
-void Graphics::Initialize()
+void Graphics::InitializeDirectX11()
 {
 	HRESULT result;
 
@@ -286,46 +345,6 @@ IDXGIAdapter1* Graphics::GetBestVideoCard(IDXGIFactory1* factory)
 	return ret;
 }
 
-void Graphics::RenderFrame(float t, float dt)
-{
-	float color[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
-
-	// Rendering to texture //
-	RenderTargetTexture rtt(dev.Get(), screenWidth / 10, screenHeight / 10, DXGI_FORMAT_R32G32B32A32_FLOAT);
-	SetRenderTargetToTexture(rtt);
-	devcon->ClearRenderTargetView(rtt.GetRenderTargetView(), color);
-	devcon->ClearDepthStencilView(rtt.GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	
-	camera->Animate(t, dt);
-
-	for (auto& gameObject : gameObjects)
-	{
-		gameObject->Animate(t, dt);
-		gameObject->Render(devcon.Get(), shaderProgramPhongBlinn.get(), camera.get());
-	}
-	
-
-	// Rendering to backbuffer //
-	SetRenderTargetToBackBuffer();
-	devcon->ClearRenderTargetView(renderTargetView.Get(), color);
-	devcon->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	camera->Animate(t, dt);
-
-
-	shaderProgramMirror->Use();
-	shaderProgramMirror->SetTexture(rtt.GetShaderResourceView(), 0);
-	mirror->Render(devcon.Get(), shaderProgramMirror.get(), camera.get());
-	
-	if (VSYNC_ENABLED)
-	{
-		swapchain->Present(1, 0);
-	}
-	else
-	{
-		swapchain->Present(0, 0);
-	}
-}
-
 void Graphics::Resize(UINT newWidth, UINT newHeight)
 {
 	HRESULT result;
@@ -336,7 +355,7 @@ void Graphics::Resize(UINT newWidth, UINT newHeight)
 
 	//devcon->ClearState();
 	devcon->OMSetRenderTargets(0, nullptr, nullptr);
-	renderTargetView = nullptr;
+	renderTargetView.ReleaseAndGetAddressOf();
 
 	THROW_IF_HRESULT_FAILED(swapchain->ResizeBuffers(1, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
 

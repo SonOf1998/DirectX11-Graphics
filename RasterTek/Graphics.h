@@ -2,6 +2,7 @@
 
 class Camera;
 class GameObject;
+class Light;
 class RenderTargetTexture;
 class ShaderProgram;
 
@@ -25,14 +26,18 @@ class Graphics
 
 	std::unique_ptr<ShaderProgram>				shaderProgramPhongBlinn;
 	std::unique_ptr<ShaderProgram>				shaderProgramMirror;
+	std::unique_ptr<ShaderProgram>				shaderProgramShadowMap;
 
 	std::unique_ptr<GameObject> mirror;
+	std::unique_ptr<Light> dirLight;
+
+	std::unique_ptr<RenderTargetTexture> shadowMap;
 
 	void CreateSwapChain(IDXGIFactory1*);
 	void CreateRenderTarget();
 	void CreateAndSetRasterizerState();
 	void CreateAndSetDepthStencilState();
-	void Initialize();
+	void InitializeDirectX11();
 
 	void SetRenderTargetToBackBuffer();
 	void SetRenderTargetToTexture(RenderTargetTexture&);

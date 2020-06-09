@@ -10,7 +10,7 @@ class Mesh
 {
 	std::unique_ptr<Geometry> geometry	= nullptr;
 	std::unique_ptr<Material> material	= nullptr;
-	std::unique_ptr<Texture> texture	= nullptr;
+	std::unique_ptr<Texture>  texture	= nullptr;
 
 public:
 

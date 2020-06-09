@@ -52,7 +52,7 @@ struct VertexDataType<HEAD, TAIL...> : public VertexDataType<TAIL...>
 	}
 };
 
-
+using InputLayoutP   = typename VertexDataType<DataTypes::Position>;
 using InputLayoutPC  = typename VertexDataType<DataTypes::Color, DataTypes::Position>;
 using InputLayoutPT  = typename VertexDataType<DataTypes::Texture, DataTypes::Position>;
 using InputLayoutPNT = typename VertexDataType<DataTypes::Texture, DataTypes::Normal, DataTypes::Position>;
@@ -85,7 +85,7 @@ struct VertexDataStructure
 	virtual void SetTexcoordUV	(const XMFLOAT2&) { throw std::runtime_error("Cannot set TexcoordUV");	}
 };
 
-class P : public VertexDataStructure
+struct P : public VertexDataStructure
 {
 	struct DATA
 	{
@@ -105,9 +105,14 @@ public:
 	{
 		data.position = position;
 	}
+
+	DATA GetData()
+	{
+		return data;
+	}
 };
 
-class PC : public VertexDataStructure
+struct PC : public VertexDataStructure
 {
 	struct DATA
 	{
@@ -133,6 +138,11 @@ public:
 	void SetColor(const XMFLOAT3& color) final
 	{
 		data.color = color;
+	}
+
+	DATA GetData()
+	{
+		return data;
 	}
 };
 

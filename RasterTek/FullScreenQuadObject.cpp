@@ -6,14 +6,22 @@
 #include "SimpleDXMath.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "Light.h"
 
-void FullScreenQuadObject::Render(ID3D11DeviceContext* deviceContext, ShaderProgram* shaderProgram, Camera* camera)
+void FullScreenQuadObject::Render(ID3D11DeviceContext* deviceContext, ShaderProgram* shaderProgram, Camera* camera /* nullptr */, Light* light /* nullptr */)
 {
 	XMMATRIX viewProj = XMMatrixIdentity();
 	if (camera != nullptr)
 	{
 		camera->Update();
 		viewProj = camera->GetViewProjMatrix();
+	}
+
+	if (light != nullptr)
+	{
+		DirLightVP dirLightVP;
+		dirLightVP.GetData().viewProj = Transpose(light->GetViewProjMatrix());
+		shaderProgram->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 	}
 
 	MVP mvp;

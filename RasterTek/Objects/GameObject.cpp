@@ -16,6 +16,10 @@ GameObject::GameObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext,
 	modelMatrix = scaleMatrix * rotation * translationMatrix;	
 }
 
+void GameObject::RenderToShadowMap(ID3D11DeviceContext*, ShaderProgram*, Light*)
+{
+}
+
 XMMATRIX GameObject::GetModelMatrix() const
 {
 	return modelMatrix;
