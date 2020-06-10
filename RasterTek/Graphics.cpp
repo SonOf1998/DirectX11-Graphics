@@ -28,33 +28,34 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 
 
 	std::unique_ptr<GameObject> plane = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(10, 10, 1, 1), XMVectorSet(1, 0, 0, 0), -XM_PI / 2);
-	Texture* planeTexture = new Texture(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/pavement.jpg", 0);
-	Geometry* planeGeometry = new QuadGeometry<PNT>(dev.Get());
-	Material* planeMaterial = new Material{ XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(0,0,0), 0.0f };
+	std::shared_ptr<Texture> planeTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/pavement.jpg", 0);
+	std::shared_ptr<Geometry> planeGeometry = std::make_shared<QuadGeometry<PNT>>(dev.Get());
+	std::shared_ptr<Material> planeMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(0, 0, 0), 0.0f);
+
 	Mesh* planeMesh = new Mesh(planeGeometry, planeMaterial);
 	planeMesh->SetTexture(planeTexture);
 	plane->AddMesh(planeMesh);
 	
 
 	std::unique_ptr<GameObject> monkey = std::make_unique<SphereObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0.5, 0, 0));
-	std::shared_ptr<Texture> monkeyTexture = new Texture(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/monkey.jpg", 0);
-	Geometry* monkeyGeometry = new AssimpModel<PNT>(dev.Get(), "Models/sphere.obj");
-	Material* monkeyMaterial = new Material{ XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(1,1,1), 50.0f };
-	Mesh* monkeyMesh = new Mesh(monkeyGeometry, monkeyMaterial);
+	std::shared_ptr<Texture> monkeyTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/monkey.jpg", 0);
+	std::shared_ptr<Geometry> monkeyGeometry = std::make_shared<AssimpModel<PNT>>(dev.Get(), "Models/sphere.obj");
+	std::shared_ptr<Material> monkeyMaterial = std::make_shared<Material>(XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(1,1,1), 50.0f);
+	std::unique_ptr<Mesh> monkeyMesh = std::make_unique<Mesh>(monkeyGeometry, monkeyMaterial);
 	monkeyMesh->SetTexture(monkeyTexture);
-	monkey->AddMesh(monkeyMesh);
+	monkey->AddMesh(std::move(monkeyMesh));
 
 	std::unique_ptr<GameObject> torus = std::make_unique<SphereObject>(dev.Get(), devcon.Get(), XMVectorSet(3.0, 0.3, 0.0, 0.0), XMVectorSet(1, 1, 1, 1));
-	Geometry* torusGeometry = new AssimpModel<PNT>(dev.Get(), "Models/torus.obj");
-	Material* torusMaterial = new Material{ XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(1,0,0), 100.0f };
-	Mesh* torusMesh = new Mesh(torusGeometry, torusMaterial);
+	std::shared_ptr<Geometry> torusGeometry = std::make_shared<AssimpModel<PNT>>(dev.Get(), "Models/torus.obj");
+	std::shared_ptr<Material> torusMaterial = std::make_shared<Material>(XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(1,0,0), 100.0f);
+	std::unique_ptr<Mesh> torusMesh = std::make_unique<Mesh>(torusGeometry, torusMaterial);
 	torusMesh->SetTexture(monkeyTexture);
-	torus->AddMesh(torusMesh);
+	torus->AddMesh(std::move(torusMesh));
 
 	std::unique_ptr<GameObject> fullScreenQuad = std::make_unique<FullScreenQuadObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 0, 1), XMVectorSet(1, 1, 1, 1));
-	Geometry* fullScreenQuadGeometry = new FullScreenQuadGeometry<PT>(dev.Get());
-	Mesh* fullScreenMesh = new Mesh(fullScreenQuadGeometry);
-	fullScreenQuad->AddMesh(fullScreenMesh);
+	std::shared_ptr<Geometry> fullScreenQuadGeometry = std::make_shared<FullScreenQuadGeometry<PT>>(dev.Get());
+	std::unique_ptr<Mesh> fullScreenMesh = std::make_unique<Mesh>(fullScreenQuadGeometry);
+	fullScreenQuad->AddMesh(std::move(fullScreenMesh));
 	mirror = std::move(fullScreenQuad);
 
 	//for (int i = 0; i < 7; ++i)
@@ -94,6 +95,7 @@ void Graphics::RenderFrame(float t, float dt)
 
 	// Rendering to texture //
 	//RenderTargetTexture rtt(dev.Get(), screenWidth / 10, screenHeight / 10, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	shaderProgramPhongBlinn->SetTexture(nullptr, 1);	// a render targetet kivesszük a phong blinn pipeline pixel shaderébõl.
 	SetRenderTargetToTexture(*(shadowMap.get()));
 	devcon->ClearRenderTargetView(shadowMap->GetRenderTargetView(), white);
 	devcon->ClearDepthStencilView(shadowMap->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -112,7 +114,6 @@ void Graphics::RenderFrame(float t, float dt)
 	devcon->ClearRenderTargetView(renderTargetView.Get(), color);
 	devcon->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	camera->Animate(t, dt);
-
 
 	shaderProgramPhongBlinn->Use();
 	shaderProgramPhongBlinn->SetTexture(shadowMap->GetShaderResourceView(), 1);

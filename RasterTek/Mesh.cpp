@@ -1,15 +1,15 @@
 #include "pch.h"
 #include "Mesh.h"
 
-Mesh::Mesh(Geometry* geometry, Material* material)
+Mesh::Mesh(const std::shared_ptr<Geometry>& geometry, const std::shared_ptr<Material>& material)
 {
-	this->geometry.reset(geometry);
-	this->material.reset(material);
+	this->geometry = geometry;
+	this->material = material;
 }
 
-void Mesh::SetTexture(Texture* texture)
+void Mesh::SetTexture(const std::shared_ptr<Texture>& texture)
 {
-	this->texture.reset(texture);
+	this->texture = texture;
 }
 
 Texture* Mesh::GetTexture() const

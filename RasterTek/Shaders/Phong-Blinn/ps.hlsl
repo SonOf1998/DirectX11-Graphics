@@ -18,7 +18,7 @@ cbuffer Camera : register(b1)
 
 float4 main(PS_IN input) : SV_TARGET
 {    
-    float3 lightDir = float3(0, 1, 1);
+    float3 lightDir = float3(6, 8, 3);
     lightDir = normalize(lightDir);
     
     float3 viewDir = cameraPosition - input.worldPos;
@@ -36,17 +36,32 @@ float4 main(PS_IN input) : SV_TARGET
     halfway = normalize(halfway);
     
     outputColor += ks.xyz * pow(saturate(dot(halfway, normal)), shine);
+    float3 fixedOutputColor = outputColor;
     
-    float2 projTexCoord = float2(input.posFromLight.x / 2 + 0.5, -input.posFromLight.y / 2 + 0.5);
-    float depth = shadowMap.Sample(samplerState, projTexCoord).x;
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
-    if (depth < input.posFromLight.z - bias)
+    // soft shadows
+    for (int i = -1; i <= 1; ++i)
     {
-        outputColor *= 0.7;
+        for (int j = -1; j <= 1; ++j)
+        {
+            float2 projTexCoord = float2(input.posFromLight.x / 2 + 0.5, -input.posFromLight.y / 2 + 0.5) + float2(i, j) * 0.001;
+            float depth = shadowMap.Sample(samplerState, projTexCoord).x;
+            float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+            if (depth < input.posFromLight.z - bias)
+            {
+                outputColor += 0.7 * fixedOutputColor;
+            }
+            else
+            {
+                outputColor += fixedOutputColor;
+            }
+        }
     }
+    
+    outputColor /= 9;
+    
    
-    float3 a = float3(depth, depth, depth);
-    float3 b = float3(input.posFromLight.z, input.posFromLight.z, input.posFromLight.z);
+   //float3 a = float3(depth, depth, depth);
+   //float3 b = float3(input.posFromLight.z, input.posFromLight.z, input.posFromLight.z);
     
     return float4(outputColor, 1);
 }

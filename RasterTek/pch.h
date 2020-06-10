@@ -1,6 +1,7 @@
 #pragma once
 
 #define WIN32_LEAN_AND_MEAN
+#define _ENABLE_EXTENDED_ALIGNED_STORAGE
 
 // standard library //
 #include <cmath>
@@ -33,10 +34,10 @@
 #include <assimp/postprocess.h>	
 
 // libs //
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "d3d11.lib")
+#pragma comment (lib, "dxgi.lib")
+#pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
-#pragma comment(lib, "dxguid.lib")
+#pragma comment (lib, "dxguid.lib")
 
 // own //
 #include "HResultException.h"
