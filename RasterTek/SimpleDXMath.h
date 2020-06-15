@@ -6,6 +6,7 @@ using namespace DirectX;
 
 constexpr float PI_180 = XM_PI / 180;
 
+
 inline XMFLOAT3 operator+(const XMFLOAT3& a, const XMFLOAT3& b)
 {
 	XMVECTOR aVec = XMLoadFloat3(&a);

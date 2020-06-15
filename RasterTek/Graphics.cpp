@@ -5,13 +5,14 @@
 #include "HResultException.h"
 #include "Geometry.h"
 #include "AssimpModel.h"
+#include "AssimpMultiModel.h"
 #include "QuadGeometry.h"
 #include "Logger.h"
 #include "DirectionalLight.h"
 #include "VertexDataType.h"
 #include "Mesh.h"
 #include "GameObject.h"
-#include "SphereObject.h"
+#include "BallObject.h"
 #include "FloorObject.h"
 #include "ShaderProgram.h"
 #include "Camera.h"
@@ -22,35 +23,132 @@
 Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth(screenWidth), screenHeight(screenHeight), hwnd(hwnd)
 {
 	InitializeDirectX11();
+	RenderInitalization();	
+}
 
+void Graphics::RenderInitalization()
+{
 	camera = std::make_unique<Camera>(XMVectorSet(0, 1, 4, 1), XMVectorSet(0, 0, 0, 1), static_cast<float>(screenWidth) / screenHeight);
 
+	// snooker balls - common resources (shape, shininess, colors)
+	std::shared_ptr<Geometry> ballGeometry = std::make_shared<AssimpModel<PNT>>(dev.Get(), "Models/ball.obj");
+	std::shared_ptr<Material> ballMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(1, 1, 1), 70.0f);
+	std::shared_ptr<Texture>  redBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/redball.png", 0);
+	std::shared_ptr<Texture>  yellowBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/yellowball.png", 0);
+	std::shared_ptr<Texture>  greenBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/greenball.png", 0);
+	std::shared_ptr<Texture>  brownBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/brownball.png", 0);
+	std::shared_ptr<Texture>  blueBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/blueball.png", 0);
+	std::shared_ptr<Texture>  pinkBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/pinkball.png", 0);
+	std::shared_ptr<Texture>  blackBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/blackball.png", 0);
+	std::shared_ptr<Texture>  whiteBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/whiteball.png", 0);
+	Mesh ballMesh(ballGeometry, ballMaterial);
+	float y = 0.96f;
+	float x = 0.0f;
+	float z = 0.0f;
+
+	std::unique_ptr<GameObject> whiteBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x + 1, y, z + 3, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	ballMesh.SetTexture(whiteBallTexture);
+	whiteBall->CopyAndAddMesh(ballMesh);
+
+	std::unique_ptr<GameObject> yellowBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x + 1.37, y, z + 2.7, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	ballMesh.SetTexture(yellowBallTexture);
+	yellowBall->CopyAndAddMesh(ballMesh);
+
+	std::unique_ptr<GameObject> greenBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x - 1.37, y, z + 2.7, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	ballMesh.SetTexture(greenBallTexture);
+	greenBall->CopyAndAddMesh(ballMesh);
+
+	std::unique_ptr<GameObject> brownBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x, y, z + 2.7, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	ballMesh.SetTexture(brownBallTexture);
+	brownBall->CopyAndAddMesh(ballMesh);
+
+	std::unique_ptr<GameObject> blueBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x, y, z, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	ballMesh.SetTexture(blueBallTexture);
+	blueBall->CopyAndAddMesh(ballMesh);
+
+	std::unique_ptr<GameObject> pinkBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x, y, z -2.3, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	ballMesh.SetTexture(pinkBallTexture);
+	pinkBall->CopyAndAddMesh(ballMesh);
 
 
-	std::unique_ptr<GameObject> plane = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(10, 10, 1, 1), XMVectorSet(1, 0, 0, 0), -XM_PI / 2);
-	std::shared_ptr<Texture> planeTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/pavement.jpg", 0);
+	std::unique_ptr<GameObject> blackBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x, y, z - 4.3, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	ballMesh.SetTexture(blackBallTexture);
+	blackBall->CopyAndAddMesh(ballMesh);
+
+	XMFLOAT4 firstRedTranslation(x, y, -2.5f, 0.0f);
+	float deltaTranslate = 0.2f;
+	for (int i = 0; i < 5; ++i)
+	{
+		float x0 = firstRedTranslation.x - ((i % 2) / 2.0f) * deltaTranslate;
+		for (int j = 0; j <= i; ++j)
+		{
+			XMFLOAT4 translate = firstRedTranslation;
+			translate.z -= i * deltaTranslate * 0.85f;
+			translate.x = x0 + pow(-1, j + 1) * j * deltaTranslate;
+			x0 = translate.x;
+			
+			std::unique_ptr<GameObject> redBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMLoadFloat4(&translate), XMVectorSet(0.1, 0.1, 0.1, 1));
+			ballMesh.SetTexture(redBallTexture);
+			redBall->CopyAndAddMesh(ballMesh);
+			gameObjects.push_back(std::move(redBall));
+		}
+	}
+
+
+
+
+	std::unique_ptr<GameObject> plane = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(15, 15, 1, 1), XMVectorSet(1, 0, 0, 0), -XM_PI / 2);
+	std::shared_ptr<Texture> planeTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/pavement.jpg", 0);
 	std::shared_ptr<Geometry> planeGeometry = std::make_shared<QuadGeometry<PNT>>(dev.Get());
 	std::shared_ptr<Material> planeMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(0, 0, 0), 0.0f);
 
 	Mesh* planeMesh = new Mesh(planeGeometry, planeMaterial);
 	planeMesh->SetTexture(planeTexture);
 	plane->AddMesh(planeMesh);
+
+	auto geometries = AssimpMultiModel<PNT>(dev.Get(), "Models/table.fbx").GetGeometries();
+
+	std::unique_ptr<GameObject> monkey = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0.8f, 0, 0), XMVectorSet(0.8f, 0.8f, 0.8f, 1), XMVectorSet(0, 1, 0, 0), XM_PI / 2);
+	std::shared_ptr<Texture> frameTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/solid_wood.png", 0);
+	std::shared_ptr<Texture> tableTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/green_fabric.png", 0);
+	std::shared_ptr<Texture> xingPaiStarLogo = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/xingpaistar.png", 0);
+	std::shared_ptr<Texture> sideWallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/side_wall_fabric.png", 0);
+	std::shared_ptr<Texture> pocketDimmerTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/pocket_dimmer.png", 0);
+	std::shared_ptr<Geometry> frameGeometry = std::move(geometries[0]);
+	std::shared_ptr<Geometry> pocketDimmerGeometry = std::move(geometries[5]);
+	std::shared_ptr<Geometry> sideWallGeometry = std::move(geometries[4]);
+	std::shared_ptr<Geometry> tableGeometry = std::move(geometries[3]);
+	std::shared_ptr<Geometry> xingPaiStarGeomRear = std::move(geometries[1]);
+	std::shared_ptr<Geometry> xingPaiStarGeomFront = std::move(geometries[2]);
+
+	std::shared_ptr<Material> dullMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(0, 0, 0), 0.0f);
+
+	std::unique_ptr<Mesh> frameMesh = std::make_unique<Mesh>(frameGeometry, dullMaterial);
+	frameMesh->SetTexture(frameTexture);
+	std::unique_ptr<Mesh> sideWallMesh = std::make_unique<Mesh>(sideWallGeometry, dullMaterial);
+	sideWallMesh->SetTexture(sideWallTexture);
+	std::unique_ptr<Mesh> pocketDimmerMesh = std::make_unique<Mesh>(pocketDimmerGeometry, dullMaterial);
+	pocketDimmerMesh->SetTexture(pocketDimmerTexture);
+	std::unique_ptr<Mesh> tableMesh = std::make_unique<Mesh>(tableGeometry, dullMaterial);
+	tableMesh->SetTexture(tableTexture);
+	std::unique_ptr<Mesh> xinPaiStarRearMesh = std::make_unique<Mesh>(xingPaiStarGeomRear, dullMaterial);
+	xinPaiStarRearMesh->SetTexture(xingPaiStarLogo);
+	std::unique_ptr<Mesh> xinPaiStarFrontMesh = std::make_unique<Mesh>(xingPaiStarGeomFront, dullMaterial);
+	xinPaiStarFrontMesh->SetTexture(xingPaiStarLogo);
+
+	monkey->AddMesh(std::move(frameMesh));
+	monkey->AddMesh(std::move(sideWallMesh));
+	monkey->AddMesh(std::move(pocketDimmerMesh));
+	monkey->AddMesh(std::move(tableMesh));
+	monkey->AddMesh(std::move(xinPaiStarRearMesh));
+	monkey->AddMesh(std::move(xinPaiStarFrontMesh));
 	
-
-	std::unique_ptr<GameObject> monkey = std::make_unique<SphereObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0.5, 0, 0));
-	std::shared_ptr<Texture> monkeyTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/monkey.jpg", 0);
-	std::shared_ptr<Geometry> monkeyGeometry = std::make_shared<AssimpModel<PNT>>(dev.Get(), "Models/sphere.obj");
-	std::shared_ptr<Material> monkeyMaterial = std::make_shared<Material>(XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(1,1,1), 50.0f);
-	std::unique_ptr<Mesh> monkeyMesh = std::make_unique<Mesh>(monkeyGeometry, monkeyMaterial);
-	monkeyMesh->SetTexture(monkeyTexture);
-	monkey->AddMesh(std::move(monkeyMesh));
-
-	std::unique_ptr<GameObject> torus = std::make_unique<SphereObject>(dev.Get(), devcon.Get(), XMVectorSet(3.0, 0.3, 0.0, 0.0), XMVectorSet(1, 1, 1, 1));
-	std::shared_ptr<Geometry> torusGeometry = std::make_shared<AssimpModel<PNT>>(dev.Get(), "Models/torus.obj");
-	std::shared_ptr<Material> torusMaterial = std::make_shared<Material>(XMFLOAT3(0.1f,0.1f,0.1f), XMFLOAT3(1,0,0), 100.0f);
-	std::unique_ptr<Mesh> torusMesh = std::make_unique<Mesh>(torusGeometry, torusMaterial);
-	torusMesh->SetTexture(monkeyTexture);
-	torus->AddMesh(std::move(torusMesh));
+	//std::unique_ptr<GameObject> torus = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(3.0, 0.3, 0.0, 0.0), XMVectorSet(1, 1, 1, 1));
+	//std::shared_ptr<Geometry> torusGeometry = std::make_shared<AssimpModel<PNT>>(dev.Get(), "Models/torus.obj");
+	//std::shared_ptr<Material> torusMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(0, 0, 0), 100.0f);
+	//std::unique_ptr<Mesh> torusMesh = std::make_unique<Mesh>(torusGeometry, torusMaterial);
+	//torusMesh->SetTexture(monkeyTexture);
+	//torus->AddMesh(std::move(torusMesh));
 
 	std::unique_ptr<GameObject> fullScreenQuad = std::make_unique<FullScreenQuadObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 0, 1), XMVectorSet(1, 1, 1, 1));
 	std::shared_ptr<Geometry> fullScreenQuadGeometry = std::make_shared<FullScreenQuadGeometry<PT>>(dev.Get());
@@ -69,23 +167,29 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 	//	nanosuit->addMesh(nanosuitMesh);
 	//	gameObjects.push_back(std::move(nanosuit));
 	//}
-	
-	
-	
+
+
+
 
 	gameObjects.push_back(std::move(plane));
 	gameObjects.push_back(std::move(monkey));
-	gameObjects.push_back(std::move(torus));
-	
-	dirLight = std::make_unique<DirectionalLight>(XMFLOAT3(6, 8, 3), XMFLOAT3(1,1,1));
+	//gameObjects.push_back(std::move(torus));
+	gameObjects.push_back(std::move(whiteBall));
+	gameObjects.push_back(std::move(yellowBall));
+	gameObjects.push_back(std::move(greenBall));
+	gameObjects.push_back(std::move(brownBall));
+	gameObjects.push_back(std::move(blueBall));
+	gameObjects.push_back(std::move(pinkBall));
+	gameObjects.push_back(std::move(blackBall));
+
+	dirLight = std::make_unique<DirectionalLight>(XMFLOAT3(12, 16, 6), XMFLOAT3(1, 1, 1));
 	shadowMap.reset(new RenderTargetTexture(dev.Get(), screenWidth, screenHeight, DXGI_FORMAT_R32_FLOAT));
-	
+
 	shaderProgramPhongBlinn.reset(ShaderProgram::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"Shaders/Phong-Blinn/bin/vs.cso", L"Shaders/Phong-Blinn/bin/ps.cso"));
 	shaderProgramMirror.reset(ShaderProgram::Create<InputLayoutPT>(dev.Get(), devcon.Get(), L"Shaders/FullScreenQuadPT/bin/vs.cso", L"Shaders/FullScreenQuadPT/bin/ps.cso"));
 	shaderProgramMirror->SetSampler(FILTERING::NEAREST, 0);
 	shaderProgramShadowMap.reset(ShaderProgram::Create<InputLayoutP>(dev.Get(), devcon.Get(), L"Shaders/ShadowMap-Directional/bin/vs.cso", L"Shaders/ShadowMap-Directional/bin/ps.cso"));
 }
-
 
 void Graphics::RenderFrame(float t, float dt)
 {

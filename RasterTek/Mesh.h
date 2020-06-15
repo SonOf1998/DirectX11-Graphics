@@ -15,7 +15,10 @@ class Mesh
 public:
 
 	Mesh(const std::shared_ptr<Geometry>&, const std::shared_ptr<Material>& = nullptr);
+	Mesh(const Mesh&);
+	Mesh& operator=(Mesh);
 	~Mesh() = default;
+
 
 	void SetTexture(const std::shared_ptr<Texture>&);
 	Texture* GetTexture() const;

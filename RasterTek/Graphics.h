@@ -37,6 +37,7 @@ class Graphics
 	void CreateRenderTarget();
 	void CreateAndSetRasterizerState();
 	void CreateAndSetDepthStencilState();
+	void RenderInitalization();
 	void InitializeDirectX11();
 
 	void SetRenderTargetToBackBuffer();

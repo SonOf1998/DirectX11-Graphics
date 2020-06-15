@@ -2,6 +2,10 @@
 
 #include "Geometry.h"
 
+/* Use for importing single mesh Maya / Blender files
+*  or to draw only one specific mesh from a multimesh file. 
+*/
+
 template <typename DATA_TYPE>
 class AssimpModel : public GeometryDerived<DATA_TYPE>
 {
@@ -9,16 +13,16 @@ class AssimpModel : public GeometryDerived<DATA_TYPE>
 
 public:
 
-	AssimpModel(ID3D11Device* device, const char* filename)
+	AssimpModel(ID3D11Device* device, const char* filename, UINT meshIndex = 0)
 	{
-		GenerateVertexData(filename, 0);
+		GenerateVertexData(filename, meshIndex);
 		this->CreateBuffers(device);
 	}
 
 	void GenerateVertexData(const char* fileName, unsigned int meshIndex)
 	{
 		Assimp::Importer importer;
-		auto model = importer.ReadFile(fileName, aiProcess_JoinIdenticalVertices | aiProcess_FlipWindingOrder);
+		auto model = importer.ReadFile(fileName, aiProcess_JoinIdenticalVertices | aiProcess_FlipWindingOrder | aiProcess_PreTransformVertices);
 		auto mesh = model->mMeshes[meshIndex];
 
 		this->vertices.reserve(mesh->mNumVertices);

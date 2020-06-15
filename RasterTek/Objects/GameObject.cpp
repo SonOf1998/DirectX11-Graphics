@@ -35,3 +35,8 @@ void GameObject::AddMesh(std::unique_ptr<Mesh>&& newMesh)
 	meshes.push_back(std::move(newMesh));
 }
 
+void GameObject::CopyAndAddMesh(Mesh mesh)
+{
+	meshes.push_back(std::make_unique<Mesh>(mesh));
+}
+

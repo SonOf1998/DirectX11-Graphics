@@ -151,7 +151,7 @@ void SystemClass::OpenWindow()
 	hwnd = CreateWindowEx(
 		NULL,
 		m_applicationName,
-		m_applicationName,
+		WindowTitle,
 		WS_OVERLAPPEDWINDOW,
 		posX, posY, screenWidth, screenHeight,
 		NULL,
@@ -159,6 +159,7 @@ void SystemClass::OpenWindow()
 		m_hinstance,
 		NULL
 	);
+
 
 	// Bring the window up on the screen and set it as main focus.
 	ShowWindow(hwnd, SW_SHOW);

@@ -1,9 +1,9 @@
 #pragma once
 
+#include "Mesh.h"
 
 class Camera;
 class ShaderProgram;
-class Mesh;
 class Light;
 
 class GameObject
@@ -34,4 +34,5 @@ public:
 	XMMATRIX GetModelMatrix() const;
 	void AddMesh(Mesh*);
 	void AddMesh(std::unique_ptr<Mesh>&&);
+	void CopyAndAddMesh(Mesh);
 };

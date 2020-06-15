@@ -37,7 +37,7 @@ float4 main(PS_IN input) : SV_TARGET
     
     outputColor += ks.xyz * pow(saturate(dot(halfway, normal)), shine);
     float3 fixedOutputColor = outputColor;
-    
+   
     // soft shadows
     for (int i = -1; i <= 1; ++i)
     {
@@ -45,10 +45,10 @@ float4 main(PS_IN input) : SV_TARGET
         {
             float2 projTexCoord = float2(input.posFromLight.x / 2 + 0.5, -input.posFromLight.y / 2 + 0.5) + float2(i, j) * 0.001;
             float depth = shadowMap.Sample(samplerState, projTexCoord).x;
-            float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+            float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
             if (depth < input.posFromLight.z - bias)
             {
-                outputColor += 0.7 * fixedOutputColor;
+                outputColor += 0.5 * fixedOutputColor;
             }
             else
             {
@@ -56,9 +56,17 @@ float4 main(PS_IN input) : SV_TARGET
             }
         }
     }
-    
+     
     outputColor /= 9;
     
+    // hard shadows
+    //float2 projTexCoord = float2(input.posFromLight.x / 2 + 0.5, -input.posFromLight.y / 2 + 0.5);
+    //float depth = shadowMap.Sample(samplerState, projTexCoord).x;
+    //float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
+    //if (depth < input.posFromLight.z - bias)
+    //{
+    //    outputColor *= 0.5;
+    //}
    
    //float3 a = float3(depth, depth, depth);
    //float3 b = float3(input.posFromLight.z, input.posFromLight.z, input.posFromLight.z);
