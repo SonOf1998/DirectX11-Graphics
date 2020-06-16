@@ -19,6 +19,7 @@
 #include "RenderTargetTexture.h"
 #include "FullScreenQuadObject.h"
 #include "FullScreenQuadGeometry.h"
+#include "SnookerTableObject.h"
 
 Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth(screenWidth), screenHeight(screenHeight), hwnd(hwnd)
 {
@@ -31,52 +32,52 @@ void Graphics::RenderInitalization()
 	camera = std::make_unique<Camera>(XMVectorSet(0, 1, 4, 1), XMVectorSet(0, 0, 0, 1), static_cast<float>(screenWidth) / screenHeight);
 
 	// snooker balls - common resources (shape, shininess, colors)
-	std::shared_ptr<Geometry> ballGeometry = std::make_shared<AssimpModel<PNT>>(dev.Get(), "Models/ball.obj");
+	std::shared_ptr<Geometry> ballGeometry = std::make_shared<AssimpModel<PNT>>(dev.Get(), BALL_MODEL);
 	std::shared_ptr<Material> ballMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(1, 1, 1), 70.0f);
-	std::shared_ptr<Texture>  redBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/redball.png", 0);
-	std::shared_ptr<Texture>  yellowBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/yellowball.png", 0);
-	std::shared_ptr<Texture>  greenBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/greenball.png", 0);
-	std::shared_ptr<Texture>  brownBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/brownball.png", 0);
-	std::shared_ptr<Texture>  blueBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/blueball.png", 0);
-	std::shared_ptr<Texture>  pinkBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/pinkball.png", 0);
-	std::shared_ptr<Texture>  blackBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/blackball.png", 0);
-	std::shared_ptr<Texture>  whiteBallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/whiteball.png", 0);
+	std::shared_ptr<Texture>  redBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), RED_BALL_TEXTURE	, 0);
+	std::shared_ptr<Texture>  yellowBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), YELLOW_BALL_TEXTURE, 0);
+	std::shared_ptr<Texture>  greenBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), GREEN_BALL_TEXTURE	, 0);
+	std::shared_ptr<Texture>  brownBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), BROWN_BALL_TEXTURE	, 0);
+	std::shared_ptr<Texture>  blueBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), BLUE_BALL_TEXTURE	, 0);
+	std::shared_ptr<Texture>  pinkBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), PINK_BALL_TEXTURE	, 0);
+	std::shared_ptr<Texture>  blackBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), BLACK_BALL_TEXTURE	, 0);
+	std::shared_ptr<Texture>  whiteBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), WHITE_BALL_TEXTURE , 0);
 	Mesh ballMesh(ballGeometry, ballMaterial);
 	float y = 0.96f;
 	float x = 0.0f;
 	float z = 0.0f;
 
-	std::unique_ptr<GameObject> whiteBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x + 1, y, z + 3, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	std::unique_ptr<GameObject> whiteBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), WHITE_BALL_PREFERRED_POS);
 	ballMesh.SetTexture(whiteBallTexture);
 	whiteBall->CopyAndAddMesh(ballMesh);
 
-	std::unique_ptr<GameObject> yellowBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x + 1.37, y, z + 2.7, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	std::unique_ptr<GameObject> yellowBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), YELLOW_BALL_POS);
 	ballMesh.SetTexture(yellowBallTexture);
 	yellowBall->CopyAndAddMesh(ballMesh);
 
-	std::unique_ptr<GameObject> greenBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x - 1.37, y, z + 2.7, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	std::unique_ptr<GameObject> greenBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), GREEN_BALL_POS);
 	ballMesh.SetTexture(greenBallTexture);
 	greenBall->CopyAndAddMesh(ballMesh);
 
-	std::unique_ptr<GameObject> brownBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x, y, z + 2.7, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	std::unique_ptr<GameObject> brownBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), BROWN_BALL_POS);
 	ballMesh.SetTexture(brownBallTexture);
 	brownBall->CopyAndAddMesh(ballMesh);
 
-	std::unique_ptr<GameObject> blueBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x, y, z, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	std::unique_ptr<GameObject> blueBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), BLUE_BALL_POS);
 	ballMesh.SetTexture(blueBallTexture);
 	blueBall->CopyAndAddMesh(ballMesh);
 
-	std::unique_ptr<GameObject> pinkBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x, y, z -2.3, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	std::unique_ptr<GameObject> pinkBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), PINK_BALL_POS);
 	ballMesh.SetTexture(pinkBallTexture);
 	pinkBall->CopyAndAddMesh(ballMesh);
 
 
-	std::unique_ptr<GameObject> blackBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(x, y, z - 4.3, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
+	std::unique_ptr<GameObject> blackBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), BLACK_BALL_POS);
 	ballMesh.SetTexture(blackBallTexture);
 	blackBall->CopyAndAddMesh(ballMesh);
 
-	XMFLOAT4 firstRedTranslation(x, y, -2.5f, 0.0f);
-	float deltaTranslate = 0.2f;
+	XMFLOAT4 firstRedTranslation(0, BALL_POS_Y, PINK_BALL_Z - 2 * BALL_RADIUS, 0.0f);
+	float deltaTranslate = 2 * BALL_RADIUS;
 	for (int i = 0; i < 5; ++i)
 	{
 		float x0 = firstRedTranslation.x - ((i % 2) / 2.0f) * deltaTranslate;
@@ -87,14 +88,14 @@ void Graphics::RenderInitalization()
 			translate.x = x0 + pow(-1, j + 1) * j * deltaTranslate;
 			x0 = translate.x;
 			
-			std::unique_ptr<GameObject> redBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMLoadFloat4(&translate), XMVectorSet(0.1, 0.1, 0.1, 1));
+			std::unique_ptr<GameObject> redBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMLoadFloat4(&translate));
 			ballMesh.SetTexture(redBallTexture);
 			redBall->CopyAndAddMesh(ballMesh);
 			gameObjects.push_back(std::move(redBall));
 		}
 	}
 
-
+	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
 
 
 	std::unique_ptr<GameObject> plane = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(15, 15, 1, 1), XMVectorSet(1, 0, 0, 0), -XM_PI / 2);
@@ -105,50 +106,7 @@ void Graphics::RenderInitalization()
 	Mesh* planeMesh = new Mesh(planeGeometry, planeMaterial);
 	planeMesh->SetTexture(planeTexture);
 	plane->AddMesh(planeMesh);
-
-	auto geometries = AssimpMultiModel<PNT>(dev.Get(), "Models/table.fbx").GetGeometries();
-
-	std::unique_ptr<GameObject> monkey = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0.8f, 0, 0), XMVectorSet(0.8f, 0.8f, 0.8f, 1), XMVectorSet(0, 1, 0, 0), XM_PI / 2);
-	std::shared_ptr<Texture> frameTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/solid_wood.png", 0);
-	std::shared_ptr<Texture> tableTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/green_fabric.png", 0);
-	std::shared_ptr<Texture> xingPaiStarLogo = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/xingpaistar.png", 0);
-	std::shared_ptr<Texture> sideWallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/side_wall_fabric.png", 0);
-	std::shared_ptr<Texture> pocketDimmerTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/pocket_dimmer.png", 0);
-	std::shared_ptr<Geometry> frameGeometry = std::move(geometries[0]);
-	std::shared_ptr<Geometry> pocketDimmerGeometry = std::move(geometries[5]);
-	std::shared_ptr<Geometry> sideWallGeometry = std::move(geometries[4]);
-	std::shared_ptr<Geometry> tableGeometry = std::move(geometries[3]);
-	std::shared_ptr<Geometry> xingPaiStarGeomRear = std::move(geometries[1]);
-	std::shared_ptr<Geometry> xingPaiStarGeomFront = std::move(geometries[2]);
-
-	std::shared_ptr<Material> dullMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(0, 0, 0), 0.0f);
-
-	std::unique_ptr<Mesh> frameMesh = std::make_unique<Mesh>(frameGeometry, dullMaterial);
-	frameMesh->SetTexture(frameTexture);
-	std::unique_ptr<Mesh> sideWallMesh = std::make_unique<Mesh>(sideWallGeometry, dullMaterial);
-	sideWallMesh->SetTexture(sideWallTexture);
-	std::unique_ptr<Mesh> pocketDimmerMesh = std::make_unique<Mesh>(pocketDimmerGeometry, dullMaterial);
-	pocketDimmerMesh->SetTexture(pocketDimmerTexture);
-	std::unique_ptr<Mesh> tableMesh = std::make_unique<Mesh>(tableGeometry, dullMaterial);
-	tableMesh->SetTexture(tableTexture);
-	std::unique_ptr<Mesh> xinPaiStarRearMesh = std::make_unique<Mesh>(xingPaiStarGeomRear, dullMaterial);
-	xinPaiStarRearMesh->SetTexture(xingPaiStarLogo);
-	std::unique_ptr<Mesh> xinPaiStarFrontMesh = std::make_unique<Mesh>(xingPaiStarGeomFront, dullMaterial);
-	xinPaiStarFrontMesh->SetTexture(xingPaiStarLogo);
-
-	monkey->AddMesh(std::move(frameMesh));
-	monkey->AddMesh(std::move(sideWallMesh));
-	monkey->AddMesh(std::move(pocketDimmerMesh));
-	monkey->AddMesh(std::move(tableMesh));
-	monkey->AddMesh(std::move(xinPaiStarRearMesh));
-	monkey->AddMesh(std::move(xinPaiStarFrontMesh));
 	
-	//std::unique_ptr<GameObject> torus = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMVectorSet(3.0, 0.3, 0.0, 0.0), XMVectorSet(1, 1, 1, 1));
-	//std::shared_ptr<Geometry> torusGeometry = std::make_shared<AssimpModel<PNT>>(dev.Get(), "Models/torus.obj");
-	//std::shared_ptr<Material> torusMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(0, 0, 0), 100.0f);
-	//std::unique_ptr<Mesh> torusMesh = std::make_unique<Mesh>(torusGeometry, torusMaterial);
-	//torusMesh->SetTexture(monkeyTexture);
-	//torus->AddMesh(std::move(torusMesh));
 
 	std::unique_ptr<GameObject> fullScreenQuad = std::make_unique<FullScreenQuadObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 0, 1), XMVectorSet(1, 1, 1, 1));
 	std::shared_ptr<Geometry> fullScreenQuadGeometry = std::make_shared<FullScreenQuadGeometry<PT>>(dev.Get());
@@ -156,24 +114,9 @@ void Graphics::RenderInitalization()
 	fullScreenQuad->AddMesh(std::move(fullScreenMesh));
 	mirror = std::move(fullScreenQuad);
 
-	//for (int i = 0; i < 7; ++i)
-	//{
-	//	std::unique_ptr<GameObject> nanosuit = std::make_unique<GameObject>(dev.Get(), devcon.Get(), XMVectorSet(3, 0, -5, 0), XMVectorSet(0.1, 0.1, 0.1, 1));
-	//	Texture* nanosuitTexture = new Texture(dev.Get(), devcon.Get(), L"C:/DX11/RasterTek/RasterTek/Textures/monkey.jpg", 0);
-	//	Geometry* nanosuitGeometry = AssimpModel::Create<PNT>(dev.Get(), "Models/nanosuit.obj", i);
-	//	Material* nanosuitMaterial = new Material{ XMFLOAT3(0.1,0.1,0.1), XMFLOAT3(1,1,1), 50.0f };
-	//	Mesh* nanosuitMesh = new Mesh(nanosuitGeometry, nanosuitMaterial);
-	//	nanosuitMesh->SetTexture(nanosuitTexture);
-	//	nanosuit->addMesh(nanosuitMesh);
-	//	gameObjects.push_back(std::move(nanosuit));
-	//}
-
-
-
 
 	gameObjects.push_back(std::move(plane));
-	gameObjects.push_back(std::move(monkey));
-	//gameObjects.push_back(std::move(torus));
+	gameObjects.push_back(std::move(snookerTable));
 	gameObjects.push_back(std::move(whiteBall));
 	gameObjects.push_back(std::move(yellowBall));
 	gameObjects.push_back(std::move(greenBall));

@@ -21,6 +21,7 @@ public:
 
 
 	void SetTexture(const std::shared_ptr<Texture>&);
+
 	Texture* GetTexture() const;
 	Geometry* GetGeometry() const;
 	Material* GetMaterial() const;

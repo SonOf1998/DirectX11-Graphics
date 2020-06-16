@@ -209,6 +209,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Objects\GameObject.cpp" />
     <ClCompile Include="Objects\BallObject.cpp" />
+    <ClCompile Include="SnookerTableObject.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -228,8 +229,10 @@
     <ClInclude Include="AssimpModel.h" />
     <ClInclude Include="HResultException.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Positions.h" />
     <ClInclude Include="QuadGeometry.h" />
     <ClInclude Include="RenderTargetTexture.h" />
+    <ClInclude Include="Resources.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="InputClass.h" />
@@ -238,6 +241,7 @@
     <ClInclude Include="SharedEnums.h" />
     <ClInclude Include="SimpleDXMath.h" />
     <ClInclude Include="Objects\BallObject.h" />
+    <ClInclude Include="SnookerTableObject.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />

@@ -8,6 +8,11 @@
 #include "Mesh.h"
 #include "Light.h"
 
+BallObject::BallObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, XMVECTOR position, XMVECTOR scale, XMVECTOR rotationAxis, float angle) : GameObject(device, deviceContext, position, scale, rotationAxis, angle)
+{
+
+}
+
 void BallObject::Render(ID3D11DeviceContext* deviceContext, ShaderProgram* shaderProgram, Camera* camera /* nullptr */, Light* light/* nullptr */)
 {
 	XMMATRIX viewProj = XMMatrixIdentity();

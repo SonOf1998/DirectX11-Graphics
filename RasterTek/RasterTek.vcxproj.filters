@@ -126,6 +126,9 @@
     <ClCompile Include="Objects\BallObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SnookerTableObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -211,6 +214,15 @@
     </ClInclude>
     <ClInclude Include="AssimpMultiModel.h">
       <Filter>Header Files\GameObjStucture\Geometries</Filter>
+    </ClInclude>
+    <ClInclude Include="SnookerTableObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Positions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
