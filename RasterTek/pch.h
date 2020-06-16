@@ -41,6 +41,8 @@
 
 // own //
 #include "HResultException.h"
+#include "InputClass.h"
+#include "Logger.h"
 #include "Positions.h"
 #include "Resources.h"
 #include "SimpleDXMath.h"

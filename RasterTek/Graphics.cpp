@@ -13,6 +13,7 @@
 #include "Mesh.h"
 #include "GameObject.h"
 #include "BallObject.h"
+#include "WhiteBallObject.h"
 #include "FloorObject.h"
 #include "ShaderProgram.h"
 #include "Camera.h"
@@ -47,7 +48,7 @@ void Graphics::RenderInitalization()
 	float x = 0.0f;
 	float z = 0.0f;
 
-	std::unique_ptr<GameObject> whiteBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), WHITE_BALL_PREFERRED_POS);
+	std::unique_ptr<GameObject> whiteBall = std::make_unique<WhiteBallObject>(dev.Get(), devcon.Get(), WHITE_BALL_PREFERRED_POS);
 	ballMesh.SetTexture(whiteBallTexture);
 	whiteBall->CopyAndAddMesh(ballMesh);
 
@@ -85,7 +86,7 @@ void Graphics::RenderInitalization()
 		{
 			XMFLOAT4 translate = firstRedTranslation;
 			translate.z -= i * deltaTranslate * 0.85f;
-			translate.x = x0 + pow(-1, j + 1) * j * deltaTranslate;
+			translate.x = x0 + powf(-1, j + 1.0f) * j * deltaTranslate;
 			x0 = translate.x;
 			
 			std::unique_ptr<GameObject> redBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMLoadFloat4(&translate));
@@ -373,7 +374,7 @@ IDXGIAdapter1* Graphics::GetBestVideoCard(IDXGIFactory1* factory)
 	IDXGIAdapter1* adapter;
 
 	IDXGIAdapter1* ret = nullptr;
-	unsigned long maxVideoMemory = 0;
+	size_t maxVideoMemory = 0;
 
 	if (CreateDXGIFactory1(__uuidof(IDXGIFactory), reinterpret_cast<void**>(&factory)) == S_OK)
 	{

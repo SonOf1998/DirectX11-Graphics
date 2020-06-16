@@ -90,8 +90,8 @@ RenderTargetTexture::RenderTargetTexture(ID3D11Device* device, UINT width, UINT 
 	CreateAndSetRenderTargetView(device, width, height, format);
 	CreateAndSetDepthStencilState(device, width, height, format);
 
-	viewport.Width = width;
-	viewport.Height = height;
+	viewport.Width  = static_cast<float>(width);
+	viewport.Height = static_cast<float>(height);
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 	viewport.TopLeftX = 0.0f;

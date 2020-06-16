@@ -36,11 +36,11 @@ protected:
 		D3D11_SUBRESOURCE_DATA vertexBufferData	= {};
 
 		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		vertexBufferDesc.ByteWidth = DATA_TYPE::GetSizeInBytes() * vertices.size();
+		vertexBufferDesc.ByteWidth = static_cast<UINT>(DATA_TYPE::GetSizeInBytes() * vertices.size());
 		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags = 0;
 		vertexBufferDesc.MiscFlags = 0;
-		vertexBufferDesc.StructureByteStride = DATA_TYPE::GetSizeInBytes();
+		vertexBufferDesc.StructureByteStride = static_cast<UINT>(DATA_TYPE::GetSizeInBytes());
 
 		vertexBufferData.pSysMem = vertices.data();
 		vertexBufferData.SysMemPitch = 0;
@@ -55,7 +55,7 @@ protected:
 		D3D11_SUBRESOURCE_DATA indexBufferData	= {};
 
 		indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		indexBufferDesc.ByteWidth = sizeof(unsigned short) * indices.size();
+		indexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(unsigned short) * indices.size());
 		indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		indexBufferDesc.CPUAccessFlags = 0;
 		indexBufferDesc.MiscFlags = 0;
@@ -73,12 +73,12 @@ public:
 
 	void Draw(ID3D11DeviceContext* devcon)
 	{
-		UINT stride = DATA_TYPE::GetSizeInBytes();
+		UINT stride = static_cast<UINT>(DATA_TYPE::GetSizeInBytes());
 		UINT offset = 0;
 
 		devcon->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 		devcon->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 		devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		devcon->DrawIndexed(indices.size(), 0, 0);
+		devcon->DrawIndexed(static_cast<UINT>(indices.size()), 0, 0);
 	}
 };

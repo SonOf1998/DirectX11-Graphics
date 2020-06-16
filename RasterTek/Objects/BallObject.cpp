@@ -67,7 +67,7 @@ void BallObject::RenderToShadowMap(ID3D11DeviceContext* deviceContext, ShaderPro
 	}
 }
 
-void BallObject::Animate(float t, float st)
+void BallObject::Animate(float t, float dt)
 {
 	//modelMatrix = XMMatrixScalingFromVector(scale) * XMMatrixRotationAxis(XMVectorSet(1, 0, -1, 0), -XM_PI / 2 * t) * XMMatrixTranslationFromVector(position);
 }

@@ -7,6 +7,8 @@ class ShaderProgram;
 
 class SnookerTableObject : public GameObject
 {
+	float energyLossFactor = 0.8f;
+	float coeffOfFriction  = 0.2f;
 
 	void BuildTable(ID3D11Device*, ID3D11DeviceContext*);
 
