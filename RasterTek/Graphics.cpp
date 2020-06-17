@@ -25,6 +25,7 @@
 Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth(screenWidth), screenHeight(screenHeight), hwnd(hwnd)
 {
 	InitializeDirectX11();
+	InitializeImGui();
 	RenderInitalization();	
 }
 
@@ -170,6 +171,15 @@ void Graphics::RenderFrame(float t, float dt)
 		gameObject->Animate(t, dt);
 		gameObject->Render(devcon.Get(), shaderProgramPhongBlinn.get(), camera.get(), dirLight.get());
 	}
+	
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("ASD");
+	ImGui::End();
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	if (VSYNC_ENABLED)
 	{
@@ -182,7 +192,12 @@ void Graphics::RenderFrame(float t, float dt)
 }
 
 
-Graphics::~Graphics() = default;
+Graphics::~Graphics()
+{
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+}
 
 void Graphics::CreateSwapChain(IDXGIFactory1* factory)
 {
@@ -353,6 +368,16 @@ void Graphics::InitializeDirectX11()
 
 	// Create the viewport.
 	devcon->RSSetViewports(1, &viewport);
+}
+
+void Graphics::InitializeImGui()
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui_ImplWin32_Init(hwnd);
+	ImGui_ImplDX11_Init(dev.Get(), devcon.Get());
+	ImGui::StyleColorsClassic();
 }
 
 void Graphics::SetRenderTargetToBackBuffer()

@@ -33,6 +33,11 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>	
 
+// imgui //
+#include <imgui.h>
+#include <imgui_impl_dx11.h>
+#include <imgui_impl_win32.h>
+
 // libs //
 #pragma comment (lib, "dxgi.lib")
 #pragma comment (lib, "d3d11.lib")

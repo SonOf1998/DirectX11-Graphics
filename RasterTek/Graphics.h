@@ -37,8 +37,12 @@ class Graphics
 	void CreateRenderTarget();
 	void CreateAndSetRasterizerState();
 	void CreateAndSetDepthStencilState();
-	void RenderInitalization();
+	
 	void InitializeDirectX11();
+	void InitializeImGui();
+	void RenderInitalization();
+
+
 
 	void SetRenderTargetToBackBuffer();
 	void SetRenderTargetToTexture(RenderTargetTexture&);
