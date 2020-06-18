@@ -1,0 +1,23 @@
+#include "VS_HS_transfer.hlsli"
+
+cbuffer M : register(b0)
+{
+    matrix modelMatrix;
+};
+
+struct VS_IN
+{
+    float3 position : POSITION;
+};
+
+
+VS_OUT main(VS_IN input)
+{
+    VS_OUT output;
+       
+    // transfers
+    output.position = input.position;
+    output.worldPos = mul(float4(input.position, 1), modelMatrix).xyz;
+    
+    return output;
+}
