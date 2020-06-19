@@ -81,9 +81,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -147,6 +144,18 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TetraObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BallSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -156,9 +165,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics.h">
@@ -269,6 +275,18 @@
     <ClInclude Include="ImGui\imstb_textedit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TetraObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BallSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Pipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\FullScreenQuadPT\ps.hlsl" />
@@ -293,6 +311,10 @@
     </FxCompile>
     <FxCompile Include="Shaders\ShadowMap-Directional\vs.hlsl" />
     <FxCompile Include="Shaders\ShadowMap-Directional\ps.hlsl" />
+    <FxCompile Include="Shaders\Ball-HWTessellationWithLoD\ds.hlsl" />
+    <FxCompile Include="Shaders\Ball-HWTessellationWithLoD\hs.hlsl" />
+    <FxCompile Include="Shaders\Ball-HWTessellationWithLoD\ps.hlsl" />
+    <FxCompile Include="Shaders\Ball-HWTessellationWithLoD\vs.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -310,5 +332,8 @@
       <Filter>Shaders\Phong-Blinn</Filter>
     </None>
     <None Include="Shaders\ShadowMap-Directional\vs_ps_transfer.hlsli" />
+    <None Include="Shaders\Ball-HWTessellationWithLoD\ds_ps_transfer.hlsli" />
+    <None Include="Shaders\Ball-HWTessellationWithLoD\hs_ds_transfer.hlsli" />
+    <None Include="Shaders\Ball-HWTessellationWithLoD\vs_hs_transfer.hlsli" />
   </ItemGroup>
 </Project>

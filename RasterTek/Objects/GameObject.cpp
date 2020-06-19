@@ -2,10 +2,6 @@
 #include "GameObject.h"
 
 #include "Camera.h"
-#include "CBufferDataType.h"
-#include "QuadGeometry.h"
-#include "ShaderProgram.h"
-#include "SimpleDXMath.h"
 #include "Mesh.h"
 
 GameObject::GameObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, XMVECTOR position, XMVECTOR scale, XMVECTOR rotationAxis, float angle) : position(position), scale(scale)
@@ -14,10 +10,6 @@ GameObject::GameObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext,
 	XMMATRIX scaleMatrix = XMMatrixScalingFromVector(scale);
 	XMMATRIX translationMatrix = XMMatrixTranslationFromVector(position);
 	modelMatrix = scaleMatrix * rotation * translationMatrix;	
-}
-
-void GameObject::RenderToShadowMap(ID3D11DeviceContext*, ShaderProgram*, Light*)
-{
 }
 
 XMMATRIX GameObject::GetModelMatrix() const

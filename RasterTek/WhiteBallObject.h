@@ -7,6 +7,7 @@ class WhiteBallObject : public BallObject
 public:
 	using BallObject::BallObject;
 
-	void Animate(float, float) override;
+
+	void Animate(float t, float dt) override;
 };
 

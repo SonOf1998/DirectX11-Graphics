@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ShaderProgram.h"
+#include "Pipeline.h"
 
 
 
@@ -8,7 +8,7 @@
 #include "SimpleDXMath.h"
 #include "Texture.h"
 
-ShaderProgram::ShaderProgram(ID3D11Device* device, ID3D11DeviceContext* deviceContext, LPCWSTR vertexShaderName, LPCWSTR pixelShaderName, LPCWSTR geometryShaderName,
+Pipeline::Pipeline(ID3D11Device* device, ID3D11DeviceContext* deviceContext, LPCWSTR vertexShaderName, LPCWSTR pixelShaderName, LPCWSTR geometryShaderName,
 							LPCWSTR hullShaderName, LPCWSTR domainShaderName, std::vector<std::pair<const char*, DXGI_FORMAT>> semanticFormatList) : device(device), deviceContext(deviceContext)
 {
 	HRESULT result;
@@ -91,39 +91,25 @@ ShaderProgram::ShaderProgram(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	InitShaderReflection(vertexShaderBinary.Get(), pixelShaderBinary.Get(), geometryShaderBinary.Get(), hullShaderBinary.Get(), domainShaderBinary.Get());
 }
 
-ShaderProgram::~ShaderProgram()
+Pipeline::~Pipeline()
 {	
 	/*ComPtr<ID3D11Debug> debug;
 	device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(debug.GetAddressOf()));
 	debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);*/
 }
 
-void ShaderProgram::Use()
+void Pipeline::Use()
 {
-	deviceContext->IASetInputLayout(inputLayout.Get());
-
+	deviceContext->IASetInputLayout(inputLayout.Get());	
 
 	deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0);
-
-	if (pixelShader != nullptr)
-	{
-		deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0);
-	}
-	if (geometryShader != nullptr)
-	{
-		deviceContext->GSSetShader(geometryShader.Get(), nullptr, 0);
-	}
-	if (hullShader != nullptr)
-	{
-		deviceContext->HSSetShader(hullShader.Get(), nullptr, 0);
-	}
-	if (domainShader != nullptr)
-	{
-		deviceContext->DSSetShader(domainShader.Get(), nullptr, 0);
-	}
+	deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0);
+	deviceContext->GSSetShader(geometryShader.Get(), nullptr, 0);
+	deviceContext->HSSetShader(hullShader.Get(), nullptr, 0);
+	deviceContext->DSSetShader(domainShader.Get(), nullptr, 0);
 }
 
-void ShaderProgram::SetCBuffer(CBufferDataType* cbufferData, CBUFFER_LOCATION location)
+void Pipeline::SetCBuffer(CBufferDataType* cbufferData, CBUFFER_LOCATION location)
 {
 	std::string name = cbufferData->name;
 
@@ -142,7 +128,7 @@ void ShaderProgram::SetCBuffer(CBufferDataType* cbufferData, CBUFFER_LOCATION lo
 	cbufferData->SetAsShaderCBuffer(device, deviceContext, location, cbufferSlots[location][name]);
 }
 
-void ShaderProgram::SetTexture(Texture* texture, TEXTURE_LOCATION location /* PIXEL SHADER */)
+void Pipeline::SetTexture(Texture* texture, TEXTURE_LOCATION location /* PIXEL SHADER */)
 {
 	ID3D11ShaderResourceView* resView = texture->GetTexture();
 
@@ -171,7 +157,7 @@ void ShaderProgram::SetTexture(Texture* texture, TEXTURE_LOCATION location /* PI
 	}
 }
 
-void ShaderProgram::SetTexture(ID3D11ShaderResourceView* texture, UINT bindingSlot, TEXTURE_LOCATION location)
+void Pipeline::SetTexture(ID3D11ShaderResourceView* texture, UINT bindingSlot, TEXTURE_LOCATION location)
 {
 	switch (location)
 	{
@@ -198,7 +184,7 @@ void ShaderProgram::SetTexture(ID3D11ShaderResourceView* texture, UINT bindingSl
 	}
 }
 
-void ShaderProgram::SetSampler(FILTERING filtering, UINT bindingSlot, SAMPLER_LOCATION location /* PIXEL SHADER */)
+void Pipeline::SetSampler(FILTERING filtering, UINT bindingSlot, SAMPLER_LOCATION location /* PIXEL SHADER */)
 {
 	HRESULT result;
 	ComPtr<ID3D11SamplerState> samplerState;
@@ -289,7 +275,7 @@ void ShaderProgram::SetSampler(FILTERING filtering, UINT bindingSlot, SAMPLER_LO
  * Unused cbuffers are sadly optimized away and will not be seen.
  * This might be turned off in hlsl settings.
  */
-void ShaderProgram::InitShaderReflection(ID3D10Blob* vertexShaderBinary, ID3D10Blob* pixelShaderBinary, ID3D10Blob* geometryShaderBinary, ID3D10Blob* hullShaderBinary, ID3D10Blob* domainShaderBinary)
+void Pipeline::InitShaderReflection(ID3D10Blob* vertexShaderBinary, ID3D10Blob* pixelShaderBinary, ID3D10Blob* geometryShaderBinary, ID3D10Blob* hullShaderBinary, ID3D10Blob* domainShaderBinary)
 {
 	HRESULT result;
 

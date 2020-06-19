@@ -3,6 +3,7 @@
 
 
 #include "HResultException.h"
+#include "BallSet.h"
 #include "Geometry.h"
 #include "AssimpModel.h"
 #include "AssimpMultiModel.h"
@@ -15,12 +16,15 @@
 #include "BallObject.h"
 #include "WhiteBallObject.h"
 #include "FloorObject.h"
-#include "ShaderProgram.h"
+#include "Pipeline.h"
 #include "Camera.h"
 #include "RenderTargetTexture.h"
 #include "FullScreenQuadObject.h"
 #include "FullScreenQuadGeometry.h"
 #include "SnookerTableObject.h"
+#include "Renderable.h"
+#include "Resources.h"
+#include "TetraObject.h"
 
 Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth(screenWidth), screenHeight(screenHeight), hwnd(hwnd)
 {
@@ -31,72 +35,10 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth
 
 void Graphics::RenderInitalization()
 {
-	camera = std::make_unique<Camera>(XMVectorSet(0, 1, 4, 1), XMVectorSet(0, 0, 0, 1), static_cast<float>(screenWidth) / screenHeight);
+	camera = std::make_unique<Camera>(XMVectorSet(0, 2, 6, 1), XMVectorSet(0, 0, 3, 1), static_cast<float>(screenWidth) / screenHeight);
 
-	// snooker balls - common resources (shape, shininess, colors)
-	std::shared_ptr<Geometry> ballGeometry = std::make_shared<AssimpModel<PNT>>(dev.Get(), BALL_MODEL);
-	std::shared_ptr<Material> ballMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(1, 1, 1), 70.0f);
-	std::shared_ptr<Texture>  redBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), RED_BALL_TEXTURE	, 0);
-	std::shared_ptr<Texture>  yellowBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), YELLOW_BALL_TEXTURE, 0);
-	std::shared_ptr<Texture>  greenBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), GREEN_BALL_TEXTURE	, 0);
-	std::shared_ptr<Texture>  brownBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), BROWN_BALL_TEXTURE	, 0);
-	std::shared_ptr<Texture>  blueBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), BLUE_BALL_TEXTURE	, 0);
-	std::shared_ptr<Texture>  pinkBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), PINK_BALL_TEXTURE	, 0);
-	std::shared_ptr<Texture>  blackBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), BLACK_BALL_TEXTURE	, 0);
-	std::shared_ptr<Texture>  whiteBallTexture	= std::make_shared<Texture>(dev.Get(), devcon.Get(), WHITE_BALL_TEXTURE , 0);
-	Mesh ballMesh(ballGeometry, ballMaterial);
-	float y = 0.96f;
-	float x = 0.0f;
-	float z = 0.0f;
-
-	std::unique_ptr<GameObject> whiteBall = std::make_unique<WhiteBallObject>(dev.Get(), devcon.Get(), WHITE_BALL_PREFERRED_POS);
-	ballMesh.SetTexture(whiteBallTexture);
-	whiteBall->CopyAndAddMesh(ballMesh);
-
-	std::unique_ptr<GameObject> yellowBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), YELLOW_BALL_POS);
-	ballMesh.SetTexture(yellowBallTexture);
-	yellowBall->CopyAndAddMesh(ballMesh);
-
-	std::unique_ptr<GameObject> greenBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), GREEN_BALL_POS);
-	ballMesh.SetTexture(greenBallTexture);
-	greenBall->CopyAndAddMesh(ballMesh);
-
-	std::unique_ptr<GameObject> brownBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), BROWN_BALL_POS);
-	ballMesh.SetTexture(brownBallTexture);
-	brownBall->CopyAndAddMesh(ballMesh);
-
-	std::unique_ptr<GameObject> blueBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), BLUE_BALL_POS);
-	ballMesh.SetTexture(blueBallTexture);
-	blueBall->CopyAndAddMesh(ballMesh);
-
-	std::unique_ptr<GameObject> pinkBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), PINK_BALL_POS);
-	ballMesh.SetTexture(pinkBallTexture);
-	pinkBall->CopyAndAddMesh(ballMesh);
-
-
-	std::unique_ptr<GameObject> blackBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), BLACK_BALL_POS);
-	ballMesh.SetTexture(blackBallTexture);
-	blackBall->CopyAndAddMesh(ballMesh);
-
-	XMFLOAT4 firstRedTranslation(0, BALL_POS_Y, PINK_BALL_Z - 2 * BALL_RADIUS, 0.0f);
-	float deltaTranslate = 2 * BALL_RADIUS;
-	for (int i = 0; i < 5; ++i)
-	{
-		float x0 = firstRedTranslation.x - ((i % 2) / 2.0f) * deltaTranslate;
-		for (int j = 0; j <= i; ++j)
-		{
-			XMFLOAT4 translate = firstRedTranslation;
-			translate.z -= i * deltaTranslate * 0.85f;
-			translate.x = x0 + powf(-1, j + 1.0f) * j * deltaTranslate;
-			x0 = translate.x;
-			
-			std::unique_ptr<GameObject> redBall = std::make_unique<BallObject>(dev.Get(), devcon.Get(), XMLoadFloat4(&translate));
-			ballMesh.SetTexture(redBallTexture);
-			redBall->CopyAndAddMesh(ballMesh);
-			gameObjects.push_back(std::move(redBall));
-		}
-	}
-
+	
+	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get());
 	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
 
 
@@ -116,24 +58,17 @@ void Graphics::RenderInitalization()
 	fullScreenQuad->AddMesh(std::move(fullScreenMesh));
 	mirror = std::move(fullScreenQuad);
 
-
 	gameObjects.push_back(std::move(plane));
 	gameObjects.push_back(std::move(snookerTable));
-	gameObjects.push_back(std::move(whiteBall));
-	gameObjects.push_back(std::move(yellowBall));
-	gameObjects.push_back(std::move(greenBall));
-	gameObjects.push_back(std::move(brownBall));
-	gameObjects.push_back(std::move(blueBall));
-	gameObjects.push_back(std::move(pinkBall));
-	gameObjects.push_back(std::move(blackBall));
 
 	dirLight = std::make_unique<DirectionalLight>(XMFLOAT3(12, 16, 6), XMFLOAT3(1, 1, 1));
 	shadowMap.reset(new RenderTargetTexture(dev.Get(), screenWidth, screenHeight, DXGI_FORMAT_R32_FLOAT));
 
-	shaderProgramPhongBlinn.reset(ShaderProgram::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"Shaders/Phong-Blinn/bin/vs.cso", L"Shaders/Phong-Blinn/bin/ps.cso"));
-	shaderProgramMirror.reset(ShaderProgram::Create<InputLayoutPT>(dev.Get(), devcon.Get(), L"Shaders/FullScreenQuadPT/bin/vs.cso", L"Shaders/FullScreenQuadPT/bin/ps.cso"));
-	shaderProgramMirror->SetSampler(FILTERING::NEAREST, 0);
-	shaderProgramShadowMap.reset(ShaderProgram::Create<InputLayoutP>(dev.Get(), devcon.Get(), L"Shaders/ShadowMap-Directional/bin/vs.cso", L"Shaders/ShadowMap-Directional/bin/ps.cso"));
+	pipelinePhongBlinn.reset(Pipeline::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"Shaders/Phong-Blinn/bin/vs.cso", L"Shaders/Phong-Blinn/bin/ps.cso"));
+	pipelineMirror.reset(Pipeline::Create<InputLayoutPT>(dev.Get(), devcon.Get(), L"Shaders/FullScreenQuadPT/bin/vs.cso", L"Shaders/FullScreenQuadPT/bin/ps.cso"));
+	pipelineMirror->SetSampler(FILTERING::NEAREST, 0);
+	pipelineShadowMap.reset(Pipeline::Create<InputLayoutP>(dev.Get(), devcon.Get(), SHADOWMAP_DIRECTIONAL_VS, SHADOWMAP_DIRECTIONAL_PS));
+	pipelineLoDTess.reset(Pipeline::Create<InputLayoutP>(dev.Get(), devcon.Get(), BALL_HWTESS_LOD_VS, BALL_HWTESS_LOD_PS, nullptr, BALL_HWTESS_LOD_HS, BALL_HWTESS_LOD_DS));
 }
 
 void Graphics::RenderFrame(float t, float dt)
@@ -144,8 +79,8 @@ void Graphics::RenderFrame(float t, float dt)
 
 	// Rendering to texture //
 	//RenderTargetTexture rtt(dev.Get(), screenWidth / 10, screenHeight / 10, DXGI_FORMAT_R32G32B32A32_FLOAT);
-	shaderProgramPhongBlinn->SetTexture(nullptr, 1);	// a render targetet kivesszük a phong blinn pipeline pixel shaderébõl.
-	SetRenderTargetToTexture(*(shadowMap.get()));
+	pipelinePhongBlinn->SetTexture(nullptr, 1);	// a render targetet kivesszük a phong blinn pipeline pixel shaderébõl.
+	SetRenderTargetToTexture(*shadowMap);
 	devcon->ClearRenderTargetView(shadowMap->GetRenderTargetView(), white);
 	devcon->ClearDepthStencilView(shadowMap->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
@@ -154,8 +89,10 @@ void Graphics::RenderFrame(float t, float dt)
 	for (auto& gameObject : gameObjects)
 	{
 		gameObject->Animate(t, dt);
-		gameObject->RenderToShadowMap(devcon.Get(), shaderProgramShadowMap.get(), dirLight.get());
+		gameObject->RenderToShadowMap(devcon.Get(), pipelineShadowMap.get(), dirLight.get());
 	}
+	ballSet->Animate(t, dt);
+	ballSet->RenderToShadowMap(devcon.Get(), pipelineShadowMap.get(), dirLight.get());
 
 
 	// Rendering to backbuffer //
@@ -164,22 +101,27 @@ void Graphics::RenderFrame(float t, float dt)
 	devcon->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	camera->Animate(t, dt);
 
-	shaderProgramPhongBlinn->Use();
-	shaderProgramPhongBlinn->SetTexture(shadowMap->GetShaderResourceView(), 1);
+	pipelinePhongBlinn->Use();
+	pipelinePhongBlinn->SetTexture(shadowMap->GetShaderResourceView(), 1);
 	for (auto& gameObject : gameObjects)
 	{
 		gameObject->Animate(t, dt);
-		gameObject->Render(devcon.Get(), shaderProgramPhongBlinn.get(), camera.get(), dirLight.get());
+		gameObject->Render(devcon.Get(), pipelinePhongBlinn.get(), camera.get(), dirLight.get());
 	}
 	
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
+	pipelineLoDTess->Use();
+	ballSet->Animate(t, dt);
+	ballSet->Render(devcon.Get(), pipelineLoDTess.get(), camera.get());
 
-	ImGui::Begin("ASD");
-	ImGui::End();
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+
+	//ImGui_ImplDX11_NewFrame();
+	//ImGui_ImplWin32_NewFrame();
+	//ImGui::NewFrame();	
+	//ImGui::Begin("ASD"/*, nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar*/);
+	//ImGui::End();
+	//ImGui::Render();
+	//ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	if (VSYNC_ENABLED)
 	{
@@ -375,9 +317,12 @@ void Graphics::InitializeImGui()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
+	io.DisplaySize = ImVec2(0, 0);
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui_ImplDX11_Init(dev.Get(), devcon.Get());
 	ImGui::StyleColorsClassic();
+	
+
 }
 
 void Graphics::SetRenderTargetToBackBuffer()

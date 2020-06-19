@@ -47,7 +47,6 @@ public:
 	void  SetAspectRatio(float newAspectRatio)	  noexcept;
 	
 	XMMATRIX GetViewProjMatrix() const;
-	CameraCBuffer GetCBuffer();
 
 	void Update();
 	void Animate(float, float);

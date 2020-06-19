@@ -28,22 +28,21 @@ public:
 		this->vertices.reserve(mesh->mNumVertices);
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
-			auto vertex = mesh->mVertices[i];
-			auto normal = mesh->mNormals[i];
-			auto texcoord = mesh->mTextureCoords[0][i];
-
 			DATA_TYPE vertexData;
 
 			if (vertexData.HandlesPosition())
 			{
+				auto vertex = mesh->mVertices[i];
 				vertexData.SetPosition(XMFLOAT3(static_cast<float>(vertex.x), static_cast<float>(vertex.y), static_cast<float>(vertex.z)));
 			}
 			if (vertexData.HandlesNormal())
 			{
+				auto normal = mesh->mNormals[i];
 				vertexData.SetNormal(XMFLOAT3(static_cast<float>(normal.x), static_cast<float>(normal.y), static_cast<float>(normal.z)));
 			}
 			if (vertexData.HandlesTexcoordUV())
 			{
+				auto texcoord = mesh->mTextureCoords[0][i];
 				vertexData.SetTexcoordUV(XMFLOAT2(static_cast<float>(texcoord.x), static_cast<float>(texcoord.y)));
 			}
 

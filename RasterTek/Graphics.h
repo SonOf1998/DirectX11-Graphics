@@ -3,8 +3,9 @@
 class Camera;
 class GameObject;
 class Light;
+class Renderable;
 class RenderTargetTexture;
-class ShaderProgram;
+class Pipeline;
 
 class Graphics
 {
@@ -24,9 +25,12 @@ class Graphics
 	std::unique_ptr<Camera>						camera;
 	std::vector<std::unique_ptr<GameObject>>	gameObjects;
 
-	std::unique_ptr<ShaderProgram>				shaderProgramPhongBlinn;
-	std::unique_ptr<ShaderProgram>				shaderProgramMirror;
-	std::unique_ptr<ShaderProgram>				shaderProgramShadowMap;
+	std::unique_ptr<Pipeline>				pipelinePhongBlinn;
+	std::unique_ptr<Pipeline>				pipelineMirror;
+	std::unique_ptr<Pipeline>				pipelineShadowMap;
+	std::unique_ptr<Pipeline>				pipelineLoDTess;
+
+	std::unique_ptr<Renderable>	ballSet;
 
 	std::unique_ptr<GameObject> mirror;
 	std::unique_ptr<Light> dirLight;

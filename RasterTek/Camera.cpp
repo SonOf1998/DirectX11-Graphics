@@ -97,11 +97,6 @@ XMMATRIX Camera::GetViewProjMatrix() const
 	return viewProjMatrix;
 }
 
-CameraCBuffer Camera::GetCBuffer()
-{
-	return CameraCBuffer(position);
-}
-
 
 void Camera::Update()
 {

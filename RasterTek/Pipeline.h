@@ -6,7 +6,7 @@
 
 class Texture;
 
-class ShaderProgram
+class Pipeline
 {
 	ComPtr<ID3D11VertexShader>		vertexShader;
 	ComPtr<ID3D11HullShader>		hullShader;
@@ -24,23 +24,23 @@ class ShaderProgram
 	std::map<CBUFFER_LOCATION, std::map<std::string, UINT>> cbufferSlots;
 
 
-	ShaderProgram(ID3D11Device*, ID3D11DeviceContext*, LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR, std::vector<std::pair<const char*, DXGI_FORMAT>>);
+	Pipeline(ID3D11Device*, ID3D11DeviceContext*, LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR, std::vector<std::pair<const char*, DXGI_FORMAT>>);
 
 public:
 	
-	ShaderProgram(const ShaderProgram&)	= delete;
-	~ShaderProgram();
+	Pipeline(const Pipeline&)	= delete;
+	~Pipeline();
 
 	void Use();
 	
 	template <typename PER_VERTEX_DATA_TYPE>
-	static ShaderProgram* Create(ID3D11Device* dev, ID3D11DeviceContext* devcon, 
+	static Pipeline* Create(ID3D11Device* dev, ID3D11DeviceContext* devcon, 
     LPCWSTR vertexShaderFile, LPCWSTR pixelShaderFile = nullptr, LPCWSTR geometryShaderFile = nullptr, LPCWSTR hullShaderFile = nullptr, LPCWSTR domainShaderFile = nullptr)
 	{
 		// find or expand the possibilities at VertexDataType.h
 		static_assert(std::is_base_of_v<VertexDataType<>, PER_VERTEX_DATA_TYPE>);
 		PER_VERTEX_DATA_TYPE instance;
-		ShaderProgram* ret = new ShaderProgram(dev, devcon, vertexShaderFile, pixelShaderFile, geometryShaderFile, hullShaderFile, domainShaderFile, instance.semanticFormatList);
+		Pipeline* ret = new Pipeline(dev, devcon, vertexShaderFile, pixelShaderFile, geometryShaderFile, hullShaderFile, domainShaderFile, instance.semanticFormatList);
 		return ret;
 	}
 

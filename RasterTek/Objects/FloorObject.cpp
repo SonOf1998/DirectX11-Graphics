@@ -5,12 +5,12 @@
 #include "Camera.h"
 #include "CBufferDataType.h"
 #include "QuadGeometry.h"
-#include "ShaderProgram.h"
+#include "Pipeline.h"
 #include "SimpleDXMath.h"
 #include "Mesh.h"
 #include "Light.h"
 
-void FloorObject::Render(ID3D11DeviceContext* deviceContext, ShaderProgram* shaderProgram, Camera* camera /* nullptr */, Light* light /* nullptr */)
+void FloorObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /* nullptr */, Light* light /* nullptr */)
 {
 	XMMATRIX viewProj = XMMatrixIdentity();
 	if (camera != nullptr)
@@ -23,7 +23,7 @@ void FloorObject::Render(ID3D11DeviceContext* deviceContext, ShaderProgram* shad
 	{
 		DirLightVP dirLightVP;
 		dirLightVP.GetData().viewProj = Transpose(light->GetViewProjMatrix());
-		shaderProgram->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+		pipeline->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 	}
 
 	MVPMInv mpvminv;
@@ -31,32 +31,33 @@ void FloorObject::Render(ID3D11DeviceContext* deviceContext, ShaderProgram* shad
 	mpvminv.GetData().viewProj = Transpose(viewProj);
 	mpvminv.GetData().modelInv = Inverse(modelMatrix);
 
-	shaderProgram->SetSampler(FILTERING::ANISOTROPIC_X16, 0);
-	shaderProgram->SetCBuffer(&mpvminv, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+	pipeline->SetSampler(FILTERING::ANISOTROPIC_X16, 0);
+	pipeline->SetCBuffer(&mpvminv, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 
-	CameraCBuffer cameraCBuffer = camera->GetCBuffer();
-	shaderProgram->SetCBuffer(&cameraCBuffer, CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
+	CameraCBuffer cameraCBuffer;
+	cameraCBuffer.GetData().position = camera->GetPosition();
+	pipeline->SetCBuffer(&cameraCBuffer, CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
 
 	for (auto& mesh : meshes)
 	{
-		shaderProgram->SetTexture(mesh->GetTexture());
-		shaderProgram->Use();
-		shaderProgram->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
+		pipeline->SetTexture(mesh->GetTexture());
+		pipeline->Use();
+		pipeline->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
 		mesh->GetGeometry()->Draw(deviceContext);
 	}
 }
 
-void FloorObject::RenderToShadowMap(ID3D11DeviceContext* deviceContext, ShaderProgram* shaderProgram, Light* light)
+void FloorObject::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Light* light)
 {
 	DirLightVP dirLightVP;
 	dirLightVP.GetData().viewProj = Transpose(light->GetViewProjMatrix());
 
 	M m;
 	m.GetData().model = Transpose(modelMatrix);
-	shaderProgram->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
-	shaderProgram->SetCBuffer(&m, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+	pipeline->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+	pipeline->SetCBuffer(&m, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 
-	shaderProgram->Use();
+	pipeline->Use();
 	for (auto& mesh : meshes)
 	{
 		mesh->GetGeometry()->Draw(deviceContext);

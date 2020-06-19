@@ -2,13 +2,13 @@
 #include "FullScreenQuadObject.h"
 
 #include "CBufferDataType.h"
-#include "ShaderProgram.h"
+#include "Pipeline.h"
 #include "SimpleDXMath.h"
 #include "Camera.h"
 #include "Mesh.h"
 #include "Light.h"
 
-void FullScreenQuadObject::Render(ID3D11DeviceContext* deviceContext, ShaderProgram* shaderProgram, Camera* camera /* nullptr */, Light* light /* nullptr */)
+void FullScreenQuadObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /* nullptr */, Light* light /* nullptr */)
 {
 	XMMATRIX viewProj = XMMatrixIdentity();
 	if (camera != nullptr)
@@ -21,17 +21,17 @@ void FullScreenQuadObject::Render(ID3D11DeviceContext* deviceContext, ShaderProg
 	{
 		DirLightVP dirLightVP;
 		dirLightVP.GetData().viewProj = Transpose(light->GetViewProjMatrix());
-		shaderProgram->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+		pipeline->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 	}
 
 	MVP mvp;
 	mvp.GetData().model = Transpose(modelMatrix);
 	mvp.GetData().viewProj = Transpose(viewProj);
 
-	shaderProgram->SetSampler(FILTERING::ANISOTROPIC_X16, 0);
-	shaderProgram->SetCBuffer(&mvp, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+	pipeline->SetSampler(FILTERING::ANISOTROPIC_X16, 0);
+	pipeline->SetCBuffer(&mvp, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 
-	shaderProgram->Use();
+	pipeline->Use();
 
 	for (auto& mesh : meshes)
 	{

@@ -289,11 +289,9 @@ struct CameraCBuffer : public CBufferDataType
 	struct CameraData
 	{
 		XMVECTOR position;
-
-		CameraData(const XMVECTOR& position) : position(position) {}
 	} data;
 
-	CameraCBuffer(XMVECTOR position) : CBufferDataType("Camera"), data(position)
+	CameraCBuffer() : CBufferDataType("Camera")
 	{
 
 	}
@@ -310,6 +308,36 @@ struct CameraCBuffer : public CBufferDataType
 	}
 
 	CameraData& GetData()
+	{
+		return data;
+	}
+};
+
+
+struct Centroid : public CBufferDataType
+{
+	struct CentroidData
+	{
+		XMVECTOR position;
+	} data;
+
+	Centroid() : CBufferDataType("Centroid")
+	{
+
+	}
+
+	void FillCBufferWithData(D3D11_MAPPED_SUBRESOURCE& mappedResource)
+	{
+		CentroidData* cbufferData = reinterpret_cast<CentroidData*>(mappedResource.pData);
+		cbufferData->position = data.position;
+	}
+
+	UINT GetDataSize()
+	{
+		return sizeof(data);
+	}
+
+	CentroidData& GetData()
 	{
 		return data;
 	}
