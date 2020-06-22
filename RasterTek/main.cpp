@@ -4,7 +4,16 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-	SystemClass system(800, 600);
+	int width = 1280;
+	int height = 720;
+
+	if (FULLSCREEN)
+	{
+		SystemClass::GetScreenResolution(width, height);
+	}
+
+
+	SystemClass system(width, height);
 	system.Run();
 	system.Shutdown();
 

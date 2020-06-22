@@ -67,6 +67,9 @@
     <Filter Include="Shaders\ShadowMap-Directional">
       <UniqueIdentifier>{b6f5910b-e71e-4281-9dc5-c97d4e654c10}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Camera">
+      <UniqueIdentifier>{8028ffc2-a4ef-49dc-a846-917c8cc7392d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SystemClass.cpp">
@@ -76,9 +79,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InputClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Graphics.cpp">
@@ -123,12 +123,6 @@
     <ClCompile Include="Objects\BallObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SnookerTableObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WhiteBallObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ImGui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -144,9 +138,6 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TetraObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BallSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -156,15 +147,33 @@
     <ClCompile Include="Pipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Objects\SnookerTableObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\WhiteBallObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\ArmchairObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Header Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="PerspectiveCamera.cpp">
+      <Filter>Header Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="OrtographicCamera.cpp">
+      <Filter>Header Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Animatable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InputClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics.h">
@@ -239,16 +248,10 @@
     <ClInclude Include="AssimpMultiModel.h">
       <Filter>Header Files\GameObjStucture\Geometries</Filter>
     </ClInclude>
-    <ClInclude Include="SnookerTableObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Positions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WhiteBallObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImGui\imstb_truetype.h">
@@ -275,9 +278,6 @@
     <ClInclude Include="ImGui\imstb_textedit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TetraObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BallSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -285,6 +285,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Pipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\SnookerTableObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\WhiteBallObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ArmchairObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="OrtographicCamera.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="PerspectiveCamera.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Animatable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -315,6 +336,10 @@
     <FxCompile Include="Shaders\Ball-HWTessellationWithLoD\hs.hlsl" />
     <FxCompile Include="Shaders\Ball-HWTessellationWithLoD\ps.hlsl" />
     <FxCompile Include="Shaders\Ball-HWTessellationWithLoD\vs.hlsl" />
+    <FxCompile Include="Shaders\BezierQuad\ds.hlsl" />
+    <FxCompile Include="Shaders\BezierQuad\hs.hlsl" />
+    <FxCompile Include="Shaders\BezierQuad\ps.hlsl" />
+    <FxCompile Include="Shaders\BezierQuad\vs.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -335,5 +360,8 @@
     <None Include="Shaders\Ball-HWTessellationWithLoD\ds_ps_transfer.hlsli" />
     <None Include="Shaders\Ball-HWTessellationWithLoD\hs_ds_transfer.hlsli" />
     <None Include="Shaders\Ball-HWTessellationWithLoD\vs_hs_transfer.hlsli" />
+    <None Include="Shaders\BezierQuad\vs_hs_transfer.hlsli" />
+    <None Include="Shaders\BezierQuad\hs_ds_transfer.hlsli" />
+    <None Include="Shaders\BezierQuad\ds_ps_transfer.hlsli" />
   </ItemGroup>
 </Project>

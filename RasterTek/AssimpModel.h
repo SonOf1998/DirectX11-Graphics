@@ -49,13 +49,15 @@ public:
 			this->vertices.push_back(vertexData.GetData());
 		}
 
-		this->indices.reserve(mesh->mNumFaces * 3);
-		for (uint i = 0; i < mesh->mNumFaces; ++i)
+		int topologyVertexCount = mesh->mFaces[0].mNumIndices;
+		this->indices.reserve(mesh->mNumFaces * topologyVertexCount);
+		for (uint j = 0; j < mesh->mNumFaces; ++j)
 		{
-			auto face = mesh->mFaces[i];
-			this->indices.push_back(face.mIndices[0]);
-			this->indices.push_back(face.mIndices[1]);
-			this->indices.push_back(face.mIndices[2]);
+			auto face = mesh->mFaces[j];
+			for (uint k = 0; k < topologyVertexCount; ++k)
+			{
+				this->indices.push_back(face.mIndices[k]);
+			}
 		}
 	}
 };

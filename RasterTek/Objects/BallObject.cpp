@@ -18,7 +18,6 @@ void BallObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, 
 	XMMATRIX viewProj = XMMatrixIdentity();
 	if (camera != nullptr)
 	{
-		camera->Update();
 		viewProj = camera->GetViewProjMatrix();
 	}
 
@@ -44,7 +43,7 @@ void BallObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, 
 	{
 		pipeline->SetTexture(mesh->GetTexture());
 		pipeline->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
-		mesh->GetGeometry()->Draw(deviceContext, DRAW_OPTIONS::AS_PATCH);
+		mesh->GetGeometry()->Draw(deviceContext, D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 	}
 }
 

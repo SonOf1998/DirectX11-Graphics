@@ -5,17 +5,11 @@
 #include "HResultException.h"
 #include "VertexDataType.h"
 
-enum class DRAW_OPTIONS
-{
-	NONE,
-	AS_PATCH
-};
-
 struct Geometry
 {
 	virtual ~Geometry() = default;
 
-	virtual void Draw(ID3D11DeviceContext*, DRAW_OPTIONS = DRAW_OPTIONS::NONE) = 0;
+	virtual void Draw(ID3D11DeviceContext*, D3D11_PRIMITIVE_TOPOLOGY = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) = 0;
 };
 
 template <typename DATA_TYPE>
@@ -76,22 +70,14 @@ protected:
 
 public:		
 
-	void Draw(ID3D11DeviceContext* devcon, DRAW_OPTIONS options = DRAW_OPTIONS::NONE)
+	void Draw(ID3D11DeviceContext* devcon, D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)
 	{
 		UINT stride = static_cast<UINT>(DATA_TYPE::GetSizeInBytes());
 		UINT offset = 0;
 
 		devcon->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 		devcon->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-		if (options == DRAW_OPTIONS::NONE)
-		{
-			devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		}
-		if (options == DRAW_OPTIONS::AS_PATCH)
-		{
-			devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
-		}
-		
-		devcon->DrawIndexed(static_cast<UINT>(indices.size()), 0, 0);
+		devcon->IASetPrimitiveTopology(topology);
+		devcon->DrawIndexed(static_cast<UINT>(indices.size()), 0, 0);			
 	}
 };

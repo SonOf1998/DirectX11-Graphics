@@ -4,6 +4,7 @@
 #include "AssimpModel.h"
 #include "BallObject.h"
 #include "Resources.h"
+#include "Positions.h"
 #include "WhiteBallObject.h"
 
 BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)

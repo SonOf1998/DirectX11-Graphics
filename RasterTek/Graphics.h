@@ -1,11 +1,24 @@
 #pragma once
 
-class Camera;
 class GameObject;
 class Light;
 class Renderable;
 class RenderTargetTexture;
+class PerspectiveCamera;
 class Pipeline;
+
+
+#define PIPELINES_AND_OBJECTS										\
+std::unique_ptr<Pipeline>				pipelinePhongBlinn;			\
+std::unique_ptr<Pipeline>				pipelineMirror;				\
+std::unique_ptr<Pipeline>				pipelineShadowMap;			\
+std::unique_ptr<Pipeline>				pipelineLoDTess;			\
+std::unique_ptr<Pipeline>				pipelineBezierQuad;			\
+																	\
+std::unique_ptr<Renderable>				ballSet;					\
+std::unique_ptr<GameObject>				armchair;					\
+
+
 
 class Graphics
 {
@@ -22,16 +35,12 @@ class Graphics
 
 	D3D11_VIEWPORT					viewport;
 
-	std::unique_ptr<Camera>						camera;
+	std::unique_ptr<PerspectiveCamera>			camera;
 	std::vector<std::unique_ptr<GameObject>>	gameObjects;
 
-	std::unique_ptr<Pipeline>				pipelinePhongBlinn;
-	std::unique_ptr<Pipeline>				pipelineMirror;
-	std::unique_ptr<Pipeline>				pipelineShadowMap;
-	std::unique_ptr<Pipeline>				pipelineLoDTess;
+	PIPELINES_AND_OBJECTS
 
-	std::unique_ptr<Renderable>	ballSet;
-
+	
 	std::unique_ptr<GameObject> mirror;
 	std::unique_ptr<Light> dirLight;
 
@@ -58,7 +67,7 @@ public:
 
 	IDXGIAdapter1* GetBestVideoCard(IDXGIFactory1*);
 
-	void RenderFrame(float, float);
-	void Resize(UINT, UINT);
+	void RenderFrame(float t, float dt);
+	void Resize(UINT width, UINT height, bool fullscreen = false);
 };
 

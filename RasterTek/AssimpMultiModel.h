@@ -64,13 +64,26 @@ public:
 				fragment->vertices.push_back(vertexData.GetData());
 			}
 
-			fragment->indices.reserve(mesh->mNumFaces * 3);
+			
+			int topologyVertexCount = mesh->mFaces[0].mNumIndices;
+			fragment->indices.reserve(mesh->mNumFaces * topologyVertexCount);
 			for (uint j = 0; j < mesh->mNumFaces; ++j)
 			{
 				auto face = mesh->mFaces[j];
-				fragment->indices.push_back(face.mIndices[0]);
-				fragment->indices.push_back(face.mIndices[1]);
-				fragment->indices.push_back(face.mIndices[2]);
+				for (uint k = 0; k < 2; ++k)
+				{
+					fragment->indices.push_back(face.mIndices[k]);
+				}
+
+				if (topologyVertexCount == 4)
+				{
+					fragment->indices.push_back(face.mIndices[3]);
+					fragment->indices.push_back(face.mIndices[2]);
+				}
+				else
+				{
+					fragment->indices.push_back(face.mIndices[2]);
+				}
 			}
 
 			fragment->CreateBuffers(device);

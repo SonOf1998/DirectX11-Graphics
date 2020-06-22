@@ -251,6 +251,14 @@ struct DirLightVP : public CBufferDataType
 
 struct Material : public CBufferDataType
 {
+	/* Notice: 
+	*
+	*  Setting the shininess component to zero might cause
+	*  visual artifacts like black patches.
+	*
+	*  Seems like 0 on the power of 0 is calculated to -inf
+	*  in the pipeline's shader programs.
+	*/
 	struct MaterialData
 	{
 		__declspec(align(16)) XMFLOAT3 ambient;
@@ -262,7 +270,7 @@ struct Material : public CBufferDataType
 
 	Material(XMFLOAT3 ambient, XMFLOAT3 specular, float shininess) : CBufferDataType("Material"), data(ambient, specular, shininess)
 	{
-
+		assert(shininess != 0.0);
 	}
 
 	void FillCBufferWithData(D3D11_MAPPED_SUBRESOURCE& mappedResource)

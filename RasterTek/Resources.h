@@ -3,16 +3,19 @@
 
 // ... MODELS ...
 
-#define SNOOKER_TABLE_MODEL					"Models/table.fbx"
-#define BALL_MODEL							"Models/ball.obj"
-#define UNIT_TETRAHEDRON_MODEL				"Models/tetrahedron.obj"
+#define MODEL_ROOTDIR						"Models/"
+
+#define SNOOKER_TABLE_MODEL					MODEL_ROOTDIR "table.fbx"
+#define BALL_MODEL							MODEL_ROOTDIR "ball.obj"
+#define UNIT_TETRAHEDRON_MODEL				MODEL_ROOTDIR "tetrahedron.obj"
+#define ARMCHAIR_MODEL						MODEL_ROOTDIR "armchair.fbx"
 
 // ... TEXTURES ...
 
 #define TEXTURE_ROOTDIR						L"Textures/"
 
 #define TABLE_FRAME_TEXTURE					TEXTURE_ROOTDIR "solid_wood.png"
-#define TABLE_CLOTH_TEXTURE					TEXTURE_ROOTDIR "green_fabric.png"
+#define TABLE_CLOTH_TEXTURE					TEXTURE_ROOTDIR "green_fabric.jpg"
 #define TABLE_XINGPAISTAR_TEXTURE			TEXTURE_ROOTDIR "xingpaistar.png"
 #define TABLE_CUSHION_TEXTURE				TEXTURE_ROOTDIR "side_wall_fabric.png"
 #define	TABLE_POCKET_TEXTURE				TEXTURE_ROOTDIR "pocket_dimmer.png"											  
@@ -25,6 +28,10 @@
 #define BLUE_BALL_TEXTURE					TEXTURE_ROOTDIR "blueball.png"		
 #define PINK_BALL_TEXTURE					TEXTURE_ROOTDIR "pinkball.png"		
 #define BLACK_BALL_TEXTURE					TEXTURE_ROOTDIR "blackball.png"	
+
+#define ARMCHAIR_PILLOW_TEXTURE				TEXTURE_ROOTDIR "pillow.jpg"
+#define ARMCHAIR_BUMP_TEXTURE				TEXTURE_ROOTDIR "bump.png"
+#define ARMCHAIR_FRAME_TEXTURE				TEXTURE_ROOTDIR "wood.jpg"
 
 
 // ... SHADERS ....
@@ -50,6 +57,21 @@
 #define SHADOWMAP_DIRECTIONAL_VS			SHADER_ROOTDIR SHADOWMAP_DIRECTIONAL VS
 #define SHADOWMAP_DIRECTIONAL_PS			SHADER_ROOTDIR SHADOWMAP_DIRECTIONAL PS
 
+#define BEZIER_QUAD							"BezierQuad/bin/"
+#define BEZIER_QUAD_VS						SHADER_ROOTDIR BEZIER_QUAD VS
+#define BEZIER_QUAD_HS						SHADER_ROOTDIR BEZIER_QUAD HS
+#define BEZIER_QUAD_DS						SHADER_ROOTDIR BEZIER_QUAD DS
+#define BEZIER_QUAD_PS						SHADER_ROOTDIR BEZIER_QUAD PS
+
+// ... CLEAR COLORS ...
+
+namespace COLOR
+{
+	constexpr float SM_WHITE[4] = { 100000, 100000, 100000, 1 };
+	constexpr float WHITE[4] = { 1, 1, 1, 1 };
+	constexpr float BLACK[4] = { 0, 0, 0, 1 };
+	constexpr float GRAY[4] = { 0.3f, 0.3f, 0.3f, 1 };
+}
 
 
 

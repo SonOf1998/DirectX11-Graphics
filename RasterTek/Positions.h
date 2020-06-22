@@ -10,9 +10,9 @@
 #define CUSHION_Z_BORDER			5.34f
 
 
-#define BALL_RADIUS					0.1f
+#define BALL_RADIUS					0.09f
 #define BALL_SCALE					XMVectorSet(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS, 1)
-#define BALL_POS_Y					SNOOKER_TABLE_POS_Y + 0.16f
+#define BALL_POS_Y					SNOOKER_TABLE_POS_Y + BALL_RADIUS * 1.8f
 #define PINK_BALL_Z					-2.3f
 
 #define WHITE_BALL_PREFERRED_POS	XMVectorSet(1, BALL_POS_Y, 3, 1)

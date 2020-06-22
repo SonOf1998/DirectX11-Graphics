@@ -7,14 +7,29 @@
 #include "HResultException.h"
 #include "Timer.h"
 
-SystemClass::SystemClass(UINT screenWidth, UINT screenHeight)
+SystemClass::SystemClass(UINT width, UINT height)
 {
+	if (FULLSCREEN)
+	{
+		screenWidth = width;
+		screenHeight = height;
+		windowWidth = 1280;
+		windowHeight = 720;
+	}
+	else
+	{
+		GetScreenResolution(screenWidth, screenHeight);
+		windowWidth = width;
+		windowHeight = height;
+	}
+
+
 	OpenWindow();
 	try 
 	{
 		graphics = std::make_unique<Graphics>(screenWidth, screenHeight, hwnd);	
 	}
-	catch (HResultException e)
+	catch (const HResultException& e)
 	{
 		MessageBox(hwnd, e.GetErrorMsg(), L"DirectX setup error", MB_ICONWARNING);
 	}
@@ -24,6 +39,15 @@ SystemClass::SystemClass(UINT screenWidth, UINT screenHeight)
 SystemClass::~SystemClass() = default;
 
 
+
+void SystemClass::GetScreenResolution(int& width, int& height)
+{
+	RECT desktop;
+	HWND hDesktop = GetDesktopWindow();
+	GetWindowRect(hDesktop, &desktop);
+	width = desktop.right;
+	height = desktop.bottom;
+}
 
 void SystemClass::Shutdown()
 {
@@ -67,16 +91,15 @@ void SystemClass::Run()
 			{
 				graphics->RenderFrame(timer.GetT(), timer.GetDt());
 			}
-			catch (HResultException e)
+			catch (const HResultException& e)
 			{
 				MessageBox(hwnd, e.GetErrorMsg(), L"DirectX runtime error", MB_ICONWARNING);
 			}
-			catch (CBufferNotFoundException e)
+			catch (const CBufferNotFoundException& e)
 			{
 				MessageBoxA(hwnd, e.what(), "CBuffer error", MB_ICONWARNING);
 			}
 		}
-
 	}
 }
 
@@ -86,7 +109,6 @@ void SystemClass::OpenWindow()
 {
 	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
-	int posX, posY;
 
 
 	// Get an external pointer to this object.	
@@ -114,46 +136,33 @@ void SystemClass::OpenWindow()
 
 	// Register the window class.
 	RegisterClassEx(&wc);
-
-	// Determine the resolution of the clients desktop screen.
-	screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
-	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
+	
+	int posX, posY;
 	if (FULLSCREEN)
 	{
-		// If full screen set the screen to maximum size of the users desktop and 32bit.
 		ZeroMemory(&dmScreenSettings, sizeof(DEVMODE));
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-		dmScreenSettings.dmPelsWidth = (unsigned long)screenWidth;
-		dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
+		dmScreenSettings.dmPelsWidth = (unsigned long)windowWidth;
+		dmScreenSettings.dmPelsHeight = (unsigned long)windowHeight;
 		dmScreenSettings.dmBitsPerPel = 32;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-		// Change the display settings to full screen.
 		ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
 
-		// Set the position of the window to the top left corner.
 		posX = posY = 0;
 	}
 	else
 	{
-		// If windowed then set it to 800x600 resolution.
-		screenWidth = 800;
-		screenHeight = 600;
-
-		// Place the window in the middle of the screen.
-		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
-		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
+		posX = (screenWidth - windowWidth) / 2;
+		posY = (screenHeight - windowHeight) / 2;
 	}
 
-	// Create the window with the screen settings and get the handle to it.
 	hwnd = CreateWindowEx(
 		NULL,
 		m_applicationName,
 		WindowTitle,
 		WS_OVERLAPPEDWINDOW,
-		posX, posY, screenWidth, screenHeight,
+		posX, posY, windowWidth, windowHeight,
 		NULL,
 		NULL,
 		m_hinstance,
@@ -192,22 +201,79 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		InputClass::SetRightMBDown(false);
 		messageHandled = true;
 	}
-	if (umsg == WM_SIZE)
+	// Window getting focused
+	if (umsg == WM_SETFOCUS)
+	{
+		if (fullscreen) // switching TO fs
+		{
+			graphics->Resize(screenWidth, screenHeight, fullscreen);
+			SetWindowPos(hwnd, NULL, 0, 0, screenWidth, screenHeight, 0);
+		}
+	}
+	if ((wparam == VK_F11 || wparam == 'F') && umsg == WM_KEYDOWN)
+	{
+		GetScreenResolution(screenWidth, screenHeight);
+
+		try
+		{
+			fullscreen = !fullscreen;
+
+			if (fullscreen)
+			{
+				graphics->Resize(screenWidth, screenHeight, fullscreen);
+				SetWindowPos(hwnd, NULL, 0, 0, screenWidth, screenHeight, 0);
+			}
+			else
+			{
+				int posX = (screenWidth - windowWidth) / 2;
+				int posY = (screenHeight - windowHeight) / 2;
+
+				graphics->Resize(windowWidth, windowHeight);
+				SetWindowPos(hwnd, NULL, posX, posY, windowWidth, windowHeight, 0);
+			}			
+		}
+		catch (HResultException e)
+		{
+			MessageBox(hwnd, e.GetErrorMsg(), L"RuntimeError", MB_OK);
+		}
+
+		messageHandled = true;
+	} 
+	else if (umsg == WM_SIZE)
 	{
 		RECT rect;
-		if (GetWindowRect(hwnd, &rect) && graphics)
+		if (GetWindowRect(hwnd, &rect) && graphics != nullptr)
 		{
 			int newWidth = rect.right - rect.left;
 			int newHeight = rect.bottom - rect.top;
 
-			try { graphics->Resize(newWidth, newHeight); }
-			catch (HResultException e)
+			/* Switching to fullscreen trigger WM_SIZE event
+			*  which would make us forget the last window size
+			*  We skip every WM_SIZE event which would result
+			*  in a full screen window.
+			*/
+			if (newWidth == screenWidth && newHeight == screenHeight)
+			{
+				messageHandled = true;
+				return 0;
+			}
+
+
+			windowWidth = newWidth;
+			windowHeight = newHeight;
+
+			try 
+			{ 
+				graphics->Resize(windowWidth, windowHeight);
+			}
+			catch (const HResultException& e)
 			{
 				MessageBox(hwnd, e.GetErrorMsg(), L"RuntimeError", MB_OK);
 			}
 		}
 		messageHandled = true;
 	}
+	
 
 	if (!messageHandled)
 	{

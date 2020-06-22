@@ -48,7 +48,6 @@
 #include "HResultException.h"
 #include "InputClass.h"
 #include "Logger.h"
-#include "Positions.h"
 #include "SimpleDXMath.h"
 
 
@@ -60,5 +59,5 @@ using uint = unsigned int;
 inline LPCWSTR WindowTitle = L"Snooker DirectX11 - BME VIK Szakdolgozat";
 
 constexpr UINT	MSAALevel = 4;
-constexpr bool	FULLSCREEN = true;
-constexpr bool	VSYNC_ENABLED = true;
+constexpr bool	FULLSCREEN = false;
+constexpr bool	VSYNC_ENABLED = false;

@@ -15,7 +15,6 @@ void FloorObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 	XMMATRIX viewProj = XMMatrixIdentity();
 	if (camera != nullptr)
 	{
-		camera->Update();
 		viewProj = camera->GetViewProjMatrix();
 	}
 

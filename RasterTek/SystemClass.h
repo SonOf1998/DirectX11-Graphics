@@ -4,9 +4,15 @@ class Graphics;
 
 class SystemClass
 {
-	static constexpr bool FULLSCREEN = false;
-	UINT screenWidth;
-	UINT screenHeight;
+	bool fullscreen = FULLSCREEN;
+
+	/* screen maximum resolution */
+	int screenWidth;
+	int screenHeight;
+
+	/* for fallback purposes when switching back from fullscreen mode */
+	UINT windowWidth;	
+	UINT windowHeight;
 
 	LPCWSTR m_applicationName;
 	HINSTANCE m_hinstance;
@@ -21,9 +27,12 @@ public:
 	SystemClass(const SystemClass&) = delete;
 	~SystemClass();
 
+
+	static void GetScreenResolution(int& width, int& height);
+	
 	void Shutdown();
 	void Run();
-
+	
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);	
 };
 
