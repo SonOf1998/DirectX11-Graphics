@@ -68,6 +68,8 @@ public:
 	IDXGIAdapter1* GetBestVideoCard(IDXGIFactory1*);
 
 	void RenderFrame(float t, float dt);
-	void Resize(UINT width, UINT height, bool fullscreen = false);
+
+	void SwitchMode(bool toFullscreen);
+	void Resize(UINT width, UINT height);
 };
 

@@ -376,7 +376,33 @@ IDXGIAdapter1* Graphics::GetBestVideoCard(IDXGIFactory1* factory)
 	return ret;
 }
 
-void Graphics::Resize(UINT newWidth, UINT newHeight, bool fullscreen /* = false */)
+void Graphics::SwitchMode(bool toFullscreen)
+{
+	if (toFullscreen)
+	{ 
+		int screenWidth;
+		int screenHeight;
+		SystemClass::GetScreenResolution(screenWidth, screenHeight);
+
+		DXGI_MODE_DESC modeDesc = {};
+		modeDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		modeDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		modeDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		modeDesc.RefreshRate.Numerator = 60;
+		modeDesc.RefreshRate.Denominator = 1;
+		modeDesc.Width = screenWidth;
+		modeDesc.Height = screenHeight;
+
+		swapchain->ResizeTarget(&modeDesc);
+		swapchain->SetFullscreenState(true, nullptr);
+	}
+	else
+	{
+		swapchain->SetFullscreenState(false, nullptr);
+	}
+}
+
+void Graphics::Resize(UINT newWidth, UINT newHeight)
 {
 	HRESULT result;
 	
@@ -384,19 +410,11 @@ void Graphics::Resize(UINT newWidth, UINT newHeight, bool fullscreen /* = false 
 	screenHeight = newHeight;
 	camera->SetAspectRatio(static_cast<float>(screenWidth) / screenHeight);
 
-	//devcon->ClearState();
+	devcon->ClearState();
 	devcon->OMSetRenderTargets(0, nullptr, nullptr);
-	renderTargetView.ReleaseAndGetAddressOf();
+	renderTargetView = nullptr;
 
 	THROW_IF_HRESULT_FAILED(swapchain->ResizeBuffers(1, newWidth, newHeight, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
-	if (fullscreen)
-	{
-		swapchain->SetFullscreenState(true, nullptr);
-	}
-	else
-	{
-		swapchain->SetFullscreenState(false, nullptr);
-	}
 
 	CreateRenderTarget();
 	CreateAndSetDepthStencilState();

@@ -206,40 +206,29 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 	{
 		if (fullscreen) // switching TO fs
 		{
-			graphics->Resize(screenWidth, screenHeight, fullscreen);
-			SetWindowPos(hwnd, NULL, 0, 0, screenWidth, screenHeight, 0);
-		}
-	}
-	if ((wparam == VK_F11 || wparam == 'F') && umsg == WM_KEYDOWN)
-	{
-		GetScreenResolution(screenWidth, screenHeight);
-
-		try
-		{
-			fullscreen = !fullscreen;
-
-			if (fullscreen)
-			{
-				graphics->Resize(screenWidth, screenHeight, fullscreen);
-				SetWindowPos(hwnd, NULL, 0, 0, screenWidth, screenHeight, 0);
-			}
-			else
-			{
-				int posX = (screenWidth - windowWidth) / 2;
-				int posY = (screenHeight - windowHeight) / 2;
-
-				graphics->Resize(windowWidth, windowHeight);
-				SetWindowPos(hwnd, NULL, posX, posY, windowWidth, windowHeight, 0);
-			}			
-		}
-		catch (HResultException e)
-		{
-			MessageBox(hwnd, e.GetErrorMsg(), L"RuntimeError", MB_OK);
+			graphics->SwitchMode(fullscreen);
 		}
 
 		messageHandled = true;
-	} 
-	else if (umsg == WM_SIZE)
+	}
+
+	if (((wparam == VK_F11 || wparam == 'F') && umsg == WM_KEYDOWN) || wparam == SC_MAXIMIZE )
+	{
+		fullscreen = !fullscreen;
+		graphics->SwitchMode(fullscreen);
+
+		if (!fullscreen)
+		{
+			int centerX = (screenWidth - windowWidth) / 2;
+			int centexY = (screenHeight - windowHeight) / 2;
+
+			SetWindowPos(hwnd, NULL, centerX, centexY, windowWidth, windowHeight, 0);
+		}
+
+		messageHandled = true;
+	}
+
+	if (umsg == WM_SIZE)
 	{
 		RECT rect;
 		if (GetWindowRect(hwnd, &rect) && graphics != nullptr)
@@ -248,23 +237,26 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			int newHeight = rect.bottom - rect.top;
 
 			/* Switching to fullscreen trigger WM_SIZE event
-			*  which would make us forget the last window size
+			*  which would make us forget the last window sizef
 			*  We skip every WM_SIZE event which would result
 			*  in a full screen window.
 			*/
-			if (newWidth == screenWidth && newHeight == screenHeight)
+			if (newWidth < screenWidth && newHeight < screenHeight)
 			{
-				messageHandled = true;
-				return 0;
+				windowWidth = newWidth;
+				windowHeight = newHeight;
 			}
-
-
-			windowWidth = newWidth;
-			windowHeight = newHeight;
-
+			
 			try 
 			{ 
-				graphics->Resize(windowWidth, windowHeight);
+				if (fullscreen)
+				{
+					graphics->Resize(screenWidth, screenHeight);					
+				}
+				else
+				{
+					graphics->Resize(windowWidth, windowHeight);
+				}
 			}
 			catch (const HResultException& e)
 			{
