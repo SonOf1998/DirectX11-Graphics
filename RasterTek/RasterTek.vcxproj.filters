@@ -168,6 +168,9 @@
     <ClCompile Include="Animatable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AxisAlignedBoundingBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -306,6 +309,9 @@
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Animatable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AxisAlignedBoundingBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

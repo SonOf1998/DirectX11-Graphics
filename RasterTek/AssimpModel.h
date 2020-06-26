@@ -33,7 +33,39 @@ public:
 			if (vertexData.HandlesPosition())
 			{
 				auto vertex = mesh->mVertices[i];
-				vertexData.SetPosition(XMFLOAT3(static_cast<float>(vertex.x), static_cast<float>(vertex.y), static_cast<float>(vertex.z)));
+
+				float x = static_cast<float>(vertex.x);
+				float y = static_cast<float>(vertex.y);
+				float z = static_cast<float>(vertex.z);
+
+				vertexData.SetPosition(XMFLOAT3(x, y, z));
+
+				if (x < this->xMin)
+				{
+					this->xMin = x;
+				}
+				if (x > this->xMax)
+				{
+					this->xMax = x;
+				}
+
+				if (y < this->yMin)
+				{
+					this->yMin = y;
+				}
+				if (y > this->yMax)
+				{
+					this->yMax = y;
+				}
+
+				if (z < this->zMin)
+				{
+					this->zMin = z;
+				}
+				if (z > this->zMax)
+				{
+					this->zMax = z;
+				}
 			}
 			if (vertexData.HandlesNormal())
 			{
@@ -49,7 +81,7 @@ public:
 			this->vertices.push_back(vertexData.GetData());
 		}
 
-		int topologyVertexCount = mesh->mFaces[0].mNumIndices;
+		uint topologyVertexCount = mesh->mFaces[0].mNumIndices;
 		this->indices.reserve(mesh->mNumFaces * topologyVertexCount);
 		for (uint j = 0; j < mesh->mNumFaces; ++j)
 		{

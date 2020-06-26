@@ -3,6 +3,7 @@
 #include "Mesh.h"
 #include "Renderable.h"
 
+class AxisAlignedBoundingBox;
 class Camera;
 class Pipeline;
 class Light;
@@ -13,6 +14,7 @@ class GameObject : public Renderable
 protected:
 
 	std::vector<std::unique_ptr<Mesh>> meshes;
+	std::vector<std::unique_ptr<AxisAlignedBoundingBox>> aabbs;
 
 	XMMATRIX modelMatrix;
 
@@ -20,11 +22,13 @@ protected:
 	XMVECTOR scale;
 	XMMATRIX rotation;
 		
+	void AddMeshAxisAlignedBoundingBox();
+
 public:
 
 	GameObject(ID3D11Device*, ID3D11DeviceContext*, XMVECTOR = XMVectorSet(0,0,0,0), XMVECTOR = XMVectorSet(1,1,1,1), XMVECTOR = XMVectorSet(0,0,1,0), float = 0.0f);
 	GameObject(const GameObject&)	= delete;
-	virtual ~GameObject()			= default;
+	virtual ~GameObject();
 
 	XMMATRIX GetModelMatrix() const;
 	void AddMesh(Mesh*);

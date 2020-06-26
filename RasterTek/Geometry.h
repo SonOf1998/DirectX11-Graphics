@@ -7,6 +7,17 @@
 
 struct Geometry
 {
+	// AABB properties //
+	float xMin, yMin, zMin;
+	float xMax, yMax, zMax;
+
+
+	Geometry()
+	{
+		xMin = yMin = zMin = std::numeric_limits<float>::max();
+		xMax = yMax = zMax = std::numeric_limits<float>::lowest();
+	}
+
 	virtual ~Geometry() = default;
 
 	virtual void Draw(ID3D11DeviceContext*, D3D11_PRIMITIVE_TOPOLOGY = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) = 0;

@@ -8,6 +8,7 @@
 #define SNOOKER_TABLE_MODEL					MODEL_ROOTDIR "table.fbx"
 #define BALL_MODEL							MODEL_ROOTDIR "ball.obj"
 #define UNIT_TETRAHEDRON_MODEL				MODEL_ROOTDIR "tetrahedron.obj"
+#define LOW_QUALITY_SPHERE_MODEL			MODEL_ROOTDIR "low_quality_sphere.fbx"
 #define ARMCHAIR_MODEL						MODEL_ROOTDIR "armchair.fbx"
 
 // ... TEXTURES ...

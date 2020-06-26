@@ -10,7 +10,7 @@
 BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 	// snooker balls - common resources (shape, shininess, colors)
-	std::shared_ptr<Geometry> ballGeometry = std::make_shared<AssimpModel<P>>(device, UNIT_TETRAHEDRON_MODEL);
+	std::shared_ptr<Geometry> ballGeometry = std::make_shared<AssimpModel<P>>(device, LOW_QUALITY_SPHERE_MODEL);
 	std::shared_ptr<Material> ballMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(1, 1, 1), 70.0f);
 	std::shared_ptr<Texture>  redBallTexture	= std::make_shared<Texture>(device, deviceContext, RED_BALL_TEXTURE, 0);
 	std::shared_ptr<Texture>  yellowBallTexture = std::make_shared<Texture>(device, deviceContext, YELLOW_BALL_TEXTURE, 0);
@@ -34,37 +34,37 @@ BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 	ballMesh.SetTexture(yellowBallTexture);
 	yellowBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(yellowBall));
-
+	
 	// GREEN BALL
 	std::unique_ptr<GameObject> greenBall = std::make_unique<BallObject>(device, deviceContext, GREEN_BALL_POS);
 	ballMesh.SetTexture(greenBallTexture);
 	greenBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(greenBall));
-
+	
 	// BROWN BALL
 	std::unique_ptr<GameObject> brownBall = std::make_unique<BallObject>(device, deviceContext, BROWN_BALL_POS);
 	ballMesh.SetTexture(brownBallTexture);
 	brownBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(brownBall));
-
+	
 	// BLUE BALL
 	std::unique_ptr<GameObject> blueBall = std::make_unique<BallObject>(device, deviceContext, BLUE_BALL_POS);
 	ballMesh.SetTexture(blueBallTexture);
 	blueBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(blueBall));
-
+	
 	// PINK BALL
 	std::unique_ptr<GameObject> pinkBall = std::make_unique<BallObject>(device, deviceContext, PINK_BALL_POS);
 	ballMesh.SetTexture(pinkBallTexture);
 	pinkBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(pinkBall));
-
+	
 	// BLACK BALL
 	std::unique_ptr<GameObject> blackBall = std::make_unique<BallObject>(device, deviceContext, BLACK_BALL_POS);
 	ballMesh.SetTexture(blackBallTexture);
 	blackBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(blackBall));
-
+	
 	// RED BALLS
 	XMFLOAT4 firstRedTranslation(0, BALL_POS_Y, PINK_BALL_Z - 2 * BALL_RADIUS, 0.0f);
 	float deltaTranslate = 2 * BALL_RADIUS;
