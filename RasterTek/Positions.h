@@ -1,5 +1,7 @@
 #pragma once
 
+// POS defines are actually translation, this is why their last coord is 0.
+
 #define SNOOKER_TABLE_POS_Y			0.65f
 #define SNOOKER_TABLE_TRANSLATE		XMVectorSet(0, SNOOKER_TABLE_POS_Y, 0, 0)
 #define SNOOKER_TABLE_SCALE			XMVectorSet(0.8f, 0.8f, 0.8f, 1)
@@ -15,10 +17,18 @@
 #define BALL_POS_Y					SNOOKER_TABLE_POS_Y + BALL_RADIUS * 1.8f
 #define PINK_BALL_Z					-2.3f
 
-#define WHITE_BALL_PREFERRED_POS	XMVectorSet(1, BALL_POS_Y, 3, 1)
-#define YELLOW_BALL_POS				XMVectorSet(1, BALL_POS_Y, 3.38f, 1)
-#define GREEN_BALL_POS				XMVectorSet(-1, BALL_POS_Y, 3.38f, 1)
-#define BROWN_BALL_POS				XMVectorSet(0, BALL_POS_Y, 3.38f, 1)
-#define BLUE_BALL_POS				XMVectorSet(0, BALL_POS_Y, 0, 1)
-#define PINK_BALL_POS				XMVectorSet(0, BALL_POS_Y, PINK_BALL_Z, 1)
-#define BLACK_BALL_POS				XMVectorSet(0, BALL_POS_Y, -4.3f, 1)
+#define WHITE_BALL_PREFERRED_POS	XMVectorSet(1, BALL_POS_Y, 3, 0)
+#define YELLOW_BALL_POS				XMVectorSet(1, BALL_POS_Y, 3.38f, 0)
+#define GREEN_BALL_POS				XMVectorSet(-1, BALL_POS_Y, 3.38f, 0)
+#define BROWN_BALL_POS				XMVectorSet(0, BALL_POS_Y, 3.38f, 0)
+#define BLUE_BALL_POS				XMVectorSet(0, BALL_POS_Y, 0, 0)
+#define PINK_BALL_POS				XMVectorSet(0, BALL_POS_Y, PINK_BALL_Z, 0)
+#define BLACK_BALL_POS				XMVectorSet(0, BALL_POS_Y, -4.3f, 0)
+
+#define ARMCHAIR_SCALE				XMVectorSet(0.6f, 0.6f, 0.6f, 1)
+#define ARMCHAIR_ROT_AXIS			XMVectorSet(0, 1, 0, 0)
+#define ARMCHAIR_ROT_ANGLE			-XM_PI
+
+#define ARMCHAIR_Y					-1.0f
+#define ARMCHAIR_1_POS				XMVectorSet(-2, ARMCHAIR_Y, 10, 0)
+#define ARMCHAIR_2_POS				XMVectorSet(2, ARMCHAIR_Y, 10, 0)

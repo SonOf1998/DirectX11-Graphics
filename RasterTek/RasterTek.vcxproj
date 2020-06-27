@@ -189,8 +189,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animatable.cpp" />
+    <ClCompile Include="ArmchairSet.cpp" />
     <ClCompile Include="AxisAlignedBoundingBox.cpp" />
-    <ClCompile Include="Objects\ArmchairObject.cpp" />
     <ClCompile Include="BallSet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CBufferNotFoundException.cpp" />
@@ -254,8 +254,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animatable.h" />
+    <ClInclude Include="ArmchairSet.h" />
     <ClInclude Include="AxisAlignedBoundingBox.h" />
-    <ClInclude Include="Objects\ArmchairObject.h" />
     <ClInclude Include="AssimpMultiModel.h" />
     <ClInclude Include="BallSet.h" />
     <ClInclude Include="Camera.h" />

@@ -9,7 +9,7 @@
 #include "Texture.h"
 
 Pipeline::Pipeline(ID3D11Device* device, ID3D11DeviceContext* deviceContext, LPCWSTR vertexShaderName, LPCWSTR pixelShaderName, LPCWSTR geometryShaderName,
-							LPCWSTR hullShaderName, LPCWSTR domainShaderName, std::vector<std::pair<const char*, DXGI_FORMAT>> semanticFormatList) : device(device), deviceContext(deviceContext)
+							LPCWSTR hullShaderName, LPCWSTR domainShaderName, std::vector<D3D11_INPUT_ELEMENT_DESC> layout) : device(device), deviceContext(deviceContext)
 {
 	HRESULT result;
 
@@ -66,28 +66,9 @@ Pipeline::Pipeline(ID3D11Device* device, ID3D11DeviceContext* deviceContext, LPC
 	{
 		THROW_IF_HRESULT_FAILED(device->CreateDomainShader(domainShaderBinary->GetBufferPointer(), domainShaderBinary->GetBufferSize(), nullptr, domainShader.GetAddressOf()));
 	}
-
 	
-	std::vector<D3D11_INPUT_ELEMENT_DESC> layout;
-	layout.reserve(semanticFormatList.size());
-	unsigned int attributeCount = semanticFormatList.size();
-	for (unsigned int i = 0; i < attributeCount; ++i)
-	{
-		std::pair<const char*, DXGI_FORMAT> semanticFormatPair = semanticFormatList[i];
-		
-		D3D11_INPUT_ELEMENT_DESC layoutElementDesc;
-		layoutElementDesc.SemanticName = semanticFormatPair.first;
-		layoutElementDesc.SemanticIndex = 0;
-		layoutElementDesc.Format = semanticFormatPair.second;
-		layoutElementDesc.InputSlot = 0;
-		layoutElementDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-		layoutElementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		layoutElementDesc.InstanceDataStepRate = 0;
-		layout.push_back(layoutElementDesc);
-	}
-
 	// Create the vertex input layout.
-	THROW_IF_HRESULT_FAILED(device->CreateInputLayout(layout.data(), attributeCount, vertexShaderBinary->GetBufferPointer(), vertexShaderBinary->GetBufferSize(), inputLayout.GetAddressOf()));
+	THROW_IF_HRESULT_FAILED(device->CreateInputLayout(layout.data(), static_cast<UINT>(layout.size()), vertexShaderBinary->GetBufferPointer(), vertexShaderBinary->GetBufferSize(), inputLayout.GetAddressOf()));
 	InitShaderReflection(vertexShaderBinary.Get(), pixelShaderBinary.Get(), geometryShaderBinary.Get(), hullShaderBinary.Get(), domainShaderBinary.Get());
 }
 

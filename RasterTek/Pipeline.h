@@ -24,7 +24,7 @@ class Pipeline
 	std::map<CBUFFER_LOCATION, std::map<std::string, UINT>> cbufferSlots;
 
 
-	Pipeline(ID3D11Device*, ID3D11DeviceContext*, LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR, std::vector<std::pair<const char*, DXGI_FORMAT>>);
+	Pipeline(ID3D11Device*, ID3D11DeviceContext*, LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR, std::vector<D3D11_INPUT_ELEMENT_DESC>);
 
 public:
 	
@@ -40,7 +40,7 @@ public:
 		// find or expand the possibilities at VertexDataType.h
 		static_assert(std::is_base_of_v<VertexDataType<>, PER_VERTEX_DATA_TYPE>);
 		PER_VERTEX_DATA_TYPE instance;
-		Pipeline* ret = new Pipeline(dev, devcon, vertexShaderFile, pixelShaderFile, geometryShaderFile, hullShaderFile, domainShaderFile, instance.semanticFormatList);
+		Pipeline* ret = new Pipeline(dev, devcon, vertexShaderFile, pixelShaderFile, geometryShaderFile, hullShaderFile, domainShaderFile, instance.GetSemanticFormatList());
 		return ret;
 	}
 

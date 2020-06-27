@@ -6,49 +6,114 @@ using namespace DirectX;
 
 namespace DataTypes
 {
-	struct Position
+	class DataType
 	{
-		const char* semantic = "POSITION";
-		DXGI_FORMAT format = DXGI_FORMAT_R32G32B32_FLOAT;
+	protected:
+
+		D3D11_INPUT_ELEMENT_DESC desc;
+
+	public:
+
+		virtual ~DataType() = default;
+		const D3D11_INPUT_ELEMENT_DESC& GetDesc()
+		{
+			return desc;
+		}
 	};
 
-	struct Color
+	// PER VERTEX //
+
+	struct Position : public DataType
 	{
-		const char* semantic = "COLOR";
-		DXGI_FORMAT format = DXGI_FORMAT_R32G32B32_FLOAT;
+		Position()
+		{
+			desc.SemanticName = "Position";
+			desc.SemanticIndex = 0;
+			desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			desc.InputSlot = 0;
+			desc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			desc.InstanceDataStepRate = 0;
+		}
 	};
 
-	struct Normal
+	struct Color : public DataType
 	{
-		const char* semantic = "NORMAL";
-		DXGI_FORMAT format = DXGI_FORMAT_R32G32B32_FLOAT;
+		Color()
+		{
+			desc.SemanticName = "COLOR";
+			desc.SemanticIndex = 0;
+			desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			desc.InputSlot = 0;
+			desc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			desc.InstanceDataStepRate = 0;
+		}
 	};
 
-	struct Texture
+	struct Normal : public DataType
 	{
-		const char* semantic = "TEXCOORD";
-		DXGI_FORMAT format = DXGI_FORMAT_R32G32_FLOAT;
+		Normal()
+		{
+			desc.SemanticName = "NORMAL";
+			desc.SemanticIndex = 0;
+			desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			desc.InputSlot = 0;
+			desc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			desc.InstanceDataStepRate = 0;
+		}
 	};
+
+	struct Texture : public DataType
+	{
+		Texture()
+		{
+			desc.SemanticName = "TEXCOORD";
+			desc.SemanticIndex = 0;
+			desc.Format = DXGI_FORMAT_R32G32_FLOAT;
+			desc.InputSlot = 0;
+			desc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			desc.InstanceDataStepRate = 0;
+		}
+	};
+
+	// PER INSTANCE //
+
+	// none so far..
 }
 
 template<typename... TYPES>
 struct VertexDataType;
 
 template<>
-struct VertexDataType<> 
+class VertexDataType<> 
 {
-	std::vector<std::pair<const char*, DXGI_FORMAT>> semanticFormatList;
+protected:
+
+	std::vector<D3D11_INPUT_ELEMENT_DESC> semanticFormatList;
+
+public:
+
+	std::vector<D3D11_INPUT_ELEMENT_DESC>& GetSemanticFormatList()
+	{
+		return semanticFormatList;
+	}
 	virtual ~VertexDataType() = default;
 };
 
 
 template<typename HEAD, typename... TAIL>
-struct VertexDataType<HEAD, TAIL...> : public VertexDataType<TAIL...>
+class VertexDataType<HEAD, TAIL...> : public VertexDataType<TAIL...>
 {
+
+public:
+
 	VertexDataType()
 	{
 		HEAD dataType;
-		this->semanticFormatList.push_back(std::make_pair(dataType.semantic, dataType.format));
+		this->semanticFormatList.push_back(dataType.GetDesc());
 	}
 };
 

@@ -16,7 +16,7 @@ std::unique_ptr<Pipeline>				pipelineLoDTess;			\
 std::unique_ptr<Pipeline>				pipelineBezierQuad;			\
 																	\
 std::unique_ptr<Renderable>				ballSet;					\
-std::unique_ptr<GameObject>				armchair;					\
+std::unique_ptr<Renderable>				armchairSet;				\
 
 
 

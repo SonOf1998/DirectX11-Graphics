@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Graphics.h"
 
-#include "ArmchairObject.h"
+#include "ArmchairSet.h"
 #include "HResultException.h"
 #include "BallSet.h"
 #include "Geometry.h"
@@ -48,7 +48,7 @@ void Graphics::RenderInitalization()
 
 	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get());
 	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
-	armchair = std::make_unique<ArmchairObject>(dev.Get(), devcon.Get());
+	armchairSet = std::make_unique<ArmchairSet>(dev.Get(), devcon.Get());
 
 
 	std::unique_ptr<GameObject> plane = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(25, 25, 1, 1), XMVectorSet(1, 0, 0, 0), -XM_PI / 2);
@@ -117,8 +117,7 @@ void Graphics::RenderFrame(float t, float dt)
 	}
 	
 	pipelineBezierQuad->Use();
-	armchair->Animate(t, dt);
-	armchair->Render(devcon.Get(), pipelineBezierQuad.get(), camera.get());
+	armchairSet->Render(devcon.Get(), pipelineBezierQuad.get(), camera.get());
 
 	pipelineLoDTess->Use();
 	ballSet->Animate(t, dt);

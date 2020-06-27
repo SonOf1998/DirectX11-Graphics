@@ -129,12 +129,14 @@ struct MVP : public CBufferDataType
 	}
 };
 
+// will be used for instancing
+template <size_t size = 1>
 struct MMInv : public CBufferDataType
 {
 	struct MMInvData
 	{
-		XMMATRIX model;
-		XMMATRIX modelInv;
+		XMMATRIX model[size];
+		XMMATRIX modelInv[size];
 	} data;
 
 	MMInv() : CBufferDataType("MMInv")
@@ -145,13 +147,16 @@ struct MMInv : public CBufferDataType
 	void FillCBufferWithData(D3D11_MAPPED_SUBRESOURCE& mappedResource)
 	{
 		MMInvData* cbufferData = reinterpret_cast<MMInvData*>(mappedResource.pData);
-		cbufferData->model = data.model;
-		cbufferData->modelInv = data.modelInv;
+		for (size_t i = 0; i < size; ++i)
+		{
+			cbufferData->model[i] = data.model[i];
+			cbufferData->modelInv[i] = data.modelInv[i];
+		}
 	}
 
 	UINT GetDataSize()
 	{
-		return sizeof(data);
+		return size * sizeof(data);
 	}
 
 	MMInvData& GetData()
