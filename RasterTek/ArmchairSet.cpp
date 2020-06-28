@@ -61,7 +61,7 @@ void ArmchairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 		pipeline->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 	}
 
-	MMInv<2> mminv;
+	MMInv<20> mminv;
 	mminv.GetData().model[0] = Transpose(modelMatrix1);
 	mminv.GetData().model[1] = Transpose(modelMatrix2);
 	mminv.GetData().modelInv[0] = Inverse(modelMatrix1);

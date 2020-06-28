@@ -50,7 +50,40 @@ public:
 
 				if (vertexData.HandlesPosition())
 				{
-					vertexData.SetPosition(XMFLOAT3(static_cast<float>(vertex.x), static_cast<float>(vertex.y), static_cast<float>(vertex.z)));
+					auto vertex = mesh->mVertices[j];
+
+					float x = static_cast<float>(vertex.x);
+					float y = static_cast<float>(vertex.y);
+					float z = static_cast<float>(vertex.z);
+
+					vertexData.SetPosition(XMFLOAT3(x, y, z));
+
+					if (x < fragment->xMin)
+					{
+						fragment->xMin = x;
+					}
+					if (x > fragment->xMax)
+					{
+						fragment->xMax = x;
+					}
+
+					if (y < fragment->yMin)
+					{
+						fragment->yMin = y;
+					}
+					if (y > fragment->yMax)
+					{
+						fragment->yMax = y;
+					}
+
+					if (z < fragment->zMin)
+					{
+						fragment->zMin = z;
+					}
+					if (z > fragment->zMax)
+					{
+						fragment->zMax = z;
+					}
 				}
 				if (vertexData.HandlesNormal())
 				{

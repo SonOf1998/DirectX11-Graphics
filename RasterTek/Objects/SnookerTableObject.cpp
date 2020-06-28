@@ -2,6 +2,7 @@
 #include "SnookerTableObject.h"
 
 #include "AssimpMultiModel.h"
+#include "AxisAlignedBoundingBox.h"
 #include "Camera.h"
 #include "Light.h"
 #include "Pipeline.h"
@@ -80,12 +81,19 @@ void SnookerTableObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pi
 	cameraCBuffer.GetData().position = camera->GetPosition();
 	pipeline->SetCBuffer(&cameraCBuffer, CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
 
-	for (auto& mesh : meshes)
-	{
-		pipeline->SetTexture(mesh->GetTexture());
-		pipeline->Use();
-		pipeline->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
-		mesh->GetGeometry()->Draw(deviceContext);
+	for (uint i = 0; i < meshes.size(); ++i)
+	{		
+		if (aabbs[i]->IsInsideViewFrustum(viewProj))
+		{
+			std::unique_ptr<Mesh>& mesh = meshes[i];
+			pipeline->SetTexture(mesh->GetTexture());
+			pipeline->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
+			mesh->GetGeometry()->Draw(deviceContext);
+		}
+		else
+		{
+			Logger::print("out");
+		}
 	}
 }
 
