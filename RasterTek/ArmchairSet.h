@@ -1,11 +1,13 @@
 #pragma once
 #include "Renderable.h"
 
+class AxisAlignedBoundingBox;
 class Mesh;
 
 class ArmchairSet : public Renderable
 {
 	std::vector<std::unique_ptr<Mesh>> meshes;
+	std::vector<std::unique_ptr<AxisAlignedBoundingBox>> aabbs;
 
 	XMMATRIX modelMatrix1; // playerA's chair
 	XMMATRIX modelMatrix2; // playerB's chair

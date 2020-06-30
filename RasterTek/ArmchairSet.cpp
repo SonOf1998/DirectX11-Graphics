@@ -2,6 +2,7 @@
 #include "ArmchairSet.h"
 
 #include "AssimpMultiModel.h"
+#include "AxisAlignedBoundingBox.h"
 #include "Camera.h"
 #include "CBufferDataType.h"
 #include "Light.h"
@@ -41,6 +42,23 @@ ArmchairSet::ArmchairSet(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 	meshes.push_back(std::move(bumpMesh));
 	meshes.push_back(std::move(frameMesh));
 	meshes.push_back(std::move(pillowMesh));
+
+
+	aabbs.emplace_back(std::make_unique<AxisAlignedBoundingBox>(armchairGeometries[0].get()));
+	aabbs.emplace_back(std::make_unique<AxisAlignedBoundingBox>(armchairGeometries[1].get()));
+	aabbs.emplace_back(std::make_unique<AxisAlignedBoundingBox>(armchairGeometries[2].get()));
+	aabbs.emplace_back(std::make_unique<AxisAlignedBoundingBox>(armchairGeometries[0].get()));
+	aabbs.emplace_back(std::make_unique<AxisAlignedBoundingBox>(armchairGeometries[1].get()));
+	aabbs.emplace_back(std::make_unique<AxisAlignedBoundingBox>(armchairGeometries[2].get()));
+
+	for (int i = 0; i < 3; ++i)
+	{
+		aabbs[i]->RecalculateVertices(modelMatrix1);
+	}
+	for (int i = 3; i < 6; ++i)
+	{
+		aabbs[i]->RecalculateVertices(modelMatrix1);
+	}
 }
 
 
@@ -77,6 +95,9 @@ void ArmchairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 	VP vp;
 	vp.GetData().viewProj = Transpose(viewProj);
 	pipeline->SetCBuffer(&vp, CBUFFER_LOCATION::DOMAIN_SHADER_CBUFFER);
+
+
+	// TODO instanced frustum culling
 
 	for (auto& mesh : meshes)
 	{

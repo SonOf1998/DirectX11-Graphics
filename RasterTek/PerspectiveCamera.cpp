@@ -91,11 +91,6 @@ XMVECTOR PerspectiveCamera::GetPosition() const noexcept
 	return position;
 }
 
-XMMATRIX PerspectiveCamera::GetViewProjMatrix() const
-{
-	return viewProjMatrix;
-}
-
 
 void PerspectiveCamera::Animate(float t, float dt)
 {
@@ -146,4 +141,5 @@ void PerspectiveCamera::Animate(float t, float dt)
 	XMMATRIX projection = XMMatrixPerspectiveFovRH(fovy, aspectRatio, zNear, zFar);
 
 	viewProjMatrix = XMMatrixMultiply(view, projection);
+	viewProjMatrixInv = XMMatrixInverse(nullptr, viewProjMatrix);
 }

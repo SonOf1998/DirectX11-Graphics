@@ -42,7 +42,5 @@ public:
 	void  SetLookAt(const XMVECTOR&);
 	void  SetAspectRatio(float newAspectRatio)	  noexcept;
 
-	XMMATRIX GetViewProjMatrix() const;
-
 	void Animate(float t, float dt) override;
 };

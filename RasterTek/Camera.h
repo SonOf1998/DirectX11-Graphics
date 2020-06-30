@@ -9,11 +9,13 @@ protected:
 
 	XMVECTOR position;
 	XMMATRIX viewProjMatrix;
+	XMMATRIX viewProjMatrixInv;
 
 	Camera(const XMVECTOR& position);
 
 public:
 		
 	XMVECTOR GetPosition()		 const noexcept;
-	XMMATRIX GetViewProjMatrix() const;
+	XMMATRIX GetViewProjMatrix() const noexcept;
+	XMMATRIX GetViewProjMatrixInv() const noexcept;
 };

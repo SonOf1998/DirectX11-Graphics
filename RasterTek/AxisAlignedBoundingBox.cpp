@@ -1,21 +1,20 @@
 #include "pch.h"
 #include "AxisAlignedBoundingBox.h"
 
+#include "Geometry.h"
 
-std::vector<AxisAlignedBoundingBox::Plane> AxisAlignedBoundingBox::GetPlanesFromViewProj(const XMMATRIX& viewProj) const
+std::vector<AxisAlignedBoundingBox::Plane> AxisAlignedBoundingBox::GetPlanesFromViewProj(const XMMATRIX& viewProjInv) const
 {
 	std::vector<Plane> planes;
 
-	XMMATRIX inverseViewProj = XMMatrixInverse(nullptr, viewProj);
-
-	XMVECTOR rightTopBehind    = XMVectorSet(1, 1, 1, 1) * inverseViewProj;
-	XMVECTOR leftTopBehind     = XMVectorSet(-1, 1, 1, 1) * inverseViewProj;
-	XMVECTOR rightBottomBehind = XMVectorSet(1, -1, 1, 1) * inverseViewProj;
-	XMVECTOR leftBottomBehind  = XMVectorSet(-1, -1, 1, 1) * inverseViewProj;
-	XMVECTOR rightTopFront     = XMVectorSet(1, 1, 0, 1) * inverseViewProj;
-	XMVECTOR leftTopFront      = XMVectorSet(-1, 1, 0, 1) * inverseViewProj;
-	XMVECTOR rightBottomFront  = XMVectorSet(1, -1, 0, 1) * inverseViewProj;
-	XMVECTOR leftBottomFront   = XMVectorSet(-1, -1, 0, 1) * inverseViewProj;
+	XMVECTOR rightTopBehind    = XMVectorSet(1, 1, 1, 1) * viewProjInv;
+	XMVECTOR leftTopBehind     = XMVectorSet(-1, 1, 1, 1) * viewProjInv;
+	XMVECTOR rightBottomBehind = XMVectorSet(1, -1, 1, 1) * viewProjInv;
+	XMVECTOR leftBottomBehind  = XMVectorSet(-1, -1, 1, 1) * viewProjInv;
+	XMVECTOR rightTopFront     = XMVectorSet(1, 1, 0, 1) * viewProjInv;
+	XMVECTOR leftTopFront      = XMVectorSet(-1, 1, 0, 1) * viewProjInv;
+	XMVECTOR rightBottomFront  = XMVectorSet(1, -1, 0, 1) * viewProjInv;
+	XMVECTOR leftBottomFront   = XMVectorSet(-1, -1, 0, 1) * viewProjInv;
 	
 	rightTopBehind		/= XMVectorGetW(rightTopBehind);
 	leftTopBehind		/= XMVectorGetW(leftTopBehind);
@@ -68,6 +67,10 @@ AxisAlignedBoundingBox::AxisAlignedBoundingBox(float xMin, float xMax, float yMi
 	modelVertices[7] = XMFLOAT3(xMax, yMax, zMax);
 }
 
+AxisAlignedBoundingBox::AxisAlignedBoundingBox(Geometry* geometry) : AxisAlignedBoundingBox(geometry->xMin, geometry->xMax, geometry->yMin, geometry->yMax, geometry->zMin, geometry->zMax)
+{
+}
+
 void AxisAlignedBoundingBox::RecalculateVertices(const XMMATRIX& modelMatrix)
 {
 	float newXMin, newYMin, newZMin;
@@ -111,27 +114,17 @@ void AxisAlignedBoundingBox::RecalculateVertices(const XMMATRIX& modelMatrix)
 			newZMax = vertex.z;
 		}
 	}
-
-	worldVertices[0] = XMFLOAT3(newXMin, newYMin, newZMin);
-	worldVertices[1] = XMFLOAT3(newXMax, newYMin, newZMin);
-	worldVertices[2] = XMFLOAT3(newXMin, newYMax, newZMin);
-	worldVertices[3] = XMFLOAT3(newXMax, newYMax, newZMin);
-	worldVertices[4] = XMFLOAT3(newXMin, newYMin, newZMax);
-	worldVertices[5] = XMFLOAT3(newXMax, newYMin, newZMax);
-	worldVertices[6] = XMFLOAT3(newXMin, newYMax, newZMax);
-	worldVertices[7] = XMFLOAT3(newXMax, newYMax, newZMax);
+	
+	minVertex = XMFLOAT3(newXMin, newYMin, newZMin);
+	maxVertex = XMFLOAT3(newXMax, newYMax, newZMax);
 }
 
-bool AxisAlignedBoundingBox::IsInsideViewFrustum(const XMMATRIX& viewProj)
+bool AxisAlignedBoundingBox::IsInsideViewFrustum(const XMMATRIX& viewProj, const XMMATRIX& viewProjInv)
 {
-	std::vector<Plane> planes = GetPlanesFromViewProj(viewProj);
-
-	XMFLOAT3 minVertex = worldVertices[0];
-	XMFLOAT3 maxVertex = worldVertices[7];
-
-	XMFLOAT3 P;
-	XMFLOAT3 Q;
-
+	std::vector<Plane> planes = GetPlanesFromViewProj(viewProjInv);
+	
+	XMFLOAT3 closestAABBVertex;
+	
 	bool allPlanePositive = true;
 
 	for (int i = 0; i < 6; ++i)
@@ -140,50 +133,34 @@ bool AxisAlignedBoundingBox::IsInsideViewFrustum(const XMMATRIX& viewProj)
 
 		if (plane.normal.x >= 0)
 		{
-			P.x = minVertex.x;
-			Q.x = maxVertex.x;
+			closestAABBVertex.x = maxVertex.x;
 		}
 		else
 		{
-			P.x = maxVertex.x;
-			Q.x = minVertex.x;
+			closestAABBVertex.x = minVertex.x;
 		}
 		if (plane.normal.y >= 0)
 		{
-			P.y = minVertex.y;
-			Q.y = maxVertex.y;
+			closestAABBVertex.y = maxVertex.y;
 		}
 		else
 		{
-			P.y = maxVertex.y;
-			Q.y = minVertex.y;
+			closestAABBVertex.y = minVertex.y;
 		}
 		if (plane.normal.z >= 0)
 		{
-			P.z = minVertex.z;
-			Q.z = maxVertex.z;
+			closestAABBVertex.z = maxVertex.z;
 		}
 		else
 		{
-			P.z = maxVertex.z;
-			Q.z = minVertex.z;
+			closestAABBVertex.z = minVertex.z;
 		}
 
-		if (Dot((P - plane.point), plane.normal) < 0)
+		if (Dot(closestAABBVertex - plane.point, plane.normal) < 0)
 		{
-			allPlanePositive = false;
-		}
-
-		if (Dot((P - plane.point), plane.normal) < 0 && Dot((Q - plane.point), plane.normal) > 0)
-		{
-			return true;
+			return false;
 		}
 	}
-
-	if (allPlanePositive)
-	{
-		return true;
-	}
-
-	return allPlanePositive;
+	
+	return true;
 }
