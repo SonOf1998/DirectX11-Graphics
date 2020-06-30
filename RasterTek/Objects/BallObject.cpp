@@ -16,18 +16,16 @@ BallObject::BallObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext,
 
 void BallObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /* nullptr */, Light* light/* nullptr */)
 {
-	static int cnt = 0;
 	XMMATRIX viewProj = XMMatrixIdentity();
+	XMMATRIX viewProjInv = XMMatrixIdentity();
 	if (camera != nullptr)
 	{
 		viewProj = camera->GetViewProjMatrix();
+		viewProjInv = camera->GetViewProjMatrixInv();
 	}
 
-	// ball has a single tetrahedron mesh only
-	// its axis aligned bounding box is not big enough
-	// regarding the z direction
 	aabbs[0]->RecalculateVertices(modelMatrix);
-	if (!aabbs[0]->IsInsideViewFrustum(viewProj))
+	if (!aabbs[0]->IsInsideViewFrustum(viewProj, viewProjInv))
 	{
 		return;
 	}

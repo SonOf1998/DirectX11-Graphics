@@ -56,9 +56,11 @@ SnookerTableObject::SnookerTableObject(ID3D11Device* device, ID3D11DeviceContext
 void SnookerTableObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /* nullptr */, Light* light /* = nullptr */)
 {
 	XMMATRIX viewProj = XMMatrixIdentity();
+	XMMATRIX viewProjInv = XMMatrixIdentity();
 	if (camera != nullptr)
 	{
 		viewProj = camera->GetViewProjMatrix();
+		viewProjInv = camera->GetViewProjMatrixInv();
 	}
 
 	if (light != nullptr)
@@ -83,16 +85,19 @@ void SnookerTableObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pi
 
 	for (uint i = 0; i < meshes.size(); ++i)
 	{		
-		if (aabbs[i]->IsInsideViewFrustum(viewProj))
+		// aabb recalculation happens only in base class' contructor
+		// as the table itself is not update dynamically
+		if (!aabbs[i]->IsInsideViewFrustum(viewProj, viewProjInv))
+		{
+			// for easier debugging
+			continue;
+		}
+		else
 		{
 			std::unique_ptr<Mesh>& mesh = meshes[i];
 			pipeline->SetTexture(mesh->GetTexture());
 			pipeline->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
 			mesh->GetGeometry()->Draw(deviceContext);
-		}
-		else
-		{
-			Logger::print("out");
 		}
 	}
 }

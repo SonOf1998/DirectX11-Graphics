@@ -40,9 +40,8 @@ ArmchairSet::ArmchairSet(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 	pillowMesh->SetTexture(pillowTexture);
 
 	meshes.push_back(std::move(bumpMesh));
-	meshes.push_back(std::move(frameMesh));
 	meshes.push_back(std::move(pillowMesh));
-
+	meshes.push_back(std::move(frameMesh));
 
 	aabbs.emplace_back(std::make_unique<AxisAlignedBoundingBox>(armchairGeometries[0].get()));
 	aabbs.emplace_back(std::make_unique<AxisAlignedBoundingBox>(armchairGeometries[1].get()));
@@ -51,13 +50,13 @@ ArmchairSet::ArmchairSet(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 	aabbs.emplace_back(std::make_unique<AxisAlignedBoundingBox>(armchairGeometries[1].get()));
 	aabbs.emplace_back(std::make_unique<AxisAlignedBoundingBox>(armchairGeometries[2].get()));
 
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < meshes.size(); ++i)
 	{
 		aabbs[i]->RecalculateVertices(modelMatrix1);
 	}
-	for (int i = 3; i < 6; ++i)
+	for (int i = meshes.size(); i < 2 * meshes.size(); ++i)
 	{
-		aabbs[i]->RecalculateVertices(modelMatrix1);
+		aabbs[i]->RecalculateVertices(modelMatrix2);
 	}
 }
 
@@ -67,9 +66,11 @@ ArmchairSet::~ArmchairSet() = default;
 void ArmchairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /*= nullptr*/, Light* light /*= nullptr*/)
 {
 	XMMATRIX viewProj = XMMatrixIdentity();
+	XMMATRIX viewProjInv = XMMatrixIdentity();
 	if (camera != nullptr)
 	{
 		viewProj = camera->GetViewProjMatrix();
+		viewProjInv = camera->GetViewProjMatrixInv();
 	}
 
 	if (light != nullptr)
@@ -79,14 +80,7 @@ void ArmchairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 		pipeline->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 	}
 
-	MMInv<20> mminv;
-	mminv.GetData().model[0] = Transpose(modelMatrix1);
-	mminv.GetData().model[1] = Transpose(modelMatrix2);
-	mminv.GetData().modelInv[0] = Inverse(modelMatrix1);
-	mminv.GetData().modelInv[1] = Inverse(modelMatrix2);
-
 	pipeline->SetSampler(FILTERING::TRILINEAR, 0);
-	pipeline->SetCBuffer(&mminv, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 	
 	CameraCBuffer cameraCBuffer;
 	cameraCBuffer.GetData().position = camera->GetPosition();
@@ -99,12 +93,56 @@ void ArmchairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 
 	// TODO instanced frustum culling
 
-	for (auto& mesh : meshes)
+	for (uint i = 0; i < meshes.size(); ++i)
 	{
+		std::unique_ptr<Mesh>& mesh = meshes[i];
+		uint instanceCount = 2;
+
+		std::vector<XMMATRIX> instanceDataVector;
+
+		if (!aabbs[i]->IsInsideViewFrustum(viewProj, viewProjInv))
+		{
+			instanceCount--;
+		}
+		else
+		{
+			instanceDataVector.push_back(modelMatrix1);
+			instanceDataVector.push_back(Inverse(modelMatrix1));
+		}
+		if (!aabbs[i + meshes.size()]->IsInsideViewFrustum(viewProj, viewProjInv))
+		{
+			instanceCount--;
+		}
+		else
+		{
+			instanceDataVector.push_back(modelMatrix2);
+			instanceDataVector.push_back(Inverse(modelMatrix2));
+		}
+
+		if (instanceCount == 0)
+		{
+			continue;
+		}
+
+		MMInv<20> mminv;
+		for (uint j = 0; j < instanceDataVector.size() / 2; ++j)
+		{
+			mminv.GetData().model[j] = Transpose(instanceDataVector[2 * j]);
+			mminv.GetData().modelInv[j] = instanceDataVector[2 * j + 1];
+		}
+		
+		pipeline->SetCBuffer(&mminv, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 		pipeline->SetTexture(mesh->GetTexture());
 		pipeline->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
-		mesh->GetGeometry()->DrawInstanced(deviceContext, 2, D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+		mesh->GetGeometry()->DrawInstanced(deviceContext, instanceCount, D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
 	}
+
+	//for (auto& mesh : meshes)
+	//{
+	//	pipeline->SetTexture(mesh->GetTexture());
+	//	pipeline->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
+	//	mesh->GetGeometry()->DrawInstanced(deviceContext, 2, D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+	//}
 }
 
 void ArmchairSet::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Light* light)
