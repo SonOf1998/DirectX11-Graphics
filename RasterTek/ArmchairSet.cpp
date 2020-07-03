@@ -18,9 +18,11 @@ ArmchairSet::ArmchairSet(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 
 	XMMATRIX translationMatrix1 = XMMatrixTranslationFromVector(ARMCHAIR_1_POS);
 	modelMatrix1 = scaleMatrix * rotation * translationMatrix1;
+	invModelMatrix1 = XMMatrixInverse(nullptr, modelMatrix1);
 
 	XMMATRIX translationMatrix2 = XMMatrixTranslationFromVector(ARMCHAIR_2_POS);
-	modelMatrix2 = scaleMatrix * rotation * translationMatrix2;
+	modelMatrix2 = scaleMatrix * rotation * translationMatrix2; 
+	invModelMatrix2 = XMMatrixInverse(nullptr, modelMatrix2);
 
 	std::shared_ptr<Texture> bumpTexture = std::make_shared<Texture>(device, deviceContext, ARMCHAIR_BUMP_TEXTURE, 0);
 	std::shared_ptr<Texture> frameTexture = std::make_shared<Texture>(device, deviceContext, ARMCHAIR_FRAME_TEXTURE, 0);
@@ -104,7 +106,7 @@ void ArmchairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 		else
 		{
 			instanceDataVector.push_back(modelMatrix1);
-			instanceDataVector.push_back(Inverse(modelMatrix1));
+			instanceDataVector.push_back(invModelMatrix1);
 		}
 		if (!aabbs[i + meshes.size()]->IsInsideViewFrustum(viewProj, viewProjInv))
 		{
@@ -113,7 +115,7 @@ void ArmchairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 		else
 		{
 			instanceDataVector.push_back(modelMatrix2);
-			instanceDataVector.push_back(Inverse(modelMatrix2));
+			instanceDataVector.push_back(invModelMatrix2);
 		}
 
 		if (instanceCount == 0)

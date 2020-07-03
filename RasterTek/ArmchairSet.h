@@ -10,7 +10,9 @@ class ArmchairSet : public Renderable
 	std::vector<std::unique_ptr<AxisAlignedBoundingBox>> aabbs;
 
 	XMMATRIX modelMatrix1; // playerA's chair
+	XMMATRIX invModelMatrix1;
 	XMMATRIX modelMatrix2; // playerB's chair
+	XMMATRIX invModelMatrix2;
 
 	// As these are fixed position objects, we only initialize these
 	// matrixes in the constructor and will not update them later on
