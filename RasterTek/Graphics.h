@@ -17,6 +17,7 @@ std::unique_ptr<Pipeline>				pipelineBezierQuad;			\
 																	\
 std::unique_ptr<Renderable>				ballSet;					\
 std::unique_ptr<Renderable>				armchairSet;				\
+std::unique_ptr<Renderable>				chairSet;					\
 
 
 

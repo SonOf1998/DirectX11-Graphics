@@ -36,8 +36,8 @@ ArmchairSet::ArmchairSet(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 	std::unique_ptr<Mesh> frameMesh = std::make_unique<Mesh>(armchairGeometries[2], shinyWoodMaterial);
 
 	bumpMesh->SetTexture(bumpTexture);
-	frameMesh->SetTexture(frameTexture);
 	pillowMesh->SetTexture(pillowTexture);
+	frameMesh->SetTexture(frameTexture);
 
 	meshes.push_back(std::move(bumpMesh));
 	meshes.push_back(std::move(pillowMesh));
@@ -89,10 +89,7 @@ void ArmchairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 	VP vp;
 	vp.GetData().viewProj = Transpose(viewProj);
 	pipeline->SetCBuffer(&vp, CBUFFER_LOCATION::DOMAIN_SHADER_CBUFFER);
-
-
-	// TODO instanced frustum culling
-
+	
 	for (uint i = 0; i < meshes.size(); ++i)
 	{
 		std::unique_ptr<Mesh>& mesh = meshes[i];
@@ -124,7 +121,7 @@ void ArmchairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 			continue;
 		}
 
-		MMInv<20> mminv;
+		MMInv<MaxInstanceCount> mminv;
 		for (uint j = 0; j < instanceDataVector.size() / 2; ++j)
 		{
 			mminv.GetData().model[j] = Transpose(instanceDataVector[2 * j]);
@@ -136,13 +133,6 @@ void ArmchairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 		pipeline->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
 		mesh->GetGeometry()->DrawInstanced(deviceContext, instanceCount, D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
 	}
-
-	//for (auto& mesh : meshes)
-	//{
-	//	pipeline->SetTexture(mesh->GetTexture());
-	//	pipeline->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
-	//	mesh->GetGeometry()->DrawInstanced(deviceContext, 2, D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
-	//}
 }
 
 void ArmchairSet::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Light* light)

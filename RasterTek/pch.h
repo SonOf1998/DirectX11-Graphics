@@ -58,6 +58,7 @@ using namespace Microsoft::WRL;
 using uint = unsigned int;
 
 inline LPCWSTR WindowTitle = L"Snooker DirectX11 - BME VIK Szakdolgozat";
+constexpr UINT MaxInstanceCount = 50;
 
 constexpr UINT	MSAALevel = 4;
 constexpr bool	FULLSCREEN = false;

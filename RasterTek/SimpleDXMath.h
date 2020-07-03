@@ -6,6 +6,10 @@ using namespace DirectX;
 
 constexpr float PI_180 = XM_PI / 180;
 
+inline constexpr float toRad(float angle)
+{
+	return (angle / 180) * XM_PI;
+}
 
 inline XMFLOAT3 operator+(const XMFLOAT3& a, const XMFLOAT3& b)
 {

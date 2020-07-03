@@ -171,6 +171,9 @@
     <ClCompile Include="ArmchairSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ChairSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -312,6 +315,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ArmchairSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChairSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

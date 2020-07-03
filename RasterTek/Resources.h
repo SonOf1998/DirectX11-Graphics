@@ -10,6 +10,7 @@
 #define UNIT_TETRAHEDRON_MODEL				MODEL_ROOTDIR "tetrahedron.obj"
 #define LOW_QUALITY_SPHERE_MODEL			MODEL_ROOTDIR "low_quality_sphere.fbx"
 #define ARMCHAIR_MODEL						MODEL_ROOTDIR "armchair.fbx"
+#define CHAIR_MODEL							MODEL_ROOTDIR "chair.fbx"
 
 // ... TEXTURES ...
 
@@ -34,6 +35,8 @@
 #define ARMCHAIR_BUMP_TEXTURE				TEXTURE_ROOTDIR "bump.png"
 #define ARMCHAIR_FRAME_TEXTURE				TEXTURE_ROOTDIR "wood.jpg"
 
+#define CHAIR_FABRIC_TEXTURE				TEXTURE_ROOTDIR "dark_blue_fabric.jpg"
+#define CHAIR_FRAME_TEXTURE					TEXTURE_ROOTDIR "light_wood.jpg"
 
 // ... SHADERS ....
 

@@ -4,6 +4,7 @@
 #include "ArmchairSet.h"
 #include "HResultException.h"
 #include "BallSet.h"
+#include "ChairSet.h"
 #include "Geometry.h"
 #include "AssimpModel.h"
 #include "AssimpMultiModel.h"
@@ -49,7 +50,7 @@ void Graphics::RenderInitalization()
 	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get());
 	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
 	armchairSet = std::make_unique<ArmchairSet>(dev.Get(), devcon.Get());
-
+	chairSet = std::make_unique<ChairSet>(dev.Get(), devcon.Get());
 
 	std::unique_ptr<GameObject> plane = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(25, 25, 1, 1), XMVectorSet(1, 0, 0, 0), -XM_PI / 2);
 	std::shared_ptr<Texture> planeTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/pavement.jpg", 0);
@@ -118,6 +119,7 @@ void Graphics::RenderFrame(float t, float dt)
 	
 	pipelineBezierQuad->Use();
 	armchairSet->Render(devcon.Get(), pipelineBezierQuad.get(), camera.get());
+	chairSet->Render(devcon.Get(), pipelineBezierQuad.get(), camera.get());
 
 	pipelineLoDTess->Use();
 	ballSet->Animate(t, dt);

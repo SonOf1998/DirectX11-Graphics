@@ -2,6 +2,10 @@
 
 // POS defines are actually translation, this is why their last coord is 0.
 
+#define X_AXIS						XMVectorSet(1, 0, 0, 0)
+#define Y_AXIS						XMVectorSet(0, 1, 0, 0)
+#define Z_AXIS						XMVectorSet(0, 0, -1, 0)
+
 #define SNOOKER_TABLE_POS_Y			0.65f
 #define SNOOKER_TABLE_TRANSLATE		XMVectorSet(0, SNOOKER_TABLE_POS_Y, 0, 0)
 #define SNOOKER_TABLE_SCALE			XMVectorSet(0.8f, 0.8f, 0.8f, 1)
@@ -32,3 +36,6 @@
 #define ARMCHAIR_Y					-1.0f
 #define ARMCHAIR_1_POS				XMVectorSet(-2, ARMCHAIR_Y, 10, 0)
 #define ARMCHAIR_2_POS				XMVectorSet(2, ARMCHAIR_Y, 10, 0)
+
+#define CHAIR_ELEVATION				0.5f
+#define CHAIR_SCALE					XMVectorSet(0.4f, 0.4f, 0.4f, 1)
