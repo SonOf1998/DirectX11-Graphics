@@ -1,11 +1,11 @@
 #pragma once
 #include "Renderable.h"
 
-class GameObject;
+class BallObject;
 
 class BallSet : public Renderable
 {
-	std::vector<std::unique_ptr<GameObject>> balls;
+	std::vector<std::unique_ptr<BallObject>> balls;
 
 public:
 	BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext);

@@ -3,6 +3,7 @@
 
 #include "AssimpModel.h"
 #include "BallObject.h"
+#include "CollisionManager.h"
 #include "Resources.h"
 #include "Positions.h"
 #include "WhiteBallObject.h"
@@ -24,50 +25,50 @@ BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 	Mesh ballMesh(ballGeometry, ballMaterial);
 
 	// WHITE BALL
-	std::unique_ptr<GameObject> whiteBall = std::make_unique<WhiteBallObject>(device, deviceContext, WHITE_BALL_PREFERRED_POS);
+	std::unique_ptr<BallObject> whiteBall = std::make_unique<WhiteBallObject>(device, deviceContext, WHITE_BALL_PREFERRED_POS);
 	ballMesh.SetTexture(whiteBallTexture);
 	whiteBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(whiteBall));
 
 	// YELLOW BALL
-	std::unique_ptr<GameObject> yellowBall = std::make_unique<BallObject>(device, deviceContext, YELLOW_BALL_POS);
+	std::unique_ptr<BallObject> yellowBall = std::make_unique<BallObject>(device, deviceContext, YELLOW_BALL_POS);
 	ballMesh.SetTexture(yellowBallTexture);
 	yellowBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(yellowBall));
 	
 	// GREEN BALL
-	std::unique_ptr<GameObject> greenBall = std::make_unique<BallObject>(device, deviceContext, GREEN_BALL_POS);
+	std::unique_ptr<BallObject> greenBall = std::make_unique<BallObject>(device, deviceContext, GREEN_BALL_POS);
 	ballMesh.SetTexture(greenBallTexture);
 	greenBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(greenBall));
 	
 	// BROWN BALL
-	std::unique_ptr<GameObject> brownBall = std::make_unique<BallObject>(device, deviceContext, BROWN_BALL_POS);
+	std::unique_ptr<BallObject> brownBall = std::make_unique<BallObject>(device, deviceContext, BROWN_BALL_POS);
 	ballMesh.SetTexture(brownBallTexture);
 	brownBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(brownBall));
 	
 	// BLUE BALL
-	std::unique_ptr<GameObject> blueBall = std::make_unique<BallObject>(device, deviceContext, BLUE_BALL_POS);
+	std::unique_ptr<BallObject> blueBall = std::make_unique<BallObject>(device, deviceContext, BLUE_BALL_POS);
 	ballMesh.SetTexture(blueBallTexture);
 	blueBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(blueBall));
 	
 	// PINK BALL
-	std::unique_ptr<GameObject> pinkBall = std::make_unique<BallObject>(device, deviceContext, PINK_BALL_POS);
+	std::unique_ptr<BallObject> pinkBall = std::make_unique<BallObject>(device, deviceContext, PINK_BALL_POS);
 	ballMesh.SetTexture(pinkBallTexture);
 	pinkBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(pinkBall));
 	
 	// BLACK BALL
-	std::unique_ptr<GameObject> blackBall = std::make_unique<BallObject>(device, deviceContext, BLACK_BALL_POS);
+	std::unique_ptr<BallObject> blackBall = std::make_unique<BallObject>(device, deviceContext, BLACK_BALL_POS);
 	ballMesh.SetTexture(blackBallTexture);
 	blackBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(blackBall));
 	
 	// RED BALLS
 	XMFLOAT4 firstRedTranslation(0, BALL_POS_Y, PINK_BALL_Z - 2 * BALL_RADIUS, 0.0f);
-	float deltaTranslate = 2 * BALL_RADIUS;
+	float deltaTranslate = 2 * BALL_RADIUS + 0.003f;	// added epsilon, so it will not report intersection (collision) right after launching
 	for (int i = 0; i < 5; ++i)
 	{
 		float x0 = firstRedTranslation.x - ((i % 2) / 2.0f) * deltaTranslate;
@@ -78,7 +79,7 @@ BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 			translate.x = x0 + powf(-1, j + 1.0f) * j * deltaTranslate;
 			x0 = translate.x;
 	
-			std::unique_ptr<GameObject> redBall = std::make_unique<BallObject>(device, deviceContext, XMLoadFloat4(&translate));
+			std::unique_ptr<BallObject> redBall = std::make_unique<BallObject>(device, deviceContext, XMLoadFloat4(&translate));
 			ballMesh.SetTexture(redBallTexture);
 			redBall->CopyAndAddMesh(ballMesh);
 			balls.push_back(std::move(redBall));
@@ -106,6 +107,47 @@ void BallSet::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pi
 
 void BallSet::Animate(float t, float dt)
 {
+	// todo
+
+
+	for (uint i = 0; i < balls.size(); ++i)
+	{
+		for (uint j = i + 1; j < balls.size(); ++j)
+		{
+			if (CollisionManager::Intersects(balls[i].get(), balls[j].get()))
+			{
+				XMVECTOR normal = XMVector3Normalize(balls[i]->GetPosition() - balls[j]->GetPosition());
+				XMVECTOR tangent = XMVectorSet(-XMVectorGetZ(normal), 0, XMVectorGetX(normal), 0);
+
+				XMVECTOR v1n = XMVector3Dot(balls[i]->GetVelocity(), normal);	   // float scalars, only magnitudes
+				XMVECTOR v1t = XMVector3Dot(balls[i]->GetVelocity(), tangent);	   // float scalars, only magnitudes
+				XMVECTOR v2n = XMVector3Dot(balls[j]->GetVelocity(), normal);	   // float scalars, only magnitudes
+				XMVECTOR v2t = XMVector3Dot(balls[j]->GetVelocity(), tangent);	   // float scalars, only magnitudes
+				
+				XMVECTOR v1n_new = XMVectorMultiply(v2n, normal);
+				XMVECTOR v1t_new = XMVectorMultiply(v1t, tangent);
+				XMVECTOR v2n_new = XMVectorMultiply(v1n, normal);
+				XMVECTOR v2t_new = XMVectorMultiply(v2t, tangent);
+
+				float centerDiff = Length(balls[i]->GetPosition() - balls[j]->GetPosition());
+				float overlapDistance = 0.5f * (2 * BALL_RADIUS - centerDiff);
+
+				balls[i]->SetPosition(balls[i]->GetPosition() + overlapDistance * normal);
+				balls[j]->SetPosition(balls[j]->GetPosition() - overlapDistance * normal);
+
+				balls[i]->SetVelocity(BALL_COLLISION_ENERGY_LOSS_FACTOR * (v1n_new + v1t_new));
+				balls[j]->SetVelocity(BALL_COLLISION_ENERGY_LOSS_FACTOR * (v2n_new + v2t_new));
+
+
+				Logger::print("intersect");
+				//balls[j]->SetVelocity(XMVectorSet(0, 0, -1, 0));
+			}
+		}
+	}
+
+
+
+
 	for (const auto& ball : balls)
 	{
 		ball->Animate(t, dt);

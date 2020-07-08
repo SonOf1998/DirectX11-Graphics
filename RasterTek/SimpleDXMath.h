@@ -95,6 +95,11 @@ inline XMFLOAT3 Cross(const XMFLOAT3& a, const XMFLOAT3& b)
 	return XMFLOAT3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }
 
+inline float Length(const XMVECTOR& v)
+{
+	return XMVectorGetX(XMVector3Length(v));
+}
+
 inline XMFLOAT3 Normalize(const XMFLOAT3& a)
 {
 	assert(a != XMFLOAT3(0, 0, 0));

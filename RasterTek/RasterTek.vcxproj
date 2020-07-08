@@ -195,6 +195,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CBufferNotFoundException.cpp" />
     <ClCompile Include="ChairSet.cpp" />
+    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -263,6 +264,7 @@
     <ClInclude Include="CBufferDataType.h" />
     <ClInclude Include="CBufferNotFoundException.h" />
     <ClInclude Include="ChairSet.h" />
+    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
