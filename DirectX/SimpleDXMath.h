@@ -100,6 +100,11 @@ inline float Length(const XMVECTOR& v)
 	return XMVectorGetX(XMVector3Length(v));
 }
 
+inline float Length(const XMFLOAT3& v)
+{
+	return Length(XMLoadFloat3(&v));
+}
+
 inline XMFLOAT3 Normalize(const XMFLOAT3& a)
 {
 	assert(a != XMFLOAT3(0, 0, 0));

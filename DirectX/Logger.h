@@ -1,9 +1,7 @@
 #pragma once
 
-#include <d3d11_4.h>
-
-#include <string>
-
+#include <DirectXMath.h>
+using namespace DirectX;
 
 class Logger
 {
@@ -18,5 +16,10 @@ public:
 	static void print(const wchar_t* str)
 	{
 		print(std::string(str, str + wcslen(str)));
-	}	
+	}
+
+	static void print(const XMFLOAT3& vec)
+	{
+		print(std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + "\n");
+	}
 };

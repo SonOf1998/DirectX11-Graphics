@@ -5,6 +5,7 @@
 #include "BallObject.h"
 #include "CollisionManager.h"
 #include "Resources.h"
+#include "SoundManager.h"
 #include "Positions.h"
 #include "WhiteBallObject.h"
 
@@ -138,8 +139,15 @@ void BallSet::Animate(float t, float dt)
 				balls[i]->SetVelocity(BALL_COLLISION_ENERGY_LOSS_FACTOR * (v1n_new + v1t_new));
 				balls[j]->SetVelocity(BALL_COLLISION_ENERGY_LOSS_FACTOR * (v2n_new + v2t_new));
 
+				SoundManager& sm = SoundManager::GetInstance();
+				XMFLOAT3 collisionEffectCenter;
+				XMStoreFloat3(&collisionEffectCenter, (balls[i]->GetPosition() + balls[j]->GetPosition()) / 2);
+				sm.PlaySound( sm.GetBallBallCollisionSoundFileName (fabsf(XMVectorGetX(v1t - v2t))),
+					collisionEffectCenter,
+					reinterpret_cast<void*>(balls[i].get()),
+					reinterpret_cast<void*>(balls[j].get())
+				);
 
-				Logger::print("intersect");
 				//balls[j]->SetVelocity(XMVectorSet(0, 0, -1, 0));
 			}
 		}

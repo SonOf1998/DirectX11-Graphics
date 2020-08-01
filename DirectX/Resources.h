@@ -38,6 +38,13 @@
 #define CHAIR_FABRIC_TEXTURE				TEXTURE_ROOTDIR "dark_blue_fabric.jpg"
 #define CHAIR_FRAME_TEXTURE					TEXTURE_ROOTDIR "light_wood.jpg"
 
+// ... SOUNDS ...
+
+#define SOUNDS_ROOTDIR						L"WaveFiles/"
+
+#define TEST_SOUND							SOUNDS_ROOTDIR "ball.wav"
+
+
 // ... SHADERS ....
 
 #define SHADER_ROOTDIR						L"Shaders/"

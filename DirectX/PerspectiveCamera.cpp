@@ -85,6 +85,24 @@ void PerspectiveCamera::SetAspectRatio(float newAspectRatio) noexcept
 	aspectRatio = newAspectRatio;
 }
 
+XMFLOAT3 PerspectiveCamera::GetPositionF() const noexcept
+{
+	XMFLOAT3 pos;
+	XMStoreFloat3(&pos, position);
+
+	return pos;
+}
+
+XMFLOAT3 PerspectiveCamera::GetForward() const noexcept
+{
+	return XMFLOAT3(-sinf(yaw)*cosf(pitch), sinf(pitch), -cosf(yaw)*cos(pitch));
+}
+
+XMFLOAT3 PerspectiveCamera::GetUp() const noexcept
+{
+	return XMFLOAT3(0, 1, 0);
+}
+
 
 XMVECTOR PerspectiveCamera::GetPosition() const noexcept
 {

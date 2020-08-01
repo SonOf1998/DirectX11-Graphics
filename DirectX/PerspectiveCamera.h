@@ -28,19 +28,22 @@ public:
 	PerspectiveCamera(const PerspectiveCamera&) = default;
 	~PerspectiveCamera() = default;
 
-	float GetYaw()				  const	  noexcept;
-	void  SetYaw(float)			  		  noexcept;
-	void  SetYawDeg(float)			  		  noexcept;
-	float GetPitch()				  const   noexcept;
-	void  SetPitch(float)			  		  noexcept;
-	void  SetPitchDeg(float)			  		  noexcept;
-	float GetRoll()				  const   noexcept;
-	void  SetRoll(float)			  		  noexcept;
-	void  SetRollDeg(float)			  		  noexcept;
-	XMVECTOR GetPosition()				  const	  noexcept;
-	void  SetPosition(const XMVECTOR&)		  noexcept;
+	float GetYaw()							const	noexcept;
+	void  SetYaw(float)			  					noexcept;
+	void  SetYawDeg(float)			  				noexcept;
+	float GetPitch()						const   noexcept;
+	void  SetPitch(float)			  				noexcept;
+	void  SetPitchDeg(float)			  			noexcept;
+	float GetRoll()							const	noexcept;
+	void  SetRoll(float)			  				noexcept;
+	void  SetRollDeg(float)			  				noexcept;
+	XMVECTOR GetPosition()					const	noexcept;
+	void  SetPosition(const XMVECTOR&)				noexcept;
 	void  SetLookAt(const XMVECTOR&);
-	void  SetAspectRatio(float newAspectRatio)	  noexcept;
+	void  SetAspectRatio(float newAspectRatio)		noexcept;
+	XMFLOAT3 GetPositionF()					const	noexcept;
+	XMFLOAT3 GetForward()					const	noexcept;
+	XMFLOAT3 GetUp()						const	noexcept;
 
 	void Animate(float t, float dt) override;
 };

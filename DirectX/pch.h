@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -63,6 +64,7 @@ using uint = unsigned int;
 inline LPCWSTR WindowTitle = L"Snooker DirectX11 - BME VIK Szakdolgozat";
 constexpr UINT MaxInstanceCount = 50;
 
+constexpr uint	SFX_CHANNELS = 16;
 constexpr UINT	MSAALevel = 4;
 constexpr bool	FULLSCREEN = false;
 constexpr bool	VSYNC_ENABLED = false;
