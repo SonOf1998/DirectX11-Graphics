@@ -38,3 +38,11 @@ enum class FILTERING
 	ANISOTROPIC_X4,
 	ANISOTROPIC_X16
 };
+
+enum class SECTION_INTERSECTION_OP
+{
+	LT_X,	// outside if ball_center x is less than cushion x 
+	GT_X,
+	LT_Z,
+	GT_Z
+};

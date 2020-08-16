@@ -108,9 +108,7 @@ void BallSet::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pi
 
 void BallSet::Animate(float t, float dt)
 {
-	// todo
-
-
+	// Collision with balls
 	for (uint i = 0; i < balls.size(); ++i)
 	{
 		for (uint j = i + 1; j < balls.size(); ++j)
@@ -124,7 +122,7 @@ void BallSet::Animate(float t, float dt)
 				XMVECTOR v1t = XMVector3Dot(balls[i]->GetVelocity(), tangent);	   // float scalars, only magnitudes
 				XMVECTOR v2n = XMVector3Dot(balls[j]->GetVelocity(), normal);	   // float scalars, only magnitudes
 				XMVECTOR v2t = XMVector3Dot(balls[j]->GetVelocity(), tangent);	   // float scalars, only magnitudes
-				
+
 				XMVECTOR v1n_new = XMVectorMultiply(v2n, normal);
 				XMVECTOR v1t_new = XMVectorMultiply(v1t, tangent);
 				XMVECTOR v2n_new = XMVectorMultiply(v1n, normal);
@@ -142,7 +140,7 @@ void BallSet::Animate(float t, float dt)
 				SoundManager& sm = SoundManager::GetInstance();
 				XMFLOAT3 collisionEffectCenter;
 				XMStoreFloat3(&collisionEffectCenter, (balls[i]->GetPosition() + balls[j]->GetPosition()) / 2);
-				sm.PlaySound( sm.GetBallBallCollisionSoundFileName (fabsf(XMVectorGetX(v1t - v2t))),
+				sm.PlaySound(sm.GetBallBallCollisionSoundFileName(fabsf(XMVectorGetX(v1t - v2t))),
 					collisionEffectCenter,
 					reinterpret_cast<void*>(balls[i].get()),
 					reinterpret_cast<void*>(balls[j].get())
@@ -153,7 +151,24 @@ void BallSet::Animate(float t, float dt)
 		}
 	}
 
+	// Ball-Wall straight //
+	for (uint i = 0; i < balls.size(); ++i)
+	{
+		XMFLOAT2 normal;
+		XMFLOAT2 dummyNormal;
+		if (CollisionManager::IntersectsWall(balls[i].get(), normal))
+		{
+			XMVECTOR normalV = XMVectorSet(normal.x, 0, normal.y, 0);
+			XMVECTOR velocity = balls[i]->GetVelocity();
 
+			do {
+				balls[i]->SetPosition(balls[i]->GetPosition() - velocity * 0.01f * dt);
+			} while (CollisionManager::IntersectsWall(balls[i].get(), dummyNormal));
+
+			XMVECTOR reflectedVelocity = XMVector3Reflect(velocity, normalV);
+			balls[i]->SetVelocity(reflectedVelocity);
+		}
+	}
 
 
 	for (const auto& ball : balls)

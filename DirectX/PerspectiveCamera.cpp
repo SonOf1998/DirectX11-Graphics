@@ -12,9 +12,11 @@ PerspectiveCamera::PerspectiveCamera(const XMVECTOR& position, const XMVECTOR& l
 	roll = 0.0f;
 }
 
-PerspectiveCamera::PerspectiveCamera(const XMVECTOR& position, float aspectRatio, float yaw, float pitch, float roll, float fovy, float zNear, float zFar) : Camera(position), aspectRatio(aspectRatio), yaw(yaw), pitch(pitch), roll(roll), fovy(fovy), zNear(zNear), zFar(zFar)
+PerspectiveCamera::PerspectiveCamera(const XMVECTOR& position, float aspectRatio, float yaw, float pitch, float roll, float fovy, float zNear, float zFar) : Camera(position), aspectRatio(aspectRatio), fovy(fovy), zNear(zNear), zFar(zFar)
 {
-
+	this->yaw = yaw;
+	this->pitch = pitch;
+	this->roll = roll;
 }
 
 float PerspectiveCamera::GetYaw() const noexcept
@@ -93,7 +95,7 @@ XMFLOAT3 PerspectiveCamera::GetPositionF() const noexcept
 	return pos;
 }
 
-XMFLOAT3 PerspectiveCamera::GetForward() const noexcept
+XMFLOAT3 PerspectiveCamera::GetForward() noexcept
 {
 	return XMFLOAT3(-sinf(yaw)*cosf(pitch), sinf(pitch), -cosf(yaw)*cos(pitch));
 }

@@ -4,17 +4,17 @@
 
 LPCWSTR SoundManager::GetBallBallCollisionSoundFileName(float velocity)
 {
-	return L"";//collisionFileNameMappings["Ball-Ball"][0].c_str();
+	return collisionFileNameMappings["Ball-Ball"][0].c_str();
 }
 
 LPCWSTR SoundManager::GetBallWallCollisionSoundFileName(float velocity)
 {
-	return LPCWSTR();
+	return collisionFileNameMappings["Ball-Wall"][0].c_str();
 }
 
 LPCWSTR SoundManager::GetBallHoleCollosionSoundFileName(float velocity)
 {
-	return LPCWSTR();
+	return collisionFileNameMappings["Ball-Hole"][0].c_str();
 }
 
 SoundManager::SoundManager()

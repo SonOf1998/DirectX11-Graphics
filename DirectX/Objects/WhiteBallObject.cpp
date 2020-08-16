@@ -1,32 +1,40 @@
 #include "pch.h"
 #include "WhiteBallObject.h"
 
+#include "PerspectiveCamera.h"
 #include "Positions.h"
+
 
 void WhiteBallObject::Animate(float t, float dt)
 {
 	//	Logger::print(std::to_string(XMVectorGetX(position)) + " , " + std::to_string(XMVectorGetZ(position)));ww
 
-	if (InputClass::IsKeyDown(VK_UP) && XMVectorGetZ(position) > -CUSHION_Z_BORDER)
+	if (InputClass::IsKeyDown(VK_UP))
 	{
-		position += XMVectorSet(0, 0, -1, 0) * dt ;
+		position += XMVectorSet(0, 0, -1, 0) * dt;
 	}
-	if (InputClass::IsKeyDown(VK_DOWN) && XMVectorGetZ(position) < CUSHION_Z_BORDER)
+	if (InputClass::IsKeyDown(VK_DOWN))
 	{
-		position -= XMVectorSet(0, 0, -1, 0) * dt ;
+		position -= XMVectorSet(0, 0, -1, 0) * dt;
 	}
-	if (InputClass::IsKeyDown(VK_RIGHT) && XMVectorGetX(position) < CUSHION_X_BORDER)
+	if (InputClass::IsKeyDown(VK_RIGHT))
 	{
-		position += XMVectorSet(1, 0, 0, 0) * dt ;
+		position += XMVectorSet(1, 0, 0, 0) * dt;
 	}
-	if (InputClass::IsKeyDown(VK_LEFT) && XMVectorGetX(position) > -CUSHION_X_BORDER)
+	if (InputClass::IsKeyDown(VK_LEFT))
 	{
-		position -= XMVectorSet(1, 0, 0, 0) * dt ;
+		position -= XMVectorSet(1, 0, 0, 0) * dt;
 	}
+
+	//Logger::print(std::to_string(XMVectorGetX(position)) + " " + std::to_string(XMVectorGetZ(position)));
 
 	if (InputClass::IsKeyDown(VK_SPACE))
 	{
-		velocity = XMVectorSet(0, 0, -3, 0);
+		XMFLOAT3 velocityF3 = PerspectiveCamera::GetForward();
+		velocityF3.y = 0.0;
+		velocity = XMVector3Normalize(XMLoadFloat3(&velocityF3));
+
+		//velocity = XMVectorSet(0, 0, -3, 0);
 	}
 
 	position += dt * velocity;
