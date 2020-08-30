@@ -44,6 +44,11 @@ void SoundPool::AddAndTryPlaying(SoundPool::SFX& sfx, PerspectiveCamera* camera,
 		}
 		else
 		{
+			if (sfx.collidingObj1Ptr == nullptr)
+			{
+				continue;
+			}
+
 			if ((channels[i].collidingObj1Ptr == sfx.collidingObj1Ptr && channels[i].collidingObj2Ptr == sfx.collidingObj2Ptr)
 				|| (channels[i].collidingObj1Ptr == sfx.collidingObj2Ptr && channels[i].collidingObj2Ptr == sfx.collidingObj1Ptr))
 			{

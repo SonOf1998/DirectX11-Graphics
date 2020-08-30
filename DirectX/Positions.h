@@ -20,9 +20,11 @@
 // 1.0 -> no energy loss on hit
 #define BALL_COLLISION_ENERGY_LOSS_FACTOR 0.9f
 
+#define HOLE_RADIUS					0.105f	// for intersections (approximately)
+
 #define BALL_RADIUS					0.09f
 #define BALL_SCALE					XMVectorSet(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS, 1)
-#define BALL_POS_Y					SNOOKER_TABLE_POS_Y + BALL_RADIUS * 1.8f
+#define BALL_POS_Y					SNOOKER_TABLE_POS_Y + BALL_RADIUS * 1.7f
 #define PINK_BALL_Z					-2.3f
 
 #define WHITE_BALL_PREFERRED_POS	XMVectorSet(0.25f, BALL_POS_Y, 3.38f, 0)

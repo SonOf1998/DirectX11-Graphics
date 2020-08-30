@@ -16,19 +16,20 @@ public:
 	std::unordered_map<std::string, std::unordered_map<int, std::wstring>> collisionFileNameMappings = { 
 		{"Ball-Ball", 
 			{
-				{0, TEST_SOUND}
+				{0, LIGHT_TOUCHING_SOUND},
+				{1, BALL_HIT_SOUND}
 			}
 		},
 	
 		{"Ball-Wall",
 			{
-				{0, TEST_SOUND}
+				{0, WALL_HIT_SOUND}
 			}
 		},
 
 		{"Ball-Hole",
 			{
-				{0, TEST_SOUND}
+				{0, HOLE_SOUND}
 			}
 		}
 	};

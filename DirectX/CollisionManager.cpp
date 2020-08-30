@@ -25,18 +25,19 @@ struct Section
 
 		  cush 1
 	   -----------
-
+    h1			   h6
 c	|				| c
 u	|				| u
 s	|				| s
 h	|				| h
 2	|				| 6
-
+    h2			   h5
 c	|				| c
 u	|				| u
 s	|				| s
 h	|				| h
 3	|				| 5
+    h3             h4
 	   -----------
 	     cush 4
 
@@ -87,6 +88,12 @@ h	|				| h
 	}
 };
 
+struct Curvature
+{
+	XMFLOAT2 center;
+	float radius;
+};
+
 Section sections[6] = {
 	// BALL_RADIUS implicitly added to the measurements of the section edges //
 	Section{XMFLOAT2(-2.4841f, -5.3436f), XMFLOAT2(2.4841f, -5.3436f), XMFLOAT2(0, 1), SECTION_INTERSECTION_OP::LT_Z},
@@ -97,6 +104,20 @@ Section sections[6] = {
 	Section{XMFLOAT2(2.6289f, 0.24776f), XMFLOAT2(2.6289f, 5.2f), XMFLOAT2(-1,0), SECTION_INTERSECTION_OP::GT_X},
 };
 
+Curvature curvature[12] = {
+	Curvature {XMFLOAT2(-2.8825f, -0.24776f), 2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(-2.8825f, 0.24776f),  2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(2.8825f, -0.24776f),  2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(2.8825f, 0.24776f),   2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(2.5f, 5.616f),   2.6f * BALL_RADIUS},
+	Curvature {XMFLOAT2(2.5f, -5.616f),  2.6f * BALL_RADIUS},
+	Curvature {XMFLOAT2(-2.5f, 5.616f),  2.6f * BALL_RADIUS},
+	Curvature {XMFLOAT2(-2.5f, -5.616f), 2.6f * BALL_RADIUS},
+	Curvature {XMFLOAT2(2.9f, 5.232f),   2.6f * BALL_RADIUS},
+	Curvature {XMFLOAT2(-2.9f, 5.232f),  2.6f * BALL_RADIUS},
+	Curvature {XMFLOAT2(2.9f, -5.232f),  2.6f * BALL_RADIUS},
+	Curvature {XMFLOAT2(-2.9f, -5.232f), 2.6f * BALL_RADIUS}
+};
 
 
 bool CollisionManager::IntersectsWall(BallObject* ball, XMFLOAT2& destNormal)
@@ -109,6 +130,46 @@ bool CollisionManager::IntersectsWall(BallObject* ball, XMFLOAT2& destNormal)
 		if (sections[i].Intersects(pos2D))
 		{
 			destNormal = sections[i].normal;
+			return true;	
+		}
+	}
+
+	for (uint i = 0; i < 12; ++i)
+	{
+		XMFLOAT2 cc = curvature[i].center; // curve center
+		float len = sqrtf((cc.x - pos2D.x) * (cc.x - pos2D.x) + (cc.y - pos2D.y) * (cc.y - pos2D.y));
+		if (len < curvature[i].radius)
+		{
+			destNormal = XMFLOAT2((pos2D.x - cc.x) / len, (pos2D.y - cc.y) / len);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+struct Hole
+{
+	XMVECTOR center;
+	// radius is in positions.h //
+};
+
+Hole holes[6] = {
+	Hole{XMVectorSet(-2.7757f, -5.5f, 0, 0)},
+	Hole{XMVectorSet(-2.8565f, 0, 0, 0)},
+	Hole{XMVectorSet(-2.7757f, 5.5f, 0, 0)},
+	Hole{XMVectorSet(2.7757f, 5.5f, 0, 0)},
+	Hole{XMVectorSet(2.8565f, 0, 0, 0)},
+	Hole{XMVectorSet(2.7757f , -5.5f, 0, 0)},
+};
+
+bool CollisionManager::IntersectsHole(BallObject* ball)
+{
+	XMFLOAT2 ballPos2D = XMFLOAT2(XMVectorGetX(ball->GetPosition()), XMVectorGetZ(ball->GetPosition()));
+	for (uint i = 0; i < 6; ++i)
+	{
+		if (XMVectorGetX(XMVector2Length(holes[i].center - XMLoadFloat2(&ballPos2D))) < HOLE_RADIUS)
+		{
 			return true;
 		}
 	}

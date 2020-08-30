@@ -43,6 +43,10 @@
 #define SOUNDS_ROOTDIR						L"WaveFiles/"
 
 #define TEST_SOUND							SOUNDS_ROOTDIR "ball.wav"
+#define WALL_HIT_SOUND						SOUNDS_ROOTDIR "wall_hit.wav"
+#define HOLE_SOUND							SOUNDS_ROOTDIR "hole.wav"
+#define BALL_HIT_SOUND						SOUNDS_ROOTDIR "ball_hit.wav"
+#define LIGHT_TOUCHING_SOUND				SOUNDS_ROOTDIR "light_touching.wav"
 
 
 // ... SHADERS ....

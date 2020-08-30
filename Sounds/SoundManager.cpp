@@ -4,7 +4,10 @@
 
 LPCWSTR SoundManager::GetBallBallCollisionSoundFileName(float velocity)
 {
-	return collisionFileNameMappings["Ball-Ball"][0].c_str();
+	if (velocity < 0.2f)
+		return collisionFileNameMappings["Ball-Ball"][0].c_str();
+	else 
+		return collisionFileNameMappings["Ball-Ball"][1].c_str();
 }
 
 LPCWSTR SoundManager::GetBallWallCollisionSoundFileName(float velocity)

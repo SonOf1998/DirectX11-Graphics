@@ -27,42 +27,49 @@ BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 
 	// WHITE BALL
 	std::unique_ptr<BallObject> whiteBall = std::make_unique<WhiteBallObject>(device, deviceContext, WHITE_BALL_PREFERRED_POS);
+	whiteBall->SetPoint(-4);
 	ballMesh.SetTexture(whiteBallTexture);
 	whiteBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(whiteBall));
 
 	// YELLOW BALL
 	std::unique_ptr<BallObject> yellowBall = std::make_unique<BallObject>(device, deviceContext, YELLOW_BALL_POS);
+	yellowBall->SetPoint(2);
 	ballMesh.SetTexture(yellowBallTexture);
 	yellowBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(yellowBall));
 	
 	// GREEN BALL
 	std::unique_ptr<BallObject> greenBall = std::make_unique<BallObject>(device, deviceContext, GREEN_BALL_POS);
+	greenBall->SetPoint(3);
 	ballMesh.SetTexture(greenBallTexture);
 	greenBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(greenBall));
 	
 	// BROWN BALL
 	std::unique_ptr<BallObject> brownBall = std::make_unique<BallObject>(device, deviceContext, BROWN_BALL_POS);
+	brownBall->SetPoint(4);
 	ballMesh.SetTexture(brownBallTexture);
 	brownBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(brownBall));
 	
 	// BLUE BALL
 	std::unique_ptr<BallObject> blueBall = std::make_unique<BallObject>(device, deviceContext, BLUE_BALL_POS);
+	blueBall->SetPoint(5);
 	ballMesh.SetTexture(blueBallTexture);
 	blueBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(blueBall));
 	
 	// PINK BALL
 	std::unique_ptr<BallObject> pinkBall = std::make_unique<BallObject>(device, deviceContext, PINK_BALL_POS);
+	pinkBall->SetPoint(6);
 	ballMesh.SetTexture(pinkBallTexture);
 	pinkBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(pinkBall));
 	
 	// BLACK BALL
 	std::unique_ptr<BallObject> blackBall = std::make_unique<BallObject>(device, deviceContext, BLACK_BALL_POS);
+	blackBall->SetPoint(7);
 	ballMesh.SetTexture(blackBallTexture);
 	blackBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(blackBall));
@@ -81,6 +88,7 @@ BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 			x0 = translate.x;
 	
 			std::unique_ptr<BallObject> redBall = std::make_unique<BallObject>(device, deviceContext, XMLoadFloat4(&translate));
+			redBall->SetPoint(1);
 			ballMesh.SetTexture(redBallTexture);
 			redBall->CopyAndAddMesh(ballMesh);
 			balls.push_back(std::move(redBall));
@@ -145,13 +153,11 @@ void BallSet::Animate(float t, float dt)
 					reinterpret_cast<void*>(balls[i].get()),
 					reinterpret_cast<void*>(balls[j].get())
 				);
-
-				//balls[j]->SetVelocity(XMVectorSet(0, 0, -1, 0));
 			}
 		}
 	}
 
-	// Ball-Wall straight //
+	// Ball-Wall //
 	for (uint i = 0; i < balls.size(); ++i)
 	{
 		XMFLOAT2 normal;
@@ -166,7 +172,34 @@ void BallSet::Animate(float t, float dt)
 			} while (CollisionManager::IntersectsWall(balls[i].get(), dummyNormal));
 
 			XMVECTOR reflectedVelocity = XMVector3Reflect(velocity, normalV);
-			balls[i]->SetVelocity(reflectedVelocity);
+			balls[i]->SetVelocity(reflectedVelocity * BALL_COLLISION_ENERGY_LOSS_FACTOR);
+			SoundManager& sm = SoundManager::GetInstance();
+			XMFLOAT3 collisionCenter;
+			XMStoreFloat3(&collisionCenter, balls[i]->GetPosition() + XMVector3Normalize(velocity) * BALL_RADIUS);
+			sm.PlaySound(sm.GetBallWallCollisionSoundFileName(XMVectorGetX(XMVector3Length(balls[i]->GetVelocity()))),
+				collisionCenter,
+				nullptr,
+				nullptr
+			);
+		}
+	}
+
+	// Ball-Hole //
+	for (uint i = 0; i < balls.size(); ++i)
+	{
+		if (CollisionManager::IntersectsHole(balls[i].get()))
+		{
+			// TODO point calculations
+			// UI update etc.
+
+			SoundManager& sm = SoundManager::GetInstance();
+			XMFLOAT3 collisionCenter;
+			XMStoreFloat3(&collisionCenter, balls[i]->GetPosition());
+			sm.PlaySound(sm.GetBallHoleCollosionSoundFileName(XMVectorGetX(XMVector3Length(balls[i]->GetVelocity()))),
+				collisionCenter,
+				reinterpret_cast<void*>(balls[i].get()),
+				reinterpret_cast<void*>(balls[i].get())
+			);
 		}
 	}
 

@@ -87,9 +87,14 @@ void BallObject::Animate(float t, float dt)
 {
 	position += dt * velocity;
 	velocity *= expf(-dt * SNOOKER_TABLE_FRICTION);
-	if (Length(velocity) < 0.03f)
+
+	float velocityMagnitude = Length(velocity);
+	if (velocityMagnitude < 0.12f)
 	{
-		velocity = XMVectorSet(0, 0, 0, 0);
+		if (velocityMagnitude < 0.02f)
+			velocity = XMVectorSet(0, 0, 0, 0);
+		else
+			velocity *= expf(-dt * (0.24f / velocityMagnitude) * SNOOKER_TABLE_FRICTION);
 	}
 
 	modelMatrix = XMMatrixScalingFromVector(scale) * XMMatrixRotationAxis(XMVectorSet(1, 0, -1, 0), -XM_PI / 2 * t) * XMMatrixTranslationFromVector(position);

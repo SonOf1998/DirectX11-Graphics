@@ -26,7 +26,7 @@ void WhiteBallObject::Animate(float t, float dt)
 		position -= XMVectorSet(1, 0, 0, 0) * dt;
 	}
 
-	//Logger::print(std::to_string(XMVectorGetX(position)) + " " + std::to_string(XMVectorGetZ(position)));
+	Logger::print(std::to_string(XMVectorGetX(position)) + " " + std::to_string(XMVectorGetZ(position)));
 
 	if (InputClass::IsKeyDown(VK_SPACE))
 	{
@@ -37,12 +37,5 @@ void WhiteBallObject::Animate(float t, float dt)
 		//velocity = XMVectorSet(0, 0, -3, 0);
 	}
 
-	position += dt * velocity;
-	velocity *= expf(-dt * SNOOKER_TABLE_FRICTION);
-	if (Length(velocity) < 0.03f)
-	{
-		velocity = XMVectorSet(0, 0, 0, 0);
-	}
-
-	modelMatrix = XMMatrixScalingFromVector(scale) * rotation * XMMatrixTranslationFromVector(position);
+	BallObject::Animate(t, dt);
 }
