@@ -107,7 +107,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc141-mtd.lib;Sounds.lib</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc141-mtd.lib;Sounds.lib;SnookerLogic.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);$(ProjectDir)lib\</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
@@ -124,7 +124,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Objects;$(SolutionDir)Sounds;$(ProjectDir)include;$(ProjectDir);$(ProjectDir)ImGui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Objects;$(SolutionDir)Sounds;$(ProjectDir)include;$(ProjectDir);$(SolutionDir)SnookerLogic;$(ProjectDir)ImGui</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
@@ -133,7 +133,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc141-mtd.lib;Sounds.lib</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc141-mtd.lib;Sounds.lib;SnookerLogic.lib</AdditionalDependencies>
       <TargetMachine>MachineX64</TargetMachine>
       <AdditionalLibraryDirectories>$(OutDir);$(ProjectDir)lib\</AdditionalLibraryDirectories>
     </Link>
@@ -165,7 +165,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc141-mtd.lib;Sounds.lib</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc141-mtd.lib;Sounds.lib;SnookerLogic.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);$(ProjectDir)lib\</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
@@ -184,7 +184,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Objects;$(SolutionDir)Sounds;$(ProjectDir)include;$(ProjectDir);$(ProjectDir)ImGui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Objects;$(SolutionDir)Sounds;$(ProjectDir)include;$(ProjectDir);$(SolutionDir)SnookerLogic;$(ProjectDir)ImGui</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
@@ -195,7 +195,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc141-mtd.lib;Sounds.lib</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc141-mtd.lib;Sounds.lib;SnookerLogic.lib</AdditionalDependencies>
       <TargetMachine>MachineX64</TargetMachine>
       <AdditionalLibraryDirectories>$(OutDir);$(ProjectDir)lib\</AdditionalLibraryDirectories>
     </Link>

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Graphics.h"
 
+// from DirectX
 #include "ArmchairSet.h"
 #include "HResultException.h"
 #include "BallSet.h"
@@ -23,11 +24,16 @@
 #include "RenderTargetTexture.h"
 #include "FullScreenQuadObject.h"
 #include "FullScreenQuadGeometry.h"
-#include "SoundManager.h"
 #include "SnookerTableObject.h"
 #include "Renderable.h"
 #include "SystemClass.h"
 #include "Resources.h"
+
+// from SnookerLogic
+#include "RoundManager.h"
+
+// from Sounds
+#include "SoundManager.h"
 
 Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth(screenWidth), screenHeight(screenHeight), hwnd(hwnd)
 {
@@ -48,6 +54,7 @@ void Graphics::RenderInitalization()
 {
 	camera = std::make_unique<PerspectiveCamera>(XMVectorSet(0, 2, 6, 1), XMVectorSet(0, 0, 3, 1), static_cast<float>(screenWidth) / screenHeight);
 	SoundManager::GetInstance().InitializeCamera(camera.get());	// for proper 3D game sounds
+	RoundManager::Initialize();	// init players
 
 	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get());
 	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
@@ -153,6 +160,8 @@ Graphics::~Graphics()
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+
+	RoundManager::Deallocate();
 }
 
 void Graphics::CreateSwapChain(IDXGIFactory1* factory)

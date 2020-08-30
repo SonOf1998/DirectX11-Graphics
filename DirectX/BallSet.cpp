@@ -1,13 +1,19 @@
 #include "pch.h"
 #include "BallSet.h"
 
+// from DirectX
 #include "AssimpModel.h"
 #include "BallObject.h"
 #include "CollisionManager.h"
 #include "Resources.h"
-#include "SoundManager.h"
 #include "Positions.h"
 #include "WhiteBallObject.h"
+
+// from SnookerLogic
+#include "RoundManager.h"
+
+// from Sounds
+#include "SoundManager.h"
 
 BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
@@ -189,6 +195,10 @@ void BallSet::Animate(float t, float dt)
 	{
 		if (CollisionManager::IntersectsHole(balls[i].get()))
 		{
+			RoundManager::AddNewPottedBall(std::move(balls[i]));
+			balls.erase(balls.begin() + i);
+
+
 			// TODO point calculations
 			// UI update etc.
 
@@ -201,6 +211,18 @@ void BallSet::Animate(float t, float dt)
 				reinterpret_cast<void*>(balls[i].get())
 			);
 		}
+	}
+
+	bool stillMoving = false;
+	for (const auto& ball : balls)
+	{
+		if (Length(ball->GetVelocity()) > 0.0f)
+			stillMoving = true;
+	}
+
+	if (!stillMoving)
+	{
+
 	}
 
 
