@@ -20,10 +20,10 @@ CueObject::CueObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, X
 	std::shared_ptr<Texture> lightwoodTexture = std::make_shared<Texture>(device, deviceContext, CUE_LIGHTWOOD_TEXTURE, 0);
 	std::shared_ptr<Texture> darkwoodTexture = std::make_shared<Texture>(device, deviceContext, CUE_DARKWOOD_TEXTURE, 0);
 
-	std::shared_ptr<Geometry> leatherGeometry = std::move(geometries[0]);
-	std::shared_ptr<Geometry> flangeGeometry = std::move(geometries[1]);
-	std::shared_ptr<Geometry> lightwoodGeometry = std::move(geometries[2]);
-	std::shared_ptr<Geometry> darkwoodGeometry = std::move(geometries[3]);
+	std::shared_ptr<Geometry> leatherGeometry = std::move(geometries[3]);
+	std::shared_ptr<Geometry> flangeGeometry = std::move(geometries[2]);
+	std::shared_ptr<Geometry> lightwoodGeometry = std::move(geometries[1]);
+	std::shared_ptr<Geometry> darkwoodGeometry = std::move(geometries[0]);
 
 	std::shared_ptr<Material> dullMaterial = std::make_shared<Material>(XMFLOAT3(0.3f, 0.3f, 0.3f), XMFLOAT3(0, 0, 0), 1.0f);
 

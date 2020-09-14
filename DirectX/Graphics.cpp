@@ -59,7 +59,7 @@ void Graphics::RenderInitalization()
 
 	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get());
 	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
-	std::unique_ptr<GameObject> cue = std::make_unique<CueObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(1, 1, 1, 1), XMVectorSet(1, 0, 0, 0), 0);
+	std::unique_ptr<GameObject> cue = std::make_unique<CueObject>(dev.Get(), devcon.Get(), XMVectorSet(0, SNOOKER_TABLE_POS_Y + BALL_RADIUS * 2, 7.5f, 0), XMVectorSet(0.7f, 0.7f, 0.7f, 1), XMVectorSet(1, 0, 0, 0), 0);
 	armchairSet = std::make_unique<ArmchairSet>(dev.Get(), devcon.Get());
 	chairSet = std::make_unique<ChairSet>(dev.Get(), devcon.Get());
 

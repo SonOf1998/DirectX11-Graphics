@@ -39,10 +39,10 @@
 #define CHAIR_FABRIC_TEXTURE				TEXTURE_ROOTDIR "dark_blue_fabric.jpg"
 #define CHAIR_FRAME_TEXTURE					TEXTURE_ROOTDIR "light_wood.jpg"
 
-#define CUE_LEATHER_TEXTURE					TEXTURE_ROOTDIR "dark_blue_fabric.jpg"
-#define CUE_FLANGE_TEXTURE					TEXTURE_ROOTDIR "yellowball.png"
-#define CUE_LIGHTWOOD_TEXTURE				TEXTURE_ROOTDIR "light_wood.jpg"
-#define CUE_DARKWOOD_TEXTURE				TEXTURE_ROOTDIR "solid_wood.jpg"
+#define CUE_LEATHER_TEXTURE					TEXTURE_ROOTDIR "cue_leather.jpg"
+#define CUE_FLANGE_TEXTURE					TEXTURE_ROOTDIR "cue_flange.jpg"
+#define CUE_LIGHTWOOD_TEXTURE				TEXTURE_ROOTDIR "cue_upper_panel.jpg"
+#define CUE_DARKWOOD_TEXTURE				TEXTURE_ROOTDIR "cue_lower_panel.jpg"
 
 // ... SOUNDS ...
 
