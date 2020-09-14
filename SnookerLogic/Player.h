@@ -2,16 +2,16 @@
 class Player
 {
 	std::string name;
-	short point;
-	short wonFrames;
+	int point;
+	int wonFrames;
 
 public:
 	Player(const std::string& name);
 	~Player();
 
-	short GetPoints() const noexcept { return point; }
-	short GetWonFrame() const noexcept { return wonFrames; }
-	void AddPoints(short val) { point += val; }
+	int GetPoints() const noexcept { return point; }
+	int GetWonFrame() const noexcept { return wonFrames; }
+	void AddPoints(int val) { point += val; }
 	void IncrementWonFrames() { ++wonFrames; }
 };
 

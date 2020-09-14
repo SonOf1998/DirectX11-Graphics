@@ -9,7 +9,10 @@
 #include "Mesh.h"
 #include "Light.h"
 
-BallObject::BallObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, XMVECTOR position, XMVECTOR scale, XMVECTOR rotationAxis, float rotationAngle) : GameObject(device, deviceContext, position, scale, rotationAxis, rotationAngle), velocity(XMVectorSet(0,0,0,0))
+BallObject::BallObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, XMVECTOR position, XMVECTOR scale, XMVECTOR rotationAxis, float rotationAngle) : 
+	GameObject(device, deviceContext, position, scale, rotationAxis, rotationAngle), 
+	velocity(XMVectorSet(0,0,0,0)),
+	preferredPosition(position)			// in case of reds it has no meaning
 {
 	
 }
@@ -22,6 +25,11 @@ void BallObject::SetVelocity(const XMVECTOR& velocity)
 XMVECTOR BallObject::GetVelocity() const
 {
 	return velocity;
+}
+
+XMVECTOR BallObject::GetPreferredPosition() const
+{
+	return preferredPosition;
 }
 
 void BallObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /* nullptr */, Light* light/* nullptr */)

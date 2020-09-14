@@ -11,6 +11,21 @@ inline constexpr float toRad(float angle)
 	return (angle / 180) * XM_PI;
 }
 
+template<typename T>
+T&& vmax(T&& val)
+{
+	return std::forward<T>(val);
+}
+
+template<typename T0, typename T1, typename... Ts>
+auto vmax(T0&& val1, T1&& val2, Ts&&... vs)
+{
+	return (val1 > val2) ?
+		vmax(val1, std::forward<Ts>(vs)...) :
+		vmax(val2, std::forward<Ts>(vs)...);
+}
+
+
 inline XMFLOAT3 operator+(const XMFLOAT3& a, const XMFLOAT3& b)
 {
 	XMVECTOR aVec = XMLoadFloat3(&a);

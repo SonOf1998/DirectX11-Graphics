@@ -25,6 +25,7 @@
 #include "FullScreenQuadObject.h"
 #include "FullScreenQuadGeometry.h"
 #include "SnookerTableObject.h"
+#include "CueObject.h"
 #include "Renderable.h"
 #include "SystemClass.h"
 #include "Resources.h"
@@ -54,10 +55,11 @@ void Graphics::RenderInitalization()
 {
 	camera = std::make_unique<PerspectiveCamera>(XMVectorSet(0, 2, 6, 1), XMVectorSet(0, 0, 3, 1), static_cast<float>(screenWidth) / screenHeight);
 	SoundManager::GetInstance().InitializeCamera(camera.get());	// for proper 3D game sounds
-	RoundManager::Initialize();	// init players
+	//RoundManager::Initialize();	// init players
 
 	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get());
 	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
+	std::unique_ptr<GameObject> cue = std::make_unique<CueObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(1, 1, 1, 1), XMVectorSet(1, 0, 0, 0), 0);
 	armchairSet = std::make_unique<ArmchairSet>(dev.Get(), devcon.Get());
 	chairSet = std::make_unique<ChairSet>(dev.Get(), devcon.Get());
 
@@ -79,6 +81,7 @@ void Graphics::RenderInitalization()
 
 	gameObjects.push_back(std::move(plane));
 	gameObjects.push_back(std::move(snookerTable));
+	gameObjects.push_back(std::move(cue));
 
 	dirLight = std::make_unique<DirectionalLight>(XMFLOAT3(12, 16, 6), XMFLOAT3(1, 1, 1));
 	shadowMap.reset(new RenderTargetTexture(dev.Get(), screenWidth, screenHeight, DXGI_FORMAT_R32_FLOAT));
@@ -160,8 +163,6 @@ Graphics::~Graphics()
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
-
-	RoundManager::Deallocate();
 }
 
 void Graphics::CreateSwapChain(IDXGIFactory1* factory)

@@ -11,6 +11,7 @@
 #define LOW_QUALITY_SPHERE_MODEL			MODEL_ROOTDIR "low_quality_sphere.fbx"
 #define ARMCHAIR_MODEL						MODEL_ROOTDIR "armchair.fbx"
 #define CHAIR_MODEL							MODEL_ROOTDIR "chair.fbx"
+#define CUE_MODEL							MODEL_ROOTDIR "cue.fbx"
 
 // ... TEXTURES ...
 
@@ -37,6 +38,11 @@
 
 #define CHAIR_FABRIC_TEXTURE				TEXTURE_ROOTDIR "dark_blue_fabric.jpg"
 #define CHAIR_FRAME_TEXTURE					TEXTURE_ROOTDIR "light_wood.jpg"
+
+#define CUE_LEATHER_TEXTURE					TEXTURE_ROOTDIR "dark_blue_fabric.jpg"
+#define CUE_FLANGE_TEXTURE					TEXTURE_ROOTDIR "yellowball.png"
+#define CUE_LIGHTWOOD_TEXTURE				TEXTURE_ROOTDIR "light_wood.jpg"
+#define CUE_DARKWOOD_TEXTURE				TEXTURE_ROOTDIR "solid_wood.jpg"
 
 // ... SOUNDS ...
 

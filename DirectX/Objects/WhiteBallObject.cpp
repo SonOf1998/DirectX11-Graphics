@@ -30,7 +30,7 @@ void WhiteBallObject::Animate(float t, float dt)
 
 	if (InputClass::IsKeyDown(VK_SPACE))
 	{
-		XMFLOAT3 velocityF3 = PerspectiveCamera::GetForward();
+		XMFLOAT3 velocityF3 = camera->GetForward();
 		velocityF3.y = 0.0;
 		velocity = XMVector3Normalize(XMLoadFloat3(&velocityF3));
 

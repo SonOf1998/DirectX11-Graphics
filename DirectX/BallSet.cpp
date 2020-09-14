@@ -122,6 +122,9 @@ void BallSet::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pi
 
 void BallSet::Animate(float t, float dt)
 {
+	RoundManager& rm = RoundManager::GetInstance();
+	bool hadHit = false;
+
 	// Collision with balls
 	for (uint i = 0; i < balls.size(); ++i)
 	{
@@ -129,6 +132,9 @@ void BallSet::Animate(float t, float dt)
 		{
 			if (CollisionManager::Intersects(balls[i].get(), balls[j].get()))
 			{
+				// detecting failed snooker attempts in RoundManager::ManagePoint  
+				hadHit = true;
+
 				XMVECTOR normal = XMVector3Normalize(balls[i]->GetPosition() - balls[j]->GetPosition());
 				XMVECTOR tangent = XMVectorSet(-XMVectorGetZ(normal), 0, XMVectorGetX(normal), 0);
 
@@ -195,12 +201,8 @@ void BallSet::Animate(float t, float dt)
 	{
 		if (CollisionManager::IntersectsHole(balls[i].get()))
 		{
-			RoundManager::AddNewPottedBall(std::move(balls[i]));
+			rm.AddNewPottedBall(std::move(balls[i]));
 			balls.erase(balls.begin() + i);
-
-
-			// TODO point calculations
-			// UI update etc.
 
 			SoundManager& sm = SoundManager::GetInstance();
 			XMFLOAT3 collisionCenter;
@@ -220,9 +222,9 @@ void BallSet::Animate(float t, float dt)
 			stillMoving = true;
 	}
 
-	if (!stillMoving)
+	if (!stillMoving) // every ball is either in a static state or potted
 	{
-
+		rm.ManagePoints(hadHit);
 	}
 
 

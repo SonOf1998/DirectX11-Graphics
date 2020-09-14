@@ -6,7 +6,7 @@
 // from SnookerLogic
 #include "Player.h"
 
-enum class TARGET
+enum TARGET
 {
 	RED,
 	YELLOW,
@@ -27,22 +27,26 @@ enum class TABLE_STATE
 
 class RoundManager
 {
-	inline static Player* p1;
-	inline static Player* p2;
+	std::unique_ptr<Player> p1;
+	std::unique_ptr<Player> p2;
+		
+	Player* currentlyPlayingPlayer;
+	TARGET target;	// target ball
 
-	inline static Player* currentlyPlayingPlayer;
+	bool roundHandled = true;
+	std::vector<std::unique_ptr<BallObject>> ballsPottedCurrRound;
 
-	inline static std::vector<std::unique_ptr<BallObject>> ballsPottedCurrRound;
+	RoundManager();
 
 public:
-	RoundManager() = delete;
-	~RoundManager() = delete;
+	~RoundManager();
 
-	static void Initialize();
-	static void Deallocate();
+	static RoundManager& GetInstance();
 
-	static void AddNewPottedBall(std::unique_ptr<BallObject>&& ball);
-	static void ManagePoints();
-	static std::vector<std::unique_ptr<BallObject>> GetBallsToPutBack();
+	void SetRoundHandled(bool roundHandled);
+
+	void AddNewPottedBall(std::unique_ptr<BallObject>&& ball);
+	void ManagePoints(bool hadHits);
+	std::vector<std::unique_ptr<BallObject>> GetBallsToPutBack(TABLE_STATE ts);
 };
 

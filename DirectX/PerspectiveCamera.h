@@ -9,9 +9,9 @@ class PerspectiveCamera : public Camera
 	XMVECTOR right = XMVectorSet(1, 0, 0, 0);
 	XMVECTOR ahead = XMVectorSet(0, 0, -1, 0);
 
-	inline static float yaw;
-	inline static float pitch;
-	inline static float roll;
+	float yaw;
+	float pitch;
+	float roll;
 
 	float fovy;
 	float aspectRatio;
@@ -42,7 +42,7 @@ public:
 	void  SetLookAt(const XMVECTOR&);
 	void  SetAspectRatio(float newAspectRatio)		noexcept;
 	XMFLOAT3 GetPositionF()					const	noexcept;
-	static XMFLOAT3 GetForward()					noexcept;
+	XMFLOAT3 GetForward()					noexcept;
 	XMFLOAT3 GetUp()						const	noexcept;
 
 	void Animate(float t, float dt) override;
