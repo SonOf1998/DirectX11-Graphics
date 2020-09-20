@@ -20,7 +20,7 @@ class SystemClass
 
 	std::unique_ptr<Graphics> graphics;
 
-	void OpenWindow();
+	HWND OpenWindow();
 
 public:
 	SystemClass(UINT, UINT);

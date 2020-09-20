@@ -9,25 +9,21 @@
 
 SystemClass::SystemClass(UINT width, UINT height)
 {
-	if (FULLSCREEN)
-	{
-		screenWidth = width;
-		screenHeight = height;
-		windowWidth = 1280;
-		windowHeight = 720;
-	}
-	else
-	{
-		GetScreenResolution(screenWidth, screenHeight);
-		windowWidth = width;
-		windowHeight = height;
-	}
+	GetScreenResolution(screenWidth, screenHeight);
+	windowWidth = width;
+	windowHeight = height;
+	
 
 
-	OpenWindow();
+	HWND hwnd = OpenWindow();
 	try 
 	{
-		graphics = std::make_unique<Graphics>(screenWidth, screenHeight, hwnd);	
+		RECT rect;
+		GetClientRect(hwnd, &rect);
+		int clWidth = rect.right - rect.left;
+		int clHeight = rect.bottom - rect.top;
+
+		graphics = std::make_unique<Graphics>(clWidth, clHeight, hwnd);
 	}
 	catch (const HResultException& e)
 	{
@@ -105,7 +101,7 @@ void SystemClass::Run()
 
 
 
-void SystemClass::OpenWindow()
+HWND SystemClass::OpenWindow()
 {
 	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
@@ -174,6 +170,8 @@ void SystemClass::OpenWindow()
 	ShowWindow(hwnd, SW_SHOW);
 	SetForegroundWindow(hwnd);
 	SetFocus(hwnd);
+
+	return hwnd;
 }
 
 
@@ -231,7 +229,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 	if (umsg == WM_SIZE)
 	{
 		RECT rect;
-		if (GetWindowRect(hwnd, &rect) && graphics != nullptr)
+		if (GetClientRect(hwnd, &rect) && graphics != nullptr)
 		{
 			int newWidth = rect.right - rect.left;
 			int newHeight = rect.bottom - rect.top;
@@ -241,7 +239,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			*  We skip every WM_SIZE event which would result
 			*  in a full screen window.
 			*/
-			if (newWidth < screenWidth && newHeight < screenHeight)
+			if (newWidth < screenWidth && newHeight < screenHeight && newWidth * newHeight > 0)
 			{
 				windowWidth = newWidth;
 				windowHeight = newHeight;

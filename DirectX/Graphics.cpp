@@ -138,14 +138,90 @@ void Graphics::RenderFrame(float t, float dt)
 	ballSet->Render(devcon.Get(), pipelineLoDTess.get(), camera.get());
 
 
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
 
-	//ImGui_ImplDX11_NewFrame();
-	//ImGui_ImplWin32_NewFrame();
-	//ImGui::NewFrame();	
-	//ImGui::Begin("ASD"/*, nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar*/);
-	//ImGui::End();
-	//ImGui::Render();
-	//ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+	ImGui::NewFrame();	
+	ImGui::SetNextWindowPos(ImVec2(1000, 300));
+	ImGui::SetNextWindowSize(ImVec2(100, 120));
+	ImGui::Begin("Cue ball");
+	ImGui::Checkbox("Aim", &(WhiteBallObject::isInAimMode));
+	ImGui::Checkbox("Fine aim", &(WhiteBallObject::isInFineAimMode));
+	ImGui::Checkbox("Spin", &(WhiteBallObject::isInSpinMode));
+	ImGui::Checkbox("Shoot", &(WhiteBallObject::isInShootMode));
+	WhiteBallObject::SwitchModes();
+	ImGui::End();
+
+	ImGui::SetNextWindowPos(ImVec2(1000, 430));
+	ImGui::SetNextWindowSize(ImVec2(120, 120));
+	ImGui::Begin("Control");
+	if (ImGui::Button("Walk around", ImVec2(100, 20))) {
+
+	}
+	if (ImGui::Button("Nominate", ImVec2(100, 20))) {
+
+	}
+	ImGui::NewLine();
+	if (ImGui::Button("Concede frame", ImVec2(100, 20)))
+	{
+
+	}
+	ImGui::End();
+
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(ImVec2(70, 20));
+	ImGui::SetNextWindowBgAlpha(0.2f);
+	ImGui::Begin("Target", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+	ImGui::Text("Target:");
+	ImGui::End();
+
+
+	ImGui::SetNextWindowPos(ImVec2(100, 200));
+	ImGui::SetNextWindowSize(ImVec2(500, 120));
+	ImGui::Begin("Scoreboard");
+	ImGui::Columns(7);
+	ImGui::SetColumnWidth(0, 70);
+	ImGui::SetColumnWidth(1, 60);
+	ImGui::SetColumnWidth(2, 115);
+	ImGui::SetColumnWidth(3, 5);
+	ImGui::SetColumnWidth(4, 70);
+	ImGui::SetColumnWidth(5, 60);
+	ImGui::Text("Player1");
+	ImGui::NextColumn();
+	ImGui::Text("Break");
+	ImGui::NewLine();
+	ImGui::Text("Points");
+	ImGui::NewLine();
+	ImGui::Text("Frames");
+	ImGui::NextColumn();
+	ImGui::Text("0");
+	ImGui::NewLine();
+	ImGui::Text("0");
+	ImGui::NewLine();
+	ImGui::Text("0");
+	ImGui::NextColumn();
+	ImGui::NextColumn();
+	ImGui::Text("Player2");
+	ImGui::NextColumn();
+	ImGui::Text("Break");
+	ImGui::NewLine();
+	ImGui::Text("Points");
+	ImGui::NewLine();
+	ImGui::Text("Frames");
+	ImGui::NextColumn();
+	ImGui::Text("0");
+	ImGui::NewLine();
+	ImGui::Text("0");
+	ImGui::NewLine();
+	ImGui::Text("0");
+	ImGui::End();
+
+
+
+	ImGui::EndFrame();
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	if (VSYNC_ENABLED)
 	{
@@ -342,12 +418,14 @@ void Graphics::InitializeImGui()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(0, 0);
+	io.DisplaySize = ImVec2(screenWidth, screenHeight);
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui_ImplDX11_Init(dev.Get(), devcon.Get());
 	ImGui::StyleColorsClassic();
 	
 
+	ImGuiStyle & style = ImGui::GetStyle();
+	style.Colors[ImGuiCol_CheckMark] = ImVec4(0.184f, 0.607f, 0.193f, 1.00f);
 }
 
 void Graphics::SetRenderTargetToBackBuffer()
@@ -418,6 +496,8 @@ void Graphics::SwitchMode(bool toFullscreen)
 void Graphics::Resize(UINT newWidth, UINT newHeight)
 {
 	HRESULT result;
+
+	float magnificationRatio = std::min(static_cast<float>(newWidth) / 1280, static_cast<float>(newHeight) / 720);
 	
 	screenWidth = newWidth;
 	screenHeight = newHeight;
@@ -440,7 +520,10 @@ void Graphics::Resize(UINT newWidth, UINT newHeight)
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 
-	devcon->RSSetViewports(1, &viewport);
+	devcon->RSSetViewports(1, &viewport);	
+	ImGuiIO& io = ImGui::GetIO();
+	io.FontGlobalScale = magnificationRatio;
+	io.DisplaySize = ImVec2(screenWidth, screenHeight);
 }
 
 

@@ -32,7 +32,7 @@ BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 	Mesh ballMesh(ballGeometry, ballMaterial);
 
 	// WHITE BALL
-	std::unique_ptr<BallObject> whiteBall = std::make_unique<WhiteBallObject>(device, deviceContext, WHITE_BALL_PREFERRED_POS);
+	std::unique_ptr<WhiteBallObject> whiteBall = std::make_unique<WhiteBallObject>(device, deviceContext, WHITE_BALL_PREFERRED_POS);
 	whiteBall->SetPoint(-4);
 	ballMesh.SetTexture(whiteBallTexture);
 	whiteBall->CopyAndAddMesh(ballMesh);
