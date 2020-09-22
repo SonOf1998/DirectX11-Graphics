@@ -5,6 +5,8 @@
 
 class BallObject : public GameObject
 {
+public:
+	inline static float maxTessFactor = 32;
 
 protected:
 	XMVECTOR velocity;

@@ -94,6 +94,42 @@ void Graphics::RenderInitalization()
 	pipelineBezierQuad.reset(Pipeline::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), BEZIER_QUAD_VS, BEZIER_QUAD_PS, nullptr, BEZIER_QUAD_HS, BEZIER_QUAD_DS));
 }
 
+
+// helper function for RenderFrame
+
+
+// Handles click event from "Quality: XXX" button
+static void StepQuality(std::string& qualityStr)
+{
+	switch (Pipeline::mipOffset)
+	{
+	case TEXTURE_QUALITY_OFFSET::HIGH:
+		Pipeline::mipOffset = TEXTURE_QUALITY_OFFSET::MEDIUM;
+		BallObject::maxTessFactor = 24;
+		qualityStr = QUALITY_BTN_MEDIUM_STR;
+		break;
+	case TEXTURE_QUALITY_OFFSET::MEDIUM:
+		Pipeline::mipOffset = TEXTURE_QUALITY_OFFSET::LOW;
+		BallObject::maxTessFactor = 16;
+		qualityStr = QUALITY_BTN_LOW_STR;
+		break;
+	case TEXTURE_QUALITY_OFFSET::LOW:
+		Pipeline::mipOffset = TEXTURE_QUALITY_OFFSET::VERY_LOW;
+		BallObject::maxTessFactor = 8;
+		qualityStr = QUALITY_BTN_VLOW_STR;
+		break;
+	case TEXTURE_QUALITY_OFFSET::VERY_LOW:
+		Pipeline::mipOffset = TEXTURE_QUALITY_OFFSET::HIGH;
+		BallObject::maxTessFactor = 32;
+		qualityStr = QUALITY_BTN_HIGH_STR;
+		break;
+	default:
+		throw std::runtime_error("Unknown offset");
+		break;
+	}
+
+}
+
 void Graphics::RenderFrame(float t, float dt)
 {	
 	camera->Animate(t, dt);
@@ -143,9 +179,9 @@ void Graphics::RenderFrame(float t, float dt)
 
 
 	ImGui::NewFrame();	
-	ImGui::SetNextWindowPos(ImVec2(1000, 300));
-	ImGui::SetNextWindowSize(ImVec2(100, 120));
-	ImGui::Begin("Cue ball");
+	ImGui::SetNextWindowPos(ImVec2(screenWidth - 135, screenHeight - 380));
+	ImGui::SetNextWindowSize(ImVec2(110, 125));
+	ImGui::Begin("Cue ball", nullptr, ImGuiWindowFlags_NoResize);
 	ImGui::Checkbox("Aim", &(WhiteBallObject::isInAimMode));
 	ImGui::Checkbox("Fine aim", &(WhiteBallObject::isInFineAimMode));
 	ImGui::Checkbox("Spin", &(WhiteBallObject::isInSpinMode));
@@ -153,9 +189,9 @@ void Graphics::RenderFrame(float t, float dt)
 	WhiteBallObject::SwitchModes();
 	ImGui::End();
 
-	ImGui::SetNextWindowPos(ImVec2(1000, 430));
+	ImGui::SetNextWindowPos(ImVec2(screenWidth - 140, screenHeight - 240));
 	ImGui::SetNextWindowSize(ImVec2(120, 120));
-	ImGui::Begin("Control");
+	ImGui::Begin("Control", nullptr, ImGuiWindowFlags_NoResize);
 	if (ImGui::Button("Walk around", ImVec2(100, 20))) {
 
 	}
@@ -169,6 +205,25 @@ void Graphics::RenderFrame(float t, float dt)
 	}
 	ImGui::End();
 
+	ImGui::SetNextWindowPos(ImVec2(screenWidth - 170, screenHeight - 100));
+	ImGui::SetNextWindowSize(ImVec2(160, 80));
+	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_NoResize);
+
+	static std::string qualityStr = QUALITY_BTN_HIGH_STR;
+	if (ImGui::Button(qualityStr.c_str(), ImVec2(140, 20))) {
+		StepQuality(qualityStr);
+	}
+	static std::string soundStr = SOUNDS_BTN_ON_STR;
+	if (ImGui::Button(soundStr.c_str(), ImVec2(140, 20))) {
+		if (SoundManager::muted)
+			soundStr = SOUNDS_BTN_ON_STR;
+		else
+			soundStr = SOUNDS_BTN_OFF_STR;
+
+		SoundManager::muted = !SoundManager::muted;
+	}
+	ImGui::End();
+
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(ImVec2(70, 20));
 	ImGui::SetNextWindowBgAlpha(0.2f);
@@ -177,9 +232,9 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui::End();
 
 
-	ImGui::SetNextWindowPos(ImVec2(100, 200));
+	ImGui::SetNextWindowPos(ImVec2(10, screenHeight - 130));
 	ImGui::SetNextWindowSize(ImVec2(500, 120));
-	ImGui::Begin("Scoreboard");
+	ImGui::Begin("Scoreboard", nullptr, ImGuiWindowFlags_NoResize);
 	ImGui::Columns(7);
 	ImGui::SetColumnWidth(0, 70);
 	ImGui::SetColumnWidth(1, 60);
@@ -522,7 +577,7 @@ void Graphics::Resize(UINT newWidth, UINT newHeight)
 
 	devcon->RSSetViewports(1, &viewport);	
 	ImGuiIO& io = ImGui::GetIO();
-	io.FontGlobalScale = magnificationRatio;
+	//io.FontGlobalScale = magnificationRatio;
 	io.DisplaySize = ImVec2(screenWidth, screenHeight);
 }
 

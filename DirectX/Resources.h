@@ -94,8 +94,14 @@ namespace COLOR
 	constexpr float GRAY[4] = { 0.3f, 0.3f, 0.3f, 1 };
 }
 
+// ... STRING RESOURCES FOR THE UI ...
+#define QUALITY_BTN_HIGH_STR	"Quality: High"
+#define QUALITY_BTN_MEDIUM_STR	"Quality: Medium"
+#define QUALITY_BTN_LOW_STR		"Quality: Low"
+#define QUALITY_BTN_VLOW_STR	"Quality: Very low"
 
-
+#define SOUNDS_BTN_ON_STR		"Sounds: On"
+#define SOUNDS_BTN_OFF_STR		"Sounds: Off"
 
 
 

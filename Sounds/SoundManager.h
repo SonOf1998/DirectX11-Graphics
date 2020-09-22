@@ -10,6 +10,9 @@ class PerspectiveCamera;
 class SoundManager
 {
 public:
+	inline static bool muted = false;
+
+public:
 
 	// Would have been static, but static's map MS's implementation is flawed
 	// and keeps raising Read Access Violation on destuctor

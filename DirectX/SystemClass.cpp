@@ -295,6 +295,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
+		// sets the minimum size of the client window
+		// we choose the smallest minimum size in which
+		// the UI elements do not overlap
+		case WM_GETMINMAXINFO:
+		{
+			LPMINMAXINFO lpMMI = (LPMINMAXINFO)lparam;
+			lpMMI->ptMinTrackSize.x = 700;
+			lpMMI->ptMinTrackSize.y = 430;
+		}
+
 		// All other messages pass to the message handler in the system class.
 		default:
 		{

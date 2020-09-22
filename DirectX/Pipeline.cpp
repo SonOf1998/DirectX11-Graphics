@@ -181,6 +181,7 @@ void Pipeline::SetSampler(FILTERING filtering, UINT bindingSlot, SAMPLER_LOCATIO
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			samplerDesc.MipLODBias = mipOffset;
 			break;
 		case FILTERING::BILINEAR:
 			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -190,6 +191,7 @@ void Pipeline::SetSampler(FILTERING filtering, UINT bindingSlot, SAMPLER_LOCATIO
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			samplerDesc.MipLODBias = mipOffset;
 			break;
 		case FILTERING::TRILINEAR:
 			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -199,6 +201,7 @@ void Pipeline::SetSampler(FILTERING filtering, UINT bindingSlot, SAMPLER_LOCATIO
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			samplerDesc.MipLODBias = mipOffset;
 			break;
 		case FILTERING::ANISOTROPIC_X4:
 			samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -209,6 +212,7 @@ void Pipeline::SetSampler(FILTERING filtering, UINT bindingSlot, SAMPLER_LOCATIO
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			samplerDesc.MipLODBias = mipOffset;
 			break;
 		case FILTERING::ANISOTROPIC_X16:
 			samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -219,6 +223,7 @@ void Pipeline::SetSampler(FILTERING filtering, UINT bindingSlot, SAMPLER_LOCATIO
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			samplerDesc.MipLODBias = mipOffset;
 			break;
 		default:
 			throw;

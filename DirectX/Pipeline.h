@@ -4,10 +4,23 @@
 #include "SharedEnums.h"
 #include "VertexDataType.h"
 
+enum TEXTURE_QUALITY_OFFSET {
+	HIGH	 = 0,
+	MEDIUM	 = 1,
+	LOW		 = 2,
+	VERY_LOW = 3
+};
+
+
 class Texture;
 
 class Pipeline
 {
+public:
+	inline static TEXTURE_QUALITY_OFFSET mipOffset = TEXTURE_QUALITY_OFFSET::HIGH;
+
+private:
+
 	ComPtr<ID3D11VertexShader>		vertexShader;
 	ComPtr<ID3D11HullShader>		hullShader;
 	ComPtr<ID3D11DomainShader>		domainShader;

@@ -355,3 +355,32 @@ struct Centroid : public CBufferDataType
 		return data;
 	}
 };
+
+struct LOD : public CBufferDataType
+{
+	struct LODData
+	{
+		XMVECTOR maxTessFactor;
+	} data;
+
+	LOD() : CBufferDataType("LOD")
+	{
+
+	}
+
+	void FillCBufferWithData(D3D11_MAPPED_SUBRESOURCE& mappedResource)
+	{
+		LODData* cbufferData = reinterpret_cast<LODData*>(mappedResource.pData);
+		cbufferData->maxTessFactor = data.maxTessFactor;
+	}
+
+	UINT GetDataSize()
+	{
+		return sizeof(data);
+	}
+
+	LODData& GetData()
+	{
+		return data;
+	}
+};

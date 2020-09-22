@@ -43,6 +43,9 @@ void SoundManager::InitializeCamera(PerspectiveCamera* camera)
 
 void SoundManager::PlaySound(LPCWSTR wavFileName, XMFLOAT3 collisionEffectCenter, void* collidintObj1Ptr, void* collidingObj2Ptr) const
 {
+	if (muted)
+		return;
+
 	audioEngine->Update();
 
 	if (audioEngine->IsCriticalError())

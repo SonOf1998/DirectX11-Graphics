@@ -59,10 +59,14 @@ void BallObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, 
 	Centroid centroid;
 	centroid.GetData().position = position;
 
+	LOD lod;
+	lod.GetData().maxTessFactor = XMVectorSet(maxTessFactor, 0, 0, 0);
+
 	pipeline->SetSampler(FILTERING::NEAREST, 0);
 
 	pipeline->SetCBuffer(&cameraCBuffer, CBUFFER_LOCATION::HULL_SHADER_CBUFFER);
 	pipeline->SetCBuffer(&centroid, CBUFFER_LOCATION::HULL_SHADER_CBUFFER);
+	pipeline->SetCBuffer(&lod, CBUFFER_LOCATION::HULL_SHADER_CBUFFER);
 	pipeline->SetCBuffer(&mvpminv, CBUFFER_LOCATION::DOMAIN_SHADER_CBUFFER);
 	pipeline->SetCBuffer(&cameraCBuffer, CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);
 

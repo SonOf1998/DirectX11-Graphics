@@ -34,6 +34,8 @@ class RoundManager
 	TARGET target;	// target ball
 
 	bool roundHandled = true;
+	bool whiteMovable = true;
+	bool whitePlaced = true;
 	std::vector<std::unique_ptr<BallObject>> ballsPottedCurrRound;
 
 	RoundManager();
@@ -44,6 +46,10 @@ public:
 	static RoundManager& GetInstance();
 
 	void SetRoundHandled(bool roundHandled);
+
+	// handling dropped white ball
+	bool IsWhiteDroppedLastRound()		const	noexcept;
+	void SetWhitePlaced(bool placed)			noexcept;
 
 	void AddNewPottedBall(std::unique_ptr<BallObject>&& ball);
 	void ManagePoints(bool hadHits);

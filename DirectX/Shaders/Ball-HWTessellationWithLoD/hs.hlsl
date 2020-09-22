@@ -11,9 +11,14 @@ cbuffer Centroid : register(b1)
     float3 objCentroid;
 }
 
+cbuffer LOD : register(b2)
+{
+    float maxTessFactor;
+}
+
 float CalculateTessFactorFromDistance(float distance)
 {
-    return min(32, max(32 + 8 - distance * 8, 2));
+    return min(maxTessFactor, max(maxTessFactor + (maxTessFactor / 4 - 1) * distance, 2));
 }
 
 TessFactors ConstFun(InputPatch<HS_IN, 3> cps, uint patchId : SV_PrimitiveID)

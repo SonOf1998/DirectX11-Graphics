@@ -24,6 +24,16 @@ void RoundManager::SetRoundHandled(bool roundHandled)
 	this->roundHandled = roundHandled;
 }
 
+bool RoundManager::IsWhiteDroppedLastRound() const noexcept
+{
+	return whiteMovable;
+}
+
+void RoundManager::SetWhitePlaced(bool placed) noexcept
+{
+	whitePlaced = placed;
+}
+
 /* Collecting the balls potted in the current round in order!
 *
 *  As soon as the round ends (all the balls stop) this array is
