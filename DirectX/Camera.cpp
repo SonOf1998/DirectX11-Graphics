@@ -20,3 +20,13 @@ XMMATRIX Camera::GetViewProjMatrixInv() const noexcept
 {
 	return viewProjMatrixInv;
 }
+
+void Camera::SetWhiteBallPos(const XMVECTOR& v) noexcept
+{
+	whiteBallPos = v;
+}
+
+void Camera::SetTargetBallPos(const XMVECTOR& v) noexcept
+{
+	targetBallPos = v;
+}

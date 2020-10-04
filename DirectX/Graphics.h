@@ -23,8 +23,10 @@ std::unique_ptr<Renderable>				chairSet;					\
 
 class Graphics
 {
-	UINT screenWidth;
-	UINT screenHeight;
+public:
+	inline static UINT screenWidth;
+	inline static UINT screenHeight;
+private:
 	HWND hwnd;
 
 	ComPtr<IDXGISwapChain>			swapchain;

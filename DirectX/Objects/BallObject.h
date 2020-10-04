@@ -15,7 +15,7 @@ protected:
 	XMVECTOR preferredPosition;
 
 public:
-	BallObject(ID3D11Device*, ID3D11DeviceContext*, XMVECTOR = XMVectorSet(0, 0, 0, 0), XMVECTOR = BALL_SCALE, XMVECTOR = XMVectorSet(0, 0, 1, 0), float = 0.0f);
+	BallObject(ID3D11Device*, ID3D11DeviceContext*, int point, XMVECTOR = XMVectorSet(0, 0, 0, 0), XMVECTOR = BALL_SCALE, XMVECTOR = XMVectorSet(0, 0, 1, 0), float = 0.0f);
 	~BallObject() = default;
 	
 	void SetVelocity(const XMVECTOR& velocity);
@@ -23,7 +23,6 @@ public:
 
 	XMVECTOR GetPreferredPosition() const;
 
-	void SetPoint(int pt) { point = pt; }
 	int GetPoint() const noexcept { return point; }
 
 	void Render(ID3D11DeviceContext*, Pipeline*, Camera* = nullptr, Light* = nullptr) override;

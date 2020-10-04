@@ -11,11 +11,16 @@ protected:
 	XMMATRIX viewProjMatrix;
 	XMMATRIX viewProjMatrixInv;
 
+	XMVECTOR whiteBallPos;
+	XMVECTOR targetBallPos;		// if there are more then the closest
+
 	Camera(const XMVECTOR& position);
 
 public:
 		
-	XMVECTOR GetPosition()		 const noexcept;
-	XMMATRIX GetViewProjMatrix() const noexcept;
+	XMVECTOR GetPosition()		    const noexcept;
+	XMMATRIX GetViewProjMatrix()    const noexcept;
 	XMMATRIX GetViewProjMatrixInv() const noexcept;
+	void SetWhiteBallPos(const XMVECTOR& v) noexcept;
+	void SetTargetBallPos(const XMVECTOR& v) noexcept;
 };

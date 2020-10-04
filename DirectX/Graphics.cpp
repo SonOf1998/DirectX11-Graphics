@@ -36,8 +36,11 @@
 // from Sounds
 #include "SoundManager.h"
 
-Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : screenWidth(screenWidth), screenHeight(screenHeight), hwnd(hwnd)
+Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : hwnd(hwnd)
 {
+	this->screenWidth = screenWidth;
+	this->screenHeight = screenHeight;
+
 	InitializeDirectX11();
 	InitializeImGui();
 	RenderInitalization();	
@@ -57,7 +60,7 @@ void Graphics::RenderInitalization()
 	SoundManager::GetInstance().InitializeCamera(camera.get());	// for proper 3D game sounds
 	//RoundManager::Initialize();	// init players
 
-	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get());
+	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get(), camera.get());
 	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
 	std::unique_ptr<GameObject> cue = std::make_unique<CueObject>(dev.Get(), devcon.Get(), XMVectorSet(0, SNOOKER_TABLE_POS_Y + BALL_RADIUS * 2, 7.5f, 0), XMVectorSet(0.7f, 0.7f, 0.7f, 1), XMVectorSet(1, 0, 0, 0), 0);
 	armchairSet = std::make_unique<ArmchairSet>(dev.Get(), devcon.Get());
@@ -179,7 +182,7 @@ void Graphics::RenderFrame(float t, float dt)
 
 
 	ImGui::NewFrame();	
-	ImGui::SetNextWindowPos(ImVec2(screenWidth - 135, screenHeight - 380));
+	ImGui::SetNextWindowPos(ImVec2(static_cast<float>(screenWidth - 135), static_cast<float>(screenHeight - 380)));
 	ImGui::SetNextWindowSize(ImVec2(110, 125));
 	ImGui::Begin("Cue ball", nullptr, ImGuiWindowFlags_NoResize);
 	ImGui::Checkbox("Aim", &(WhiteBallObject::isInAimMode));
@@ -189,7 +192,7 @@ void Graphics::RenderFrame(float t, float dt)
 	WhiteBallObject::SwitchModes();
 	ImGui::End();
 
-	ImGui::SetNextWindowPos(ImVec2(screenWidth - 140, screenHeight - 240));
+	ImGui::SetNextWindowPos(ImVec2(static_cast<float>(screenWidth - 140), static_cast<float>(screenHeight - 240)));
 	ImGui::SetNextWindowSize(ImVec2(120, 120));
 	ImGui::Begin("Control", nullptr, ImGuiWindowFlags_NoResize);
 	if (ImGui::Button("Walk around", ImVec2(100, 20))) {
@@ -205,7 +208,7 @@ void Graphics::RenderFrame(float t, float dt)
 	}
 	ImGui::End();
 
-	ImGui::SetNextWindowPos(ImVec2(screenWidth - 170, screenHeight - 100));
+	ImGui::SetNextWindowPos(ImVec2(static_cast<float>(screenWidth - 170), static_cast<float>(screenHeight - 100)));
 	ImGui::SetNextWindowSize(ImVec2(160, 80));
 	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_NoResize);
 
@@ -232,7 +235,7 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui::End();
 
 
-	ImGui::SetNextWindowPos(ImVec2(10, screenHeight - 130));
+	ImGui::SetNextWindowPos(ImVec2(10, static_cast<float>(screenHeight - 130)));
 	ImGui::SetNextWindowSize(ImVec2(500, 120));
 	ImGui::Begin("Scoreboard", nullptr, ImGuiWindowFlags_NoResize);
 	ImGui::Columns(7);
@@ -473,7 +476,7 @@ void Graphics::InitializeImGui()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(screenWidth, screenHeight);
+	io.DisplaySize = ImVec2(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui_ImplDX11_Init(dev.Get(), devcon.Get());
 	ImGui::StyleColorsClassic();
@@ -578,7 +581,7 @@ void Graphics::Resize(UINT newWidth, UINT newHeight)
 	devcon->RSSetViewports(1, &viewport);	
 	ImGuiIO& io = ImGui::GetIO();
 	//io.FontGlobalScale = magnificationRatio;
-	io.DisplaySize = ImVec2(screenWidth, screenHeight);
+	io.DisplaySize = ImVec2(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 }
 
 

@@ -45,5 +45,7 @@ public:
 	XMFLOAT3 GetForward()					noexcept;
 	XMFLOAT3 GetUp()						const	noexcept;
 
+	void GoAimMode();
+
 	void Animate(float t, float dt) override;
 };

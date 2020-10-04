@@ -1,6 +1,7 @@
 #pragma once
 #include "BallObject.h"
 
+class BallSet;
 class PerspectiveCamera;
 
 enum class WHITE_BALL_MODE
@@ -14,6 +15,7 @@ enum class WHITE_BALL_MODE
 class WhiteBallObject : public BallObject
 {
 	PerspectiveCamera* camera;
+	BallSet* ballSet;
 
 public:
 	// statics as std::function is not supported
@@ -29,7 +31,10 @@ public:
 
 
 public:
-	using BallObject::BallObject;
+	WhiteBallObject(ID3D11Device*, ID3D11DeviceContext*, int point, PerspectiveCamera* camera, BallSet* ballSet,
+					XMVECTOR = XMVectorSet(0, 0, 0, 0), XMVECTOR = BALL_SCALE, XMVECTOR = XMVectorSet(0, 0, 1, 0), float = 0.0f);
+	~WhiteBallObject() = default;
+
 
 	void Animate(float t, float dt) override;
 };

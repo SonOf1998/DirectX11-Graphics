@@ -9,8 +9,9 @@
 #include "Mesh.h"
 #include "Light.h"
 
-BallObject::BallObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, XMVECTOR position, XMVECTOR scale, XMVECTOR rotationAxis, float rotationAngle) : 
+BallObject::BallObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, int point, XMVECTOR position, XMVECTOR scale, XMVECTOR rotationAxis, float rotationAngle) : 
 	GameObject(device, deviceContext, position, scale, rotationAxis, rotationAngle), 
+	point(point),
 	velocity(XMVectorSet(0,0,0,0)),
 	preferredPosition(position)			// in case of reds it has no meaning
 {

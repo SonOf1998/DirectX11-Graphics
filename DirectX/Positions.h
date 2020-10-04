@@ -45,3 +45,5 @@
 
 #define CHAIR_ELEVATION				0.5f
 #define CHAIR_SCALE					XMVectorSet(0.4f, 0.4f, 0.4f, 1)
+
+#define DZ							3.38f

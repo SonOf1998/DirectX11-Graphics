@@ -1,9 +1,13 @@
 #include "pch.h"
 #include "PerspectiveCamera.h"
 
+// from DirectX
 #include "CBufferDataType.h"
 #include "InputClass.h"
 #include "SimpleDXMath.h"
+
+// from SnookerLogic
+//#include "RoundManager.h"
 
 
 PerspectiveCamera::PerspectiveCamera(const XMVECTOR& position, const XMVECTOR& lookAt, float aspectRatio, float fovy, float zNear, float zFar) : Camera(position), aspectRatio(aspectRatio), fovy(fovy), zNear(zNear), zFar(zFar)
@@ -105,6 +109,30 @@ XMFLOAT3 PerspectiveCamera::GetUp() const noexcept
 	return XMFLOAT3(0, 1, 0);
 }
 
+void PerspectiveCamera::GoAimMode()
+{
+	XMFLOAT3 wbp;
+	XMFLOAT3 tbp;
+
+	XMStoreFloat3(&wbp, whiteBallPos);
+	XMStoreFloat3(&tbp, targetBallPos);
+
+	float len = Length(whiteBallPos - targetBallPos);
+
+	// camera offset from cue ball
+	// can be adjusted by rolling the mouse's middle button
+	float distance_factor = 0.3f / (len / 6.0f);
+	float elevation_factor = std::max(0.9f * (len / 6.0f), 0.4f);
+
+	// SetPosition first as SetLookAt relies on parameter "position"
+	SetPosition(XMVectorSet(distance_factor * (wbp.x - tbp.x) + wbp.x, wbp.y + elevation_factor, distance_factor * (wbp.z - tbp.z) + wbp.z, 0.0f));
+	SetLookAt(whiteBallPos);
+	
+	//log
+	// Logger::print(wbp);
+	// Logger::print(tbp);
+}
+
 
 XMVECTOR PerspectiveCamera::GetPosition() const noexcept
 {
@@ -133,6 +161,7 @@ void PerspectiveCamera::Animate(float t, float dt)
 	{
 		position += right * dt;
 	}
+	
 
 	POINT cursorMove = InputClass::GetCursorMove();
 	if (InputClass::RightMBDown())
