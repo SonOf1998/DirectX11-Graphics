@@ -59,3 +59,13 @@ bool InputClass::RightMBDown()
 {
 	return rightMBDown;
 }
+
+void InputClass::SetLeftMBDown(bool down)
+{
+	leftMBDown = down;
+}
+
+bool InputClass::LeftMBDown()
+{
+	return leftMBDown;
+}

@@ -7,6 +7,7 @@ class InputClass
 	inline static POINT lastCursorPos;
 	inline static POINT currentCursorPos;
 	inline static bool rightMBDown = false;
+	inline static bool leftMBDown = false;
 
 	inline static std::once_flag flag;
 
@@ -25,5 +26,7 @@ public:
 	static POINT GetCursorPosition();
 	static void SetRightMBDown(bool);
 	static bool RightMBDown();
+	static void SetLeftMBDown(bool);
+	static bool LeftMBDown();
 };
 

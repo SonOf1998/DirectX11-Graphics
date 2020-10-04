@@ -135,7 +135,7 @@ void WhiteBallObject::Animate(float t, float dt)
 	//	Logger::print(std::to_string(XMVectorGetX(position)) + " , " + std::to_string(XMVectorGetZ(position)));ww
 
 	// Picking technique
-	if (rm.IsWhitePlaced() && InputClass::RightMBDown())
+	if (!rm.IsWhitePlaced())
 	{
 		POINT cursorPos = InputClass::GetCursorPosition();
 
@@ -167,6 +167,12 @@ void WhiteBallObject::Animate(float t, float dt)
 		{
 			position = XMVectorSet(x_ray, BALL_POS_Y, z_ray, 0);
 		}
+
+		if (InputClass::LeftMBDown())
+		{
+			rm.SetWhitePlaced(true);
+		}
+
 	}
 
 	if (InputClass::IsKeyDown(VK_UP))

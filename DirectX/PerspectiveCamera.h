@@ -19,6 +19,8 @@ class PerspectiveCamera : public Camera
 	float zNear;
 	float zFar;
 
+	float aimModeMagnification = 1.0f;
+
 public:
 
 	// camera parameters given by lookAt; up vector is fixed (0,1,0)
@@ -46,6 +48,7 @@ public:
 	XMFLOAT3 GetUp()						const	noexcept;
 
 	void GoAimMode();
+	void MagnifyAimMode(short level);
 
 	void Animate(float t, float dt) override;
 };

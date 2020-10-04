@@ -74,5 +74,7 @@ public:
 
 	void SwitchMode(bool toFullscreen);
 	void Resize(UINT width, UINT height);
+
+	void ForwardWheelMessage(short deltaZ);
 };
 

@@ -584,6 +584,12 @@ void Graphics::Resize(UINT newWidth, UINT newHeight)
 	io.DisplaySize = ImVec2(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 }
 
+void Graphics::ForwardWheelMessage(short deltaZ)
+{
+	static constexpr short wheelUnit = 120; // Microsoft made const
+	camera->MagnifyAimMode(deltaZ / wheelUnit);
+}
+
 
 
 

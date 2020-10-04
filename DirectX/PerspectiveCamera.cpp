@@ -121,8 +121,8 @@ void PerspectiveCamera::GoAimMode()
 
 	// camera offset from cue ball
 	// can be adjusted by rolling the mouse's middle button
-	float distance_factor = 0.3f / (len / 6.0f);
-	float elevation_factor = std::max(0.9f * (len / 6.0f), 0.4f);
+	float distance_factor  = aimModeMagnification * 0.4f / (len / 6.0f);
+	float elevation_factor = aimModeMagnification * std::max(0.9f * (len / 6.0f), 0.4f);
 
 	// SetPosition first as SetLookAt relies on parameter "position"
 	SetPosition(XMVectorSet(distance_factor * (wbp.x - tbp.x) + wbp.x, wbp.y + elevation_factor, distance_factor * (wbp.z - tbp.z) + wbp.z, 0.0f));
@@ -131,6 +131,28 @@ void PerspectiveCamera::GoAimMode()
 	//log
 	// Logger::print(wbp);
 	// Logger::print(tbp);
+}
+
+void PerspectiveCamera::MagnifyAimMode(short level)
+{
+	static constexpr float magnUnitStep = 0.02f;
+	static constexpr float magnMin = 1.25f;
+	static constexpr float magnMax = 0.5f;
+
+	float magnificationLevel = level * magnUnitStep;
+
+	if (aimModeMagnification - magnificationLevel > magnMin)
+	{
+		aimModeMagnification = magnMin;
+		return;
+	}
+	if (aimModeMagnification - magnificationLevel < magnMax)
+	{
+		aimModeMagnification = magnMax;
+		return;
+	}
+
+	aimModeMagnification -= magnificationLevel;
 }
 
 

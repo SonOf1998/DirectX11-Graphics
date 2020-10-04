@@ -199,6 +199,22 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		InputClass::SetRightMBDown(false);
 		messageHandled = true;
 	}
+	if (umsg == WM_LBUTTONDOWN)
+	{
+		InputClass::SetLeftMBDown(true);
+		messageHandled = true;
+	}
+	if (umsg == WM_LBUTTONUP)
+	{
+		InputClass::SetLeftMBDown(false);
+		messageHandled = true;
+	}
+	if (umsg == WM_MOUSEWHEEL)
+	{
+		messageHandled = true;
+		short zDelta = GET_WHEEL_DELTA_WPARAM(wparam);
+		graphics->ForwardWheelMessage(zDelta);
+	}
 	// Window getting focused
 	if (umsg == WM_SETFOCUS)
 	{
