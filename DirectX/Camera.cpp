@@ -30,3 +30,13 @@ void Camera::SetTargetBallPos(const XMVECTOR& v) noexcept
 {
 	targetBallPos = v;
 }
+
+XMVECTOR Camera::GetWhiteBallPos() const
+{
+	return whiteBallPos;
+}
+
+XMVECTOR Camera::GetTargetBallPos() const
+{
+	return targetBallPos;
+}

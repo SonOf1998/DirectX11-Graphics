@@ -1,17 +1,20 @@
 #include "pch.h"
 #include "CueObject.h"
 
+// from DirectX
 #include "AssimpMultiModel.h"
 #include "Camera.h"
 #include "CBufferDataType.h"
 #include "QuadGeometry.h"
+#include "PerspectiveCamera.h"
 #include "Pipeline.h"
 #include "Mesh.h"
 #include "Light.h"
 #include "Resources.h"
 
-CueObject::CueObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, XMVECTOR position, XMVECTOR scale, XMVECTOR rotationAxis, float rotationAngle) :
-	GameObject(device, deviceContext, position, scale, rotationAxis, rotationAngle)
+CueObject::CueObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera, XMVECTOR position, XMVECTOR scale, XMVECTOR rotationAxis, float rotationAngle) :
+	GameObject(device, deviceContext, position, scale, rotationAxis, rotationAngle),
+	camera(camera)
 {
 	auto geometries = AssimpMultiModel<PNT>(device, CUE_MODEL).GetGeometries();
 
@@ -88,5 +91,25 @@ void CueObject::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* 
 
 void CueObject::Animate(float t, float dt)
 {
-	
+	XMVECTOR whitePos = camera->GetWhiteBallPos();
+	XMVECTOR cameraPos = camera->GetPosition();
+	XMFLOAT3 cameraPosF = camera->GetPositionF();
+	XMFLOAT3 whitePosF;
+	XMStoreFloat3(&whitePosF, whitePos);
+
+	XMVECTOR dir2D = XMVectorSet(whitePosF.x - cameraPosF.x, 0, whitePosF.z - cameraPosF.z, 0);
+	dir2D = XMVector3Normalize(dir2D);
+	XMFLOAT3 dir2DF;
+	XMStoreFloat3(&dir2DF, dir2D);
+	static constexpr float clf = 1.5f;  // Cue length factor
+
+	float angle = acosf(XMVectorGetX(XMVector3Dot(dir2D, orientation)));
+	Logger::print(std::to_string(angle));
+	orientation = orientation * XMMatrixRotationAxis(XMVectorSet(0, 1, 0, 0), angle);
+
+	position = XMVectorSet(-clf * dir2DF.x, SNOOKER_TABLE_POS_Y + BALL_RADIUS * 2, -clf * dir2DF.z, 0);
+
+
+	modelMatrix = XMMatrixScalingFromVector(scale) * XMMatrixRotationAxis(XMVectorSet(0, 1, 0, 0), angle) * XMMatrixTranslationFromVector(position);
 }
+ 

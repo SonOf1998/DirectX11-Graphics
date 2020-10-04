@@ -127,11 +127,6 @@ WhiteBallObject::WhiteBallObject(ID3D11Device* device, ID3D11DeviceContext* devi
 void WhiteBallObject::Animate(float t, float dt)
 {
 	RoundManager& rm = RoundManager::GetInstance();
-
-	camera->SetWhiteBallPos(position);
-	camera->SetTargetBallPos(ballSet->GetClosestTargetBallToCueBall(position, rm.GetTarget()));
-	camera->GoAimMode();
-
 	//	Logger::print(std::to_string(XMVectorGetX(position)) + " , " + std::to_string(XMVectorGetZ(position)));ww
 
 	// Picking technique
@@ -163,16 +158,19 @@ void WhiteBallObject::Animate(float t, float dt)
 		float x_ray = s.x + t_ray * dir.x;
 		float z_ray = s.z + t_ray * dir.z;
 		
-		if (x_ray * x_ray + (z_ray - DZ) * (z_ray - DZ) <= 1.0f && z_ray > DZ)
+		XMVECTOR newPos = XMVectorSet(x_ray, BALL_POS_Y, z_ray, 0);
+		if (x_ray * x_ray + (z_ray - DZ) * (z_ray - DZ) <= 1.0f && z_ray > DZ && !ballSet->IsPlaceUsed(newPos, true))
 		{
-			position = XMVectorSet(x_ray, BALL_POS_Y, z_ray, 0);
+			position = newPos;
 		}
 
 		if (InputClass::LeftMBDown())
 		{
 			rm.SetWhitePlaced(true);
+			camera->SetWhiteBallPos(position);
+			camera->SetTargetBallPos(ballSet->GetClosestTargetBallToCueBall(position, rm.GetTarget()));
+			camera->GoAimMode();
 		}
-
 	}
 
 	if (InputClass::IsKeyDown(VK_UP))

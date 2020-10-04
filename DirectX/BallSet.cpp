@@ -226,7 +226,7 @@ void BallSet::Animate(float t, float dt)
 	}
 }
 
-XMVECTOR BallSet::GetClosestTargetBallToCueBall(const XMVECTOR& cueBallPos, TARGET target) const noexcept
+XMVECTOR BallSet::GetClosestTargetBallToCueBall(const XMVECTOR& cueBallPos, TARGET target) const
 {
 	BallObject* targetBallWithMinDist = nullptr;
 	float minDist = std::numeric_limits<float>::max();
@@ -244,4 +244,20 @@ XMVECTOR BallSet::GetClosestTargetBallToCueBall(const XMVECTOR& cueBallPos, TARG
 	}
 
 	return targetBallWithMinDist->GetPosition();
+}
+
+bool BallSet::IsPlaceUsed(const XMVECTOR& place, bool excludeWhite /* =false */) const
+{
+	for (auto& ball : balls)
+	{
+		if (excludeWhite && ball->GetPoint() == -4)
+			continue;
+
+		if (Length(place - ball->GetPosition()) + 0.00001f < 2 * BALL_RADIUS)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

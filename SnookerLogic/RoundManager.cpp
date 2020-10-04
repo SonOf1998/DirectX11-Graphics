@@ -24,6 +24,11 @@ void RoundManager::SetRoundHandled(bool roundHandled)
 	this->roundHandled = roundHandled;
 }
 
+TARGET RoundManager::GetTarget() const noexcept
+{
+	return target;
+}
+
 bool RoundManager::IsWhiteDroppedLastRound() const noexcept
 {
 	return whiteMovable;
@@ -32,6 +37,11 @@ bool RoundManager::IsWhiteDroppedLastRound() const noexcept
 void RoundManager::SetWhitePlaced(bool placed) noexcept
 {
 	whitePlaced = placed;
+}
+
+bool RoundManager::IsWhitePlaced() const noexcept
+{
+	return whitePlaced;
 }
 
 /* Collecting the balls potted in the current round in order!

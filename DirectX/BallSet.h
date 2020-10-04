@@ -17,6 +17,7 @@ public:
 	virtual void RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Light* light);
 	virtual void Animate(float t, float dt) override;
 
-	XMVECTOR GetClosestTargetBallToCueBall(const XMVECTOR& cueBallPos, TARGET target) const noexcept;
+	XMVECTOR GetClosestTargetBallToCueBall(const XMVECTOR& cueBallPos, TARGET target) const;
+	bool IsPlaceUsed(const XMVECTOR& place, bool excludeWhite = false) const;
 };
 

@@ -62,7 +62,7 @@ void Graphics::RenderInitalization()
 
 	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get(), camera.get());
 	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
-	std::unique_ptr<GameObject> cue = std::make_unique<CueObject>(dev.Get(), devcon.Get(), XMVectorSet(0, SNOOKER_TABLE_POS_Y + BALL_RADIUS * 2, 7.5f, 0), XMVectorSet(0.7f, 0.7f, 0.7f, 1), XMVectorSet(1, 0, 0, 0), 0);
+	std::unique_ptr<GameObject> cue = std::make_unique<CueObject>(dev.Get(), devcon.Get(), camera.get(), XMVectorSet(0, SNOOKER_TABLE_POS_Y + BALL_RADIUS * 2, 7.5f, 0), XMVectorSet(0.7f, 0.7f, 0.7f, 1), XMVectorSet(1, 0, 0, 0), 0);
 	armchairSet = std::make_unique<ArmchairSet>(dev.Get(), devcon.Get());
 	chairSet = std::make_unique<ChairSet>(dev.Get(), devcon.Get());
 
@@ -275,6 +275,29 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui::Text("0");
 	ImGui::End();
 
+	RoundManager& rm = RoundManager::GetInstance();
+
+	if (rm.IsWhiteDroppedLastRound() && rm.IsWhitePlaced())
+	{
+		ImGuiStyle & style = ImGui::GetStyle();
+		style.Colors[ImGuiCol_Button] = ImVec4(0.5f, 0.5f, 0, 0.8f);
+		style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.55f, 0.55f, 0, 0.8f);
+		style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.6f, 0.6f, 0, 0.8f);
+		ImGui::SetNextWindowPos(ImVec2(30, static_cast<float>(screenHeight - 190)));
+		ImGui::SetNextWindowSize(ImVec2(120, 40));
+		ImGui::SetNextWindowBgAlpha(0.0f);
+		ImGui::Begin("Move", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+		if (ImGui::Button("Move cue ball", ImVec2(105, 25)))
+		{
+			rm.SetWhitePlaced(false);
+		}
+		ImGui::End();
+
+
+		style.Colors[ImGuiCol_Button] = ImVec4(0.28f, 0.24f, 0.545f, 0.8f);
+		style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.35f, 0.29f, 0.69f, 0.8f);
+		style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.416f, 0.35f, 0.8f, 0.8f);
+	}	
 
 
 	ImGui::EndFrame();
@@ -484,6 +507,11 @@ void Graphics::InitializeImGui()
 
 	ImGuiStyle & style = ImGui::GetStyle();
 	style.Colors[ImGuiCol_CheckMark] = ImVec4(0.184f, 0.607f, 0.193f, 1.00f);
+	// purple buttons
+	style.Colors[ImGuiCol_Button] = ImVec4(0.28f, 0.24f, 0.545f, 0.8f);
+	style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.35f, 0.29f, 0.69f, 0.8f);
+	style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.416f, 0.35f, 0.8f, 0.8f);
+
 }
 
 void Graphics::SetRenderTargetToBackBuffer()

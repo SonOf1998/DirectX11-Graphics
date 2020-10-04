@@ -5,6 +5,7 @@
 #include "CBufferDataType.h"
 #include "InputClass.h"
 #include "SimpleDXMath.h"
+#include "WhiteBallObject.h"
 
 // from SnookerLogic
 //#include "RoundManager.h"
@@ -12,12 +13,14 @@
 
 PerspectiveCamera::PerspectiveCamera(const XMVECTOR& position, const XMVECTOR& lookAt, float aspectRatio, float fovy, float zNear, float zFar) : Camera(position), aspectRatio(aspectRatio), fovy(fovy), zNear(zNear), zFar(zFar)
 {
+	defaultPos = position;
 	SetLookAt(lookAt);	// sets yaw and pitch
 	roll = 0.0f;
 }
 
 PerspectiveCamera::PerspectiveCamera(const XMVECTOR& position, float aspectRatio, float yaw, float pitch, float roll, float fovy, float zNear, float zFar) : Camera(position), aspectRatio(aspectRatio), fovy(fovy), zNear(zNear), zFar(zFar)
 {
+	defaultPos = position;
 	this->yaw = yaw;
 	this->pitch = pitch;
 	this->roll = roll;
@@ -116,17 +119,12 @@ void PerspectiveCamera::GoAimMode()
 
 	XMStoreFloat3(&wbp, whiteBallPos);
 	XMStoreFloat3(&tbp, targetBallPos);
-
-	float len = Length(whiteBallPos - targetBallPos);
-
-	// camera offset from cue ball
-	// can be adjusted by rolling the mouse's middle button
-	float distance_factor  = aimModeMagnification * 0.4f / (len / 6.0f);
-	float elevation_factor = aimModeMagnification * std::max(0.9f * (len / 6.0f), 0.4f);
+	
 
 	// SetPosition first as SetLookAt relies on parameter "position"
-	SetPosition(XMVectorSet(distance_factor * (wbp.x - tbp.x) + wbp.x, wbp.y + elevation_factor, distance_factor * (wbp.z - tbp.z) + wbp.z, 0.0f));
+	SetPosition(XMVectorSet((wbp.x - tbp.x) + wbp.x, wbp.y, (wbp.z - tbp.z) + wbp.z, 0.0f));
 	SetLookAt(whiteBallPos);
+	defaultPos = position;
 	
 	//log
 	// Logger::print(wbp);
@@ -155,6 +153,11 @@ void PerspectiveCamera::MagnifyAimMode(short level)
 	aimModeMagnification -= magnificationLevel;
 }
 
+float PerspectiveCamera::GetGyroAngle() const noexcept
+{
+	return gyroAngle;
+}
+
 
 XMVECTOR PerspectiveCamera::GetPosition() const noexcept
 {
@@ -164,46 +167,88 @@ XMVECTOR PerspectiveCamera::GetPosition() const noexcept
 
 void PerspectiveCamera::Animate(float t, float dt)
 {
-	XMVECTOR velocity = XMVectorSet(0, 0, -1, 0);
-	XMVECTOR sideVelocity = XMVectorSet(1, 0, 0, 0);
+	if (isInAimMode)
+	{
+		POINT cursorMove = InputClass::GetCursorMove();
+		if (InputClass::LeftMBDown())
+		{
 
-	if (InputClass::IsKeyDown('W'))
-	{
-		position += ahead * dt;
+			float gyroStep = 0;
+
+			if (WhiteBallObject::isInAimMode)
+				gyroStep = 0.002f;
+			else if (WhiteBallObject::isInFineAimMode)
+				gyroStep = 0.0005f;
+
+			gyroAngle += cursorMove.x * gyroStep;
+		}
+		
+
+		XMVECTOR dir = defaultPos - whiteBallPos;
+		float xOld = XMVectorGetX(dir);
+		float zOld = XMVectorGetZ(dir);
+		float y = XMVectorGetY(dir);
+
+		float xNew = xOld * cosf(gyroAngle) - zOld * sinf(gyroAngle);
+		float zNew = xOld * sinf(gyroAngle) + zOld * cosf(gyroAngle);
+
+		// camera offset from cue ball
+		// can be adjusted by rolling the mouse's middle button
+		float len = Length(whiteBallPos - targetBallPos);
+		float distance_factor = aimModeMagnification * 0.4f / (len / 6.0f);
+		float elevation = aimModeMagnification * std::max(0.9f * (len / 6.0f), 0.4f);
+
+		XMVECTOR newDir = XMVectorSet(distance_factor * xNew, y + elevation, distance_factor * zNew, 0);
+		position = whiteBallPos + newDir;
+		SetLookAt(whiteBallPos);
+		
 	}
-	if (InputClass::IsKeyDown('S'))
+	// walk mode
+	else
 	{
-		position -= ahead * dt;
+		XMVECTOR velocity = XMVectorSet(0, 0, -1, 0);
+		XMVECTOR sideVelocity = XMVectorSet(1, 0, 0, 0);
+
+		if (InputClass::IsKeyDown('W'))
+		{
+			position += ahead * dt;
+		}
+		if (InputClass::IsKeyDown('S'))
+		{
+			position -= ahead * dt;
+		}
+		if (InputClass::IsKeyDown('A'))
+		{
+			position -= right * dt;
+		}
+		if (InputClass::IsKeyDown('D'))
+		{
+			position += right * dt;
+		}
+
+
+		POINT cursorMove = InputClass::GetCursorMove();
+		if (InputClass::RightMBDown())
+		{
+			yaw -= cursorMove.x * 0.002f;
+			pitch -= cursorMove.y * 0.002f;
+			if (pitch > 3.14f / 2.0f)
+			{
+				pitch = 3.14f / 2.0f;
+			}
+			if (pitch < -3.14f / 2.0f)
+			{
+				pitch = -3.14f / 2.0f;
+			}
+
+			XMMATRIX rotation = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+			ahead = XMVectorSet(0, 0, -1, 0) * rotation;
+			right = XMVectorSet(1, 0, 0, 0) * rotation;
+			up = XMVectorSet(0, 1, 0, 0) * rotation;
+		}
 	}
-	if (InputClass::IsKeyDown('A'))
-	{
-		position -= right * dt;
-	}
-	if (InputClass::IsKeyDown('D'))
-	{
-		position += right * dt;
-	}
+
 	
-
-	POINT cursorMove = InputClass::GetCursorMove();
-	if (InputClass::RightMBDown())
-	{
-		yaw -= cursorMove.x * 0.002f;
-		pitch -= cursorMove.y * 0.002f;
-		if (pitch > 3.14f / 2.0f)
-		{
-			pitch = 3.14f / 2.0f;
-		}
-		if (pitch < -3.14f / 2.0f)
-		{
-			pitch = -3.14f / 2.0f;
-		}
-
-		XMMATRIX rotation = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
-		ahead = XMVectorSet(0, 0, -1, 0) * rotation;
-		right = XMVectorSet(1, 0, 0, 0) * rotation;
-		up = XMVectorSet(0, 1, 0, 0) * rotation;
-	}
 
 	XMMATRIX rotation = XMMatrixTranspose(XMMatrixRotationRollPitchYaw(pitch, yaw, roll));
 	XMMATRIX invTranslate = XMMatrixTranslationFromVector(-position);

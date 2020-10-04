@@ -23,4 +23,6 @@ public:
 	XMMATRIX GetViewProjMatrixInv() const noexcept;
 	void SetWhiteBallPos(const XMVECTOR& v) noexcept;
 	void SetTargetBallPos(const XMVECTOR& v) noexcept;
+	XMVECTOR GetWhiteBallPos() const;
+	XMVECTOR GetTargetBallPos() const;
 };

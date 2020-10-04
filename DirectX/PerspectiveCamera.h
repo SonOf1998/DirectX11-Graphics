@@ -20,6 +20,11 @@ class PerspectiveCamera : public Camera
 	float zFar;
 
 	float aimModeMagnification = 1.0f;
+	XMVECTOR defaultPos;					// default pos of camera, when a new round starts
+											// and the white ball gets autofocused
+											// this is the default direction we then rotate by gyroAngle
+	float gyroAngle = 0.0f;
+	bool isInAimMode = true;
 
 public:
 
@@ -49,6 +54,7 @@ public:
 
 	void GoAimMode();
 	void MagnifyAimMode(short level);
+	float GetGyroAngle()					const	noexcept;
 
 	void Animate(float t, float dt) override;
 };
