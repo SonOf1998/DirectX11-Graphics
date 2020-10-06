@@ -8,7 +8,7 @@
 #include "WhiteBallObject.h"
 
 // from SnookerLogic
-//#include "RoundManager.h"
+#include "RoundManager.h"
 
 
 PerspectiveCamera::PerspectiveCamera(const XMVECTOR& position, const XMVECTOR& lookAt, float aspectRatio, float fovy, float zNear, float zFar) : Camera(position), aspectRatio(aspectRatio), fovy(fovy), zNear(zNear), zFar(zFar)
@@ -167,7 +167,9 @@ XMVECTOR PerspectiveCamera::GetPosition() const noexcept
 
 void PerspectiveCamera::Animate(float t, float dt)
 {
-	if (isInAimMode)
+	RoundManager& rm = RoundManager::GetInstance();
+
+	if (isInAimMode && !rm.IsRoundGoing())
 	{
 		POINT cursorMove = InputClass::GetCursorMove();
 		if (InputClass::LeftMBDown())

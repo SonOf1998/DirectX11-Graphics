@@ -3,6 +3,7 @@
 #include "RoundManager.h"
 
 class BallObject;
+class CueObject;
 class PerspectiveCamera;
 
 class BallSet : public Renderable
@@ -10,7 +11,7 @@ class BallSet : public Renderable
 	std::vector<std::unique_ptr<BallObject>> balls;
 
 public:
-	BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera);
+	BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera, CueObject* cue);
 	~BallSet();
 
 	virtual void Render(ID3D11DeviceContext* device, Pipeline* pipeline, Camera* camera = nullptr, Light* light = nullptr) override;

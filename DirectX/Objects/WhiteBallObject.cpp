@@ -2,6 +2,7 @@
 #include "WhiteBallObject.h"
 
 // from DirectX
+#include "CueObject.h"
 #include "Graphics.h"
 #include "BallSet.h"
 #include "PerspectiveCamera.h"
@@ -122,6 +123,17 @@ WhiteBallObject::WhiteBallObject(ID3D11Device* device, ID3D11DeviceContext* devi
 	camera->SetWhiteBallPos(pos);
 	camera->SetTargetBallPos(ballSet->GetClosestTargetBallToCueBall(pos, rm.GetTarget()));
 	camera->GoAimMode();
+}
+
+void WhiteBallObject::InitiateShot(CueObject* cue, float speedFactor, const XMVECTOR& dir)
+{
+	RoundManager& rm = RoundManager::GetInstance();
+	rm.SetRoundGoing(!rm.IsRoundGoing());
+
+	isInAimMode = true;
+	SwitchModes();
+
+	velocity = speedFactor * dir;
 }
 
 void WhiteBallObject::Animate(float t, float dt)

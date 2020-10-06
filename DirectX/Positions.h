@@ -46,4 +46,10 @@
 #define CHAIR_ELEVATION				0.5f
 #define CHAIR_SCALE					XMVectorSet(0.4f, 0.4f, 0.4f, 1)
 
+// D shape z position
+// for placing white ball after scratch
 #define DZ							3.38f
+
+#define CDF_DEFAULT_VAL				4.2f
+#define CDF_LOWER_BOUND				4.05f
+#define CDF_UPPER_BOUND				4.8f

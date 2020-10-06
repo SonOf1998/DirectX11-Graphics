@@ -60,9 +60,9 @@ void Graphics::RenderInitalization()
 	SoundManager::GetInstance().InitializeCamera(camera.get());	// for proper 3D game sounds
 	//RoundManager::Initialize();	// init players
 
-	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get(), camera.get());
+	std::unique_ptr<CueObject> cue = std::make_unique<CueObject>(dev.Get(), devcon.Get(), camera.get(), XMVectorSet(0, SNOOKER_TABLE_POS_Y + BALL_RADIUS * 2, 7.5f, 0), XMVectorSet(0.7f, 0.7f, 0.7f, 1), XMVectorSet(1, 0, 0, 0), 0);
+	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get(), camera.get(), cue.get());
 	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
-	std::unique_ptr<GameObject> cue = std::make_unique<CueObject>(dev.Get(), devcon.Get(), camera.get(), XMVectorSet(0, SNOOKER_TABLE_POS_Y + BALL_RADIUS * 2, 7.5f, 0), XMVectorSet(0.7f, 0.7f, 0.7f, 1), XMVectorSet(1, 0, 0, 0), 0);
 	armchairSet = std::make_unique<ArmchairSet>(dev.Get(), devcon.Get());
 	chairSet = std::make_unique<ChairSet>(dev.Get(), devcon.Get());
 
@@ -86,7 +86,7 @@ void Graphics::RenderInitalization()
 	gameObjects.push_back(std::move(snookerTable));
 	gameObjects.push_back(std::move(cue));
 
-	dirLight = std::make_unique<DirectionalLight>(XMFLOAT3(12, 16, 6), XMFLOAT3(1, 1, 1));
+	dirLight = std::make_unique<DirectionalLight>(XMFLOAT3(0, 1, 0), XMFLOAT3(1, 0, 1));
 	shadowMap.reset(new RenderTargetTexture(dev.Get(), screenWidth, screenHeight, DXGI_FORMAT_R32_FLOAT));
 
 	pipelinePhongBlinn.reset(Pipeline::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), L"Shaders/Phong-Blinn/bin/vs.cso", L"Shaders/Phong-Blinn/bin/ps.cso"));

@@ -2,6 +2,7 @@
 #include "BallObject.h"
 
 class BallSet;
+class CueObject;
 class PerspectiveCamera;
 
 enum class WHITE_BALL_MODE
@@ -37,5 +38,7 @@ public:
 
 
 	void Animate(float t, float dt) override;
+
+	void InitiateShot(CueObject* cue, float speedFactor, const XMVECTOR& dir);
 };
 

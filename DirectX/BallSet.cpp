@@ -5,6 +5,7 @@
 #include "AssimpModel.h"
 #include "BallObject.h"
 #include "CollisionManager.h"
+#include "CueObject.h"
 #include "Resources.h"
 #include "Positions.h"
 #include "WhiteBallObject.h"
@@ -15,11 +16,11 @@
 // from Sounds
 #include "SoundManager.h"
 
-BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera)
+BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera, CueObject* cue)
 {
 	// snooker balls - common resources (shape, shininess, colors)
 	std::shared_ptr<Geometry> ballGeometry = std::make_shared<AssimpModel<P>>(device, LOW_QUALITY_SPHERE_MODEL);
-	std::shared_ptr<Material> ballMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(1, 1, 1), 70.0f);
+	std::shared_ptr<Material> ballMaterial = std::make_shared<Material>(XMFLOAT3(0.3f, 0.3f, 0.3f), XMFLOAT3(0.8f, 0.8f, 0.8f), 70.0f);
 	std::shared_ptr<Texture>  redBallTexture	= std::make_shared<Texture>(device, deviceContext, RED_BALL_TEXTURE, 0);
 	std::shared_ptr<Texture>  yellowBallTexture = std::make_shared<Texture>(device, deviceContext, YELLOW_BALL_TEXTURE, 0);
 	std::shared_ptr<Texture>  greenBallTexture	= std::make_shared<Texture>(device, deviceContext, GREEN_BALL_TEXTURE, 0);
@@ -91,7 +92,10 @@ BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, Persp
 	std::unique_ptr<WhiteBallObject> whiteBall = std::make_unique<WhiteBallObject>(device, deviceContext, -4, camera, this, WHITE_BALL_PREFERRED_POS);
 	ballMesh.SetTexture(whiteBallTexture);
 	whiteBall->CopyAndAddMesh(ballMesh);
+	cue->InitWhiteBall(whiteBall.get());
 	balls.push_back(std::move(whiteBall));
+
+	
 }
 
 BallSet::~BallSet() = default;
