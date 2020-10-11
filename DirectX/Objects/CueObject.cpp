@@ -56,6 +56,11 @@ void CueObject::InitWhiteBall(WhiteBallObject* whiteBall)
 
 void CueObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /* nullptr */, Light* light/* nullptr */)
 {
+	RoundManager& rm = RoundManager::GetInstance();
+	if (!rm.IsWhitePlaced() || rm.IsRoundGoing())
+		return;
+
+
 	XMMATRIX viewProj = XMMatrixIdentity();
 	XMMATRIX viewProjInv = XMMatrixIdentity();
 	if (camera != nullptr)
@@ -95,8 +100,21 @@ void CueObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, C
 
 void CueObject::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Light* light)
 {
+	RoundManager& rm = RoundManager::GetInstance();
+	if (!rm.IsWhitePlaced() || rm.IsRoundGoing())
+		return;
 
+	// Todo, similarly as BallObject
 }
+
+struct Thrust
+{
+	long dy;
+	float dt;
+};
+
+#define MAX_CACHE_SIZE 3
+std::deque<Thrust> thrustCache;
 
 void CueObject::Animate(float t, float dt)
 {
@@ -127,11 +145,27 @@ void CueObject::Animate(float t, float dt)
 		long dy = curMove.y;
 
 		cdf += dy * 0.003f;
-		
+
+		if (thrustCache.size() == MAX_CACHE_SIZE)
+		{
+			thrustCache.pop_front();
+		}
+		thrustCache.push_back(Thrust {dy, dt});
+
 		cdf = std::clamp(cdf, CDF_LOWER_BOUND, CDF_UPPER_BOUND);
 		
 		//todo fwd list for proper speed factor
-		float speedFactor = -dy / (500 * dt);
+
+		long sumDy = 0;
+		float sumDt = 0;
+		for (uint i = 0; i < thrustCache.size(); ++i)
+		{
+			auto& cacheElement = thrustCache[i];
+			sumDy += cacheElement.dy;
+			sumDt += cacheElement.dt;
+		}
+
+		float speedFactor = -sumDy / (750 * sumDt);
 		if (cdf == CDF_LOWER_BOUND)
 		{
 			whiteBall->InitiateShot(this, speedFactor, dir2D);

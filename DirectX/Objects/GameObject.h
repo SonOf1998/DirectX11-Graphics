@@ -21,6 +21,8 @@ protected:
 	XMVECTOR position;
 	XMVECTOR scale;
 	XMMATRIX rotation;
+
+	bool isHidden = false;
 		
 	void AddMeshAxisAlignedBoundingBox();
 
@@ -37,4 +39,6 @@ public:
 	void AddMesh(Mesh*);
 	void AddMesh(std::unique_ptr<Mesh>&&);
 	void CopyAndAddMesh(Mesh);
+
+	void SetHidden(bool hidden) noexcept;
 };

@@ -58,3 +58,8 @@ void GameObject::CopyAndAddMesh(Mesh mesh)
 	AddMeshAxisAlignedBoundingBox();
 }
 
+void GameObject::SetHidden(bool hidden) noexcept
+{
+	isHidden = hidden;
+}
+

@@ -125,7 +125,9 @@ void PerspectiveCamera::GoAimMode()
 	SetPosition(XMVectorSet((wbp.x - tbp.x) + wbp.x, wbp.y, (wbp.z - tbp.z) + wbp.z, 0.0f));
 	SetLookAt(whiteBallPos);
 	defaultPos = position;
-	
+	gyroAngle = 0;
+	extraElevation = 0;
+
 	//log
 	// Logger::print(wbp);
 	// Logger::print(tbp);
@@ -169,13 +171,13 @@ void PerspectiveCamera::Animate(float t, float dt)
 {
 	RoundManager& rm = RoundManager::GetInstance();
 
-	if (isInAimMode && !rm.IsRoundGoing())
+	if ((WhiteBallObject::isInAimMode || WhiteBallObject::isInFineAimMode) && !rm.IsRoundGoing())
 	{
 		POINT cursorMove = InputClass::GetCursorMove();
 		if (InputClass::LeftMBDown())
 		{
-
 			float gyroStep = 0;
+			float elevationStep = 0.008f;
 
 			if (WhiteBallObject::isInAimMode)
 				gyroStep = 0.002f;
@@ -183,6 +185,11 @@ void PerspectiveCamera::Animate(float t, float dt)
 				gyroStep = 0.0005f;
 
 			gyroAngle += cursorMove.x * gyroStep;
+
+			if (std::fabsf(cursorMove.y) >= std::fabs(3 * cursorMove.x))
+				extraElevation += cursorMove.y * elevationStep;
+
+			extraElevation = std::clamp(extraElevation, -0.33f, 1.1f);
 		}
 		
 
@@ -198,7 +205,7 @@ void PerspectiveCamera::Animate(float t, float dt)
 		// can be adjusted by rolling the mouse's middle button
 		float len = Length(whiteBallPos - targetBallPos);
 		float distance_factor = aimModeMagnification * 0.4f / (len / 6.0f);
-		float elevation = aimModeMagnification * std::max(0.9f * (len / 6.0f), 0.4f);
+		float elevation = aimModeMagnification * std::max(0.9f * (len / 6.0f), 0.5f) + extraElevation;
 
 		XMVECTOR newDir = XMVectorSet(distance_factor * xNew, y + elevation, distance_factor * zNew, 0);
 		position = whiteBallPos + newDir;

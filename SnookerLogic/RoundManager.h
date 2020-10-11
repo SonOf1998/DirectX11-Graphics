@@ -23,8 +23,6 @@ enum class TABLE_STATE
 	ONLY_COLORS
 };
 
-
-
 class RoundManager
 {
 	std::unique_ptr<Player> p1;
@@ -33,10 +31,11 @@ class RoundManager
 	Player* currentlyPlayingPlayer;
 	TARGET target;	// target ball
 
-	bool roundHandled = true;
+	bool roundGoing = false;
 	bool whiteMovable = true;
 	bool whitePlaced  = true;
 	std::vector<std::unique_ptr<BallObject>> ballsPottedCurrRound;
+	BallObject* firstHit = nullptr;
 
 	RoundManager();
 
@@ -44,17 +43,20 @@ public:
 	~RoundManager();
 	static RoundManager& GetInstance();
 
-	void SetRoundHandled(bool roundHandled);
 	TARGET GetTarget() const noexcept;
 	
 
 	// handling dropped white ball
 	bool IsWhiteDroppedLastRound()		const	noexcept;
+	void SetWhiteDropped(bool dropped)			noexcept;
 	bool IsWhitePlaced()				const	noexcept;
 	void SetWhitePlaced(bool placed)			noexcept;
+	bool IsRoundGoing()					const	noexcept;
+	void SetRoundGoing(bool state)				noexcept;
+	void MemoFirstHit(BallObject* ball)			noexcept;
 
 	void AddNewPottedBall(std::unique_ptr<BallObject>&& ball);
-	void ManagePoints(bool hadHits);
+	void ManagePoints();
 	std::vector<std::unique_ptr<BallObject>> GetBallsToPutBack(TABLE_STATE ts);
 };
 

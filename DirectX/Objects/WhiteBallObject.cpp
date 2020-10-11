@@ -128,10 +128,12 @@ WhiteBallObject::WhiteBallObject(ID3D11Device* device, ID3D11DeviceContext* devi
 void WhiteBallObject::InitiateShot(CueObject* cue, float speedFactor, const XMVECTOR& dir)
 {
 	RoundManager& rm = RoundManager::GetInstance();
-	rm.SetRoundGoing(!rm.IsRoundGoing());
 
-	isInAimMode = true;
+	rm.SetRoundGoing(true);			// start the round
+	rm.SetWhiteDropped(false);		// white is not yet dropped
+	isInAimMode = true;				// next shot should start in aim mode
 	SwitchModes();
+	cue->ResetCDF();				// reset cue and wb distance
 
 	velocity = speedFactor * dir;
 }

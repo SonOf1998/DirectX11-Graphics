@@ -5,10 +5,13 @@
 class BallObject;
 class CueObject;
 class PerspectiveCamera;
+class WhiteBallObject;
 
 class BallSet : public Renderable
 {
 	std::vector<std::unique_ptr<BallObject>> balls;
+	PerspectiveCamera* camera;
+	WhiteBallObject* whiteBallRef;	
 
 public:
 	BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera, CueObject* cue);

@@ -7,6 +7,7 @@
 #include "CollisionManager.h"
 #include "CueObject.h"
 #include "Resources.h"
+#include "PerspectiveCamera.h"
 #include "Positions.h"
 #include "WhiteBallObject.h"
 
@@ -16,7 +17,7 @@
 // from Sounds
 #include "SoundManager.h"
 
-BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera, CueObject* cue)
+BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera, CueObject* cue) : camera(camera)
 {
 	// snooker balls - common resources (shape, shininess, colors)
 	std::shared_ptr<Geometry> ballGeometry = std::make_shared<AssimpModel<P>>(device, LOW_QUALITY_SPHERE_MODEL);
@@ -92,6 +93,7 @@ BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, Persp
 	std::unique_ptr<WhiteBallObject> whiteBall = std::make_unique<WhiteBallObject>(device, deviceContext, -4, camera, this, WHITE_BALL_PREFERRED_POS);
 	ballMesh.SetTexture(whiteBallTexture);
 	whiteBall->CopyAndAddMesh(ballMesh);
+	whiteBallRef = whiteBall.get();
 	cue->InitWhiteBall(whiteBall.get());
 	balls.push_back(std::move(whiteBall));
 
@@ -116,10 +118,19 @@ void BallSet::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pi
 	}
 }
 
+std::map<int, XMVECTOR> preferredPositions = {
+	{-4, WHITE_BALL_PREFERRED_POS},
+	{2, YELLOW_BALL_POS},
+	{3, GREEN_BALL_POS},
+	{4, BROWN_BALL_POS},
+	{5, BLUE_BALL_POS},
+	{6, PINK_BALL_POS},
+	{7, BLACK_BALL_POS}
+};
+
 void BallSet::Animate(float t, float dt)
 {
 	RoundManager& rm = RoundManager::GetInstance();
-	bool hadHit = false;
 
 	// Collision with balls
 	for (uint i = 0; i < balls.size(); ++i)
@@ -129,7 +140,17 @@ void BallSet::Animate(float t, float dt)
 			if (CollisionManager::Intersects(balls[i].get(), balls[j].get()))
 			{
 				// detecting failed snooker attempts in RoundManager::ManagePoint  
-				hadHit = true;
+				// also it handles first hit fouls
+				if (balls[i]->GetPoint() == -4)
+				{
+					rm.MemoFirstHit(balls[j].get());
+				}
+				else if (balls[j]->GetPoint() == -4)
+				{
+					rm.MemoFirstHit(balls[i].get());
+				}
+				
+				// TODO spin!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 				XMVECTOR normal = XMVector3Normalize(balls[i]->GetPosition() - balls[j]->GetPosition());
 				XMVECTOR tangent = XMVectorSet(-XMVectorGetZ(normal), 0, XMVectorGetX(normal), 0);
@@ -175,6 +196,7 @@ void BallSet::Animate(float t, float dt)
 			XMVECTOR normalV = XMVectorSet(normal.x, 0, normal.y, 0);
 			XMVECTOR velocity = balls[i]->GetVelocity();
 
+			// TODO needs urgent refactor as it can freeze the game totally
 			do {
 				balls[i]->SetPosition(balls[i]->GetPosition() - velocity * 0.01f * dt);
 			} while (CollisionManager::IntersectsWall(balls[i].get(), dummyNormal));
@@ -197,16 +219,22 @@ void BallSet::Animate(float t, float dt)
 	{
 		if (CollisionManager::IntersectsHole(balls[i].get()))
 		{
+			if (balls[i]->GetPoint() == -4)
+				rm.SetWhiteDropped(true);
+
+			XMFLOAT3 collisionCenter;
+			float velocity = XMVectorGetX(XMVector3Length(balls[i]->GetVelocity()));
+			balls[i]->SetVelocity(NULL_VELOCITY);
+			XMStoreFloat3(&collisionCenter, balls[i]->GetPosition());
+
 			rm.AddNewPottedBall(std::move(balls[i]));
 			balls.erase(balls.begin() + i);
 
 			SoundManager& sm = SoundManager::GetInstance();
-			XMFLOAT3 collisionCenter;
-			XMStoreFloat3(&collisionCenter, balls[i]->GetPosition());
-			sm.PlaySound(sm.GetBallHoleCollosionSoundFileName(XMVectorGetX(XMVector3Length(balls[i]->GetVelocity()))),
+			sm.PlaySound(sm.GetBallHoleCollosionSoundFileName(velocity),
 				collisionCenter,
-				reinterpret_cast<void*>(balls[i].get()),
-				reinterpret_cast<void*>(balls[i].get())
+				nullptr,
+				nullptr
 			);
 		}
 	}
@@ -218,9 +246,33 @@ void BallSet::Animate(float t, float dt)
 			stillMoving = true;
 	}
 
-	if (!stillMoving) // every ball is either in a static state or potted
+	// The time to finish the round and handle the points
+	// every ball is either in a static state or potted
+	// and round is not yet administrated
+	if (!stillMoving && rm.IsRoundGoing()) 
 	{
-		rm.ManagePoints(hadHit);
+		rm.ManagePoints();
+		std::vector<std::unique_ptr<BallObject>> ballsToPutBack = rm.GetBallsToPutBack(TABLE_STATE::HAS_REDS);
+		camera->SetWhiteBallPos(whiteBallRef->GetPosition());
+		camera->SetTargetBallPos(GetClosestTargetBallToCueBall(whiteBallRef->GetPosition(), rm.GetTarget()));
+		camera->GoAimMode();
+
+		for (int i = 0; i < ballsToPutBack.size(); ++i)
+		{
+			std::unique_ptr<BallObject>& ball = ballsToPutBack[i];
+
+			XMVECTOR placeBackPos = preferredPositions[ball->GetPoint()];
+			bool placedBack = false;
+			while (!placedBack)
+			{
+				if (!IsPlaceUsed(placeBackPos, true))
+				{
+					ball->SetPosition(placeBackPos);
+					balls.push_back(std::move(ball));
+					placedBack = true;
+				}
+			}
+		}
 	}
 
 

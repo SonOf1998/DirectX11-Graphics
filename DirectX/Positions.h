@@ -46,6 +46,9 @@
 #define CHAIR_ELEVATION				0.5f
 #define CHAIR_SCALE					XMVectorSet(0.4f, 0.4f, 0.4f, 1)
 
+
+#define NULL_VELOCITY				XMVectorSet(0,0,0,0)
+
 // D shape z position
 // for placing white ball after scratch
 #define DZ							3.38f

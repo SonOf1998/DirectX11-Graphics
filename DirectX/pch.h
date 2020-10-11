@@ -7,6 +7,7 @@
 // standard library //
 #include <cmath>
 #include <cstring>
+#include <deque>
 #include <limits>
 #include <map>
 #include <memory>

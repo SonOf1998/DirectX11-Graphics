@@ -24,7 +24,7 @@ class PerspectiveCamera : public Camera
 											// and the white ball gets autofocused
 											// this is the default direction we then rotate by gyroAngle
 	float gyroAngle = 0.0f;
-	bool isInAimMode = true;
+	float extraElevation = 0.0f;
 
 public:
 
