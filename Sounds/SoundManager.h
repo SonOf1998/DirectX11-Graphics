@@ -34,6 +34,13 @@ public:
 			{
 				{0, HOLE_SOUND}
 			}
+		},
+
+		{"Cue-Ball",
+			{
+				{0, CUE_LIGHT_SOUND},
+				{1, CUE_SOUND}
+			}
 		}
 	};
 
@@ -41,7 +48,8 @@ public:
 
 	LPCWSTR GetBallBallCollisionSoundFileName(float velocity);
 	LPCWSTR GetBallWallCollisionSoundFileName(float velocity);
-	LPCWSTR GetBallHoleCollosionSoundFileName(float velocity);
+	LPCWSTR GetBallHoleCollisionSoundFileName(float velocity);
+	LPCWSTR GetCueBallCollisionSoundFileName(float speedFactor);
 
 private:
 

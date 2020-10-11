@@ -16,6 +16,9 @@
 // from SnookerLogic
 #include "RoundManager.h"
 
+// from Sounds
+#include "SoundManager.h"
+
 CueObject::CueObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera, XMVECTOR position, XMVECTOR scale, XMVECTOR rotationAxis, float rotationAngle) :
 	GameObject(device, deviceContext, position, scale, rotationAxis, rotationAngle),
 	camera(camera)
@@ -168,6 +171,16 @@ void CueObject::Animate(float t, float dt)
 		float speedFactor = -sumDy / (750 * sumDt);
 		if (cdf == CDF_LOWER_BOUND)
 		{
+			SoundManager& sm = SoundManager::GetInstance();
+			XMFLOAT3 soundEffectCenter;
+			XMStoreFloat3(&soundEffectCenter, whiteBall->GetPosition());
+			sm.PlaySound(sm.GetCueBallCollisionSoundFileName(speedFactor),
+				soundEffectCenter,
+				nullptr,
+				nullptr
+			);
+
+
 			whiteBall->InitiateShot(this, speedFactor, dir2D);
 		}
 	}
