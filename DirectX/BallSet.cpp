@@ -253,28 +253,88 @@ void BallSet::Animate(float t, float dt)
 	{
 		rm.ManagePoints();
 		std::vector<std::unique_ptr<BallObject>> ballsToPutBack = rm.GetBallsToPutBack(TABLE_STATE::HAS_REDS);
-		camera->SetWhiteBallPos(whiteBallRef->GetPosition());
-		camera->SetTargetBallPos(GetClosestTargetBallToCueBall(whiteBallRef->GetPosition(), rm.GetTarget()));
-		camera->GoAimMode();
 
-		for (int i = 0; i < ballsToPutBack.size(); ++i)
+		struct BallReplacementStatus
+		{
+			uint index;
+			bool placedBack;
+		};
+
+		std::vector<BallReplacementStatus> statuses;	
+
+		for (uint i = 0; i < ballsToPutBack.size(); ++i)
 		{
 			std::unique_ptr<BallObject>& ball = ballsToPutBack[i];
+			bool isWhite = ball->GetPoint() == -4;
 
 			XMVECTOR placeBackPos = preferredPositions[ball->GetPoint()];
 			bool placedBack = false;
-			while (!placedBack)
+
+			// as the first attempt, just try to replace the ball to its original spot
+			// most of the time it will work
+			if (!IsPlaceUsed(placeBackPos, true))
 			{
+				ball->SetPosition(placeBackPos);
+				balls.push_back(std::move(ball));
+				placedBack = true;
+			}
+			// if it didn't work out then memorize the indices
+			// of the balls that aren't placed back yet
+			else {
+				statuses.push_back(BallReplacementStatus{ i, false });
+			}
+		}
+
+		for (auto& status : statuses)
+		{
+			std::unique_ptr<BallObject>& ball = ballsToPutBack[status.index];
+			bool isWhite = ball->GetPoint() == -4;
+
+			bool placed = false;
+
+			// try putting the balls back to the empty places of coloured balls
+			for (uint i = 7; i >= 2 && !placed && !isWhite; --i)
+			{
+				XMVECTOR placeBackPos = preferredPositions[i];
 				if (!IsPlaceUsed(placeBackPos, true))
 				{
 					ball->SetPosition(placeBackPos);
 					balls.push_back(std::move(ball));
-					placedBack = true;
+					placed = true;
+				}
+			}
+
+			// if it fails then try to put as close to pink as possible
+			// handling white is unique: we try every position on the D-shape's straight part
+			if (!placed)
+			{
+				if (isWhite)
+				{
+					XMVECTOR placeBackPos = preferredPositions[-4];
+					do {
+						placeBackPos -= XMVectorSet(0.004f, 0, 0, 0);
+					} while (IsPlaceUsed(placeBackPos, true));
+
+					ball->SetPosition(placeBackPos);
+					balls.push_back(std::move(ball));
+				}
+				else
+				{
+					XMVECTOR placeBackPos = preferredPositions[6];
+					do {
+						placeBackPos += XMVectorSet(0, 0, 0.004f, 0);
+					} while (IsPlaceUsed(placeBackPos, true));
+
+					ball->SetPosition(placeBackPos);
+					balls.push_back(std::move(ball));
 				}
 			}
 		}
-	}
 
+		camera->SetWhiteBallPos(whiteBallRef->GetPosition());
+		camera->SetTargetBallPos(GetClosestTargetBallToCueBall(whiteBallRef->GetPosition(), rm.GetTarget()));
+		camera->GoAimMode();
+	}
 
 	for (const auto& ball : balls)
 	{
