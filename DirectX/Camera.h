@@ -14,6 +14,7 @@ protected:
 	XMVECTOR whiteBallPos;
 	XMVECTOR targetBallPos;		// if there are more then the closest
 
+	Camera() = default;
 	Camera(const XMVECTOR& position);
 
 public:

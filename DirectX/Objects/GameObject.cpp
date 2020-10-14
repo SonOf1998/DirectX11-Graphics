@@ -13,6 +13,7 @@ GameObject::GameObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext,
 	modelMatrix = scaleMatrix * rotation * translationMatrix;	
 }
 
+GameObject::GameObject() = default;
 GameObject::~GameObject() = default;
 
 void GameObject::AddMeshAxisAlignedBoundingBox()

@@ -6,6 +6,7 @@
 #include "HResultException.h"
 #include "BallSet.h"
 #include "ChairSet.h"
+#include "OverlaySet.h"
 #include "Geometry.h"
 #include "AssimpModel.h"
 #include "AssimpMultiModel.h"
@@ -21,6 +22,7 @@
 #include "Pipeline.h"
 #include "PerspectiveCamera.h"
 #include "Camera.h"
+#include "OrthographicCamera.h"
 #include "RenderTargetTexture.h"
 #include "FullScreenQuadObject.h"
 #include "FullScreenQuadGeometry.h"
@@ -57,8 +59,13 @@ Graphics::Graphics(UINT screenWidth, UINT screenHeight, HWND hwnd) : hwnd(hwnd)
 void Graphics::RenderInitalization()
 {
 	camera = std::make_unique<PerspectiveCamera>(XMVectorSet(0, 2, 6, 1), XMVectorSet(0, 0, 3, 1), static_cast<float>(screenWidth) / screenHeight);
+	overlayCamera = std::make_unique<OrthographicCamera>();		// will get its parameters from GRAPHICS's statics
 	SoundManager::GetInstance().InitializeCamera(camera.get());	// for proper 3D game sounds
 	//RoundManager::Initialize();	// init players
+
+	overlaySet = std::make_unique<OverlaySet>(dev.Get(), devcon.Get());
+	RoundManager& rm = RoundManager::GetInstance();
+	rm.InitOverlaySystem(dev.Get(), devcon.Get(), reinterpret_cast<OverlaySet*>(overlaySet.get()));
 
 	std::unique_ptr<CueObject> cue = std::make_unique<CueObject>(dev.Get(), devcon.Get(), camera.get(), XMVectorSet(0, SNOOKER_TABLE_POS_Y + BALL_RADIUS * 2, 7.5f, 0), XMVectorSet(0.7f, 0.7f, 0.7f, 1), XMVectorSet(1, 0, 0, 0), 0);
 	ballSet = std::make_unique<BallSet>(dev.Get(), devcon.Get(), camera.get(), cue.get());
@@ -95,6 +102,7 @@ void Graphics::RenderInitalization()
 	pipelineShadowMap.reset(Pipeline::Create<InputLayoutP>(dev.Get(), devcon.Get(), SHADOWMAP_DIRECTIONAL_VS, SHADOWMAP_DIRECTIONAL_PS));
 	pipelineLoDTess.reset(Pipeline::Create<InputLayoutP>(dev.Get(), devcon.Get(), BALL_HWTESS_LOD_VS, BALL_HWTESS_LOD_PS, nullptr, BALL_HWTESS_LOD_HS, BALL_HWTESS_LOD_DS));
 	pipelineBezierQuad.reset(Pipeline::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), BEZIER_QUAD_VS, BEZIER_QUAD_PS, nullptr, BEZIER_QUAD_HS, BEZIER_QUAD_DS));
+	pipelineOverlay.reset(Pipeline::Create<InputLayoutPT>(dev.Get(), devcon.Get(), OVERLAY_VS, OVERLAY_PS));
 }
 
 
@@ -175,6 +183,13 @@ void Graphics::RenderFrame(float t, float dt)
 	pipelineLoDTess->Use();
 	ballSet->Animate(t, dt);
 	ballSet->Render(devcon.Get(), pipelineLoDTess.get(), camera.get());
+
+	devcon->OMSetBlendState(overlayBlendState.Get(), nullptr, 0xFFFFFF);
+	pipelineOverlay->Use();
+	overlaySet->Animate(t, dt);
+	overlaySet->Render(devcon.Get(), pipelineOverlay.get(), overlayCamera.get());
+	devcon->OMSetBlendState(defaultBlendState.Get(), nullptr, 0xFFFFFF);
+
 
 
 	ImGui_ImplDX11_NewFrame();
@@ -454,6 +469,27 @@ void Graphics::CreateAndSetDepthStencilState()
 	
 	THROW_IF_HRESULT_FAILED(dev->CreateDepthStencilView(depthStencilBuffer.Get(), &depthStencilViewDesc, depthStencilView.ReleaseAndGetAddressOf()));
 }
+
+void Graphics::CreateBlendStates()
+{
+	D3D11_BLEND_DESC defBlendStateDesc = {};
+	defBlendStateDesc.RenderTarget[0].BlendEnable = false;
+	defBlendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	dev->CreateBlendState(&defBlendStateDesc, defaultBlendState.GetAddressOf());
+
+	D3D11_BLEND_DESC overlayBlendStateDesc = {};
+	overlayBlendStateDesc.RenderTarget[0].BlendEnable = true;
+	overlayBlendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	overlayBlendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	overlayBlendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	overlayBlendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	overlayBlendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	overlayBlendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	overlayBlendStateDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+	dev->CreateBlendState(&overlayBlendStateDesc, overlayBlendState.GetAddressOf());
+
+	devcon->OMSetBlendState(defaultBlendState.Get(), nullptr, 0xFFFFFF);
+}
  
 void Graphics::InitializeDirectX11()
 {
@@ -480,7 +516,7 @@ void Graphics::InitializeDirectX11()
 	CreateRenderTarget();
 	CreateAndSetDepthStencilState();
 	CreateAndSetRasterizerState();
-
+	CreateBlendStates();
 
 
 	viewport.Width = static_cast<float>(screenWidth);
@@ -605,6 +641,8 @@ void Graphics::Resize(UINT newWidth, UINT newHeight)
 	viewport.MaxDepth = 1.0f;
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
+
+	reinterpret_cast<OverlaySet*>(overlaySet.get())->MarkForUpdate();
 
 	devcon->RSSetViewports(1, &viewport);	
 	ImGuiIO& io = ImGui::GetIO();

@@ -12,6 +12,7 @@
 #define ARMCHAIR_MODEL						MODEL_ROOTDIR "armchair.fbx"
 #define CHAIR_MODEL							MODEL_ROOTDIR "chair.fbx"
 #define CUE_MODEL							MODEL_ROOTDIR "cue.fbx"
+#define QUAD_MODEL							MODEL_ROOTDIR "quad.obj"
 
 // ... TEXTURES ...
 
@@ -31,6 +32,16 @@
 #define BLUE_BALL_TEXTURE					TEXTURE_ROOTDIR "blueball.png"		
 #define PINK_BALL_TEXTURE					TEXTURE_ROOTDIR "pinkball.png"		
 #define BLACK_BALL_TEXTURE					TEXTURE_ROOTDIR "blackball.png"	
+
+#define WHITE_BALL_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "white_overlay_item.png"
+#define RED_BALL_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "red_overlay_item.png"
+#define YELLOW_BALL_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "yellow_overlay_item.png"
+#define GREEN_BALL_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "green_overlay_item.png"
+#define BROWN_BALL_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "brown_overlay_item.png"
+#define BLUE_BALL_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "blue_overlay_item.png"
+#define PINK_BALL_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "pink_overlay_item.png"
+#define BLACK_BALL_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "black_overlay_item.png"
+#define NOMINATE_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "nominate_overlay_item.png"
 
 #define ARMCHAIR_PILLOW_TEXTURE				TEXTURE_ROOTDIR "pillow.jpg"
 #define ARMCHAIR_BUMP_TEXTURE				TEXTURE_ROOTDIR "bump.png"
@@ -53,6 +64,8 @@
 #define HOLE_SOUND							SOUNDS_ROOTDIR "hole.wav"
 #define BALL_HIT_SOUND						SOUNDS_ROOTDIR "ball_hit.wav"
 #define LIGHT_TOUCHING_SOUND				SOUNDS_ROOTDIR "light_touching.wav"
+#define CUE_SOUND							SOUNDS_ROOTDIR "cue.wav"
+#define CUE_LIGHT_SOUND						SOUNDS_ROOTDIR "cue_light.wav"
 
 
 // ... SHADERS ....
@@ -83,6 +96,10 @@
 #define BEZIER_QUAD_HS						SHADER_ROOTDIR BEZIER_QUAD HS
 #define BEZIER_QUAD_DS						SHADER_ROOTDIR BEZIER_QUAD DS
 #define BEZIER_QUAD_PS						SHADER_ROOTDIR BEZIER_QUAD PS
+
+#define OVERLAY								"Overlay/bin/"
+#define OVERLAY_VS							SHADER_ROOTDIR OVERLAY VS
+#define OVERLAY_PS							SHADER_ROOTDIR OVERLAY PS
 
 // ... CLEAR COLORS ...
 

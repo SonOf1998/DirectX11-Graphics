@@ -4,6 +4,7 @@ class GameObject;
 class Light;
 class Renderable;
 class RenderTargetTexture;
+class OrthographicCamera;
 class PerspectiveCamera;
 class Pipeline;
 
@@ -14,10 +15,12 @@ std::unique_ptr<Pipeline>				pipelineMirror;				\
 std::unique_ptr<Pipeline>				pipelineShadowMap;			\
 std::unique_ptr<Pipeline>				pipelineLoDTess;			\
 std::unique_ptr<Pipeline>				pipelineBezierQuad;			\
+std::unique_ptr<Pipeline>				pipelineOverlay;			\
 																	\
 std::unique_ptr<Renderable>				ballSet;					\
 std::unique_ptr<Renderable>				armchairSet;				\
 std::unique_ptr<Renderable>				chairSet;					\
+std::unique_ptr<Renderable>				overlaySet;					\
 
 
 
@@ -35,10 +38,14 @@ private:
 	ComPtr<ID3D11RenderTargetView>	renderTargetView;
 	ComPtr<ID3D11DepthStencilState> depthStencilState;
 	ComPtr<ID3D11DepthStencilView>	depthStencilView;
+	ComPtr<ID3D11BlendState>		defaultBlendState;
+	ComPtr<ID3D11BlendState>		overlayBlendState;
+
 
 	D3D11_VIEWPORT					viewport;
 
 	std::unique_ptr<PerspectiveCamera>			camera;
+	std::unique_ptr<OrthographicCamera>			overlayCamera;
 	std::vector<std::unique_ptr<GameObject>>	gameObjects;
 
 	PIPELINES_AND_OBJECTS
@@ -53,6 +60,7 @@ private:
 	void CreateRenderTarget();
 	void CreateAndSetRasterizerState();
 	void CreateAndSetDepthStencilState();
+	void CreateBlendStates();
 	
 	void InitializeDirectX11();
 	void InitializeImGui();

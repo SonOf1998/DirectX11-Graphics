@@ -28,6 +28,7 @@ protected:
 
 public:
 
+	GameObject();
 	GameObject(ID3D11Device*, ID3D11DeviceContext*, XMVECTOR = XMVectorSet(0,0,0,0), XMVECTOR = XMVectorSet(1,1,1,1), XMVECTOR = XMVectorSet(0,0,1,0), float = 0.0f);
 	GameObject(const GameObject&)	= delete;
 	virtual ~GameObject();

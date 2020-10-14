@@ -231,7 +231,7 @@ void BallSet::Animate(float t, float dt)
 			balls.erase(balls.begin() + i);
 
 			SoundManager& sm = SoundManager::GetInstance();
-			sm.PlaySound(sm.GetBallHoleCollosionSoundFileName(velocity),
+			sm.PlaySound(sm.GetBallHoleCollisionSoundFileName(velocity),
 				collisionCenter,
 				nullptr,
 				nullptr

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "RoundManager.h"
 
+#include "OverlayObject.h"
+#include "OverlaySet.h"
 
 RoundManager::RoundManager()
 {
@@ -17,6 +19,17 @@ RoundManager& RoundManager::GetInstance()
 {
 	static RoundManager rm;
 	return rm;
+}
+
+void RoundManager::InitOverlaySystem(ID3D11Device* device, ID3D11DeviceContext* deviceContext, OverlaySet* overlay)
+{
+	overlaySet = overlay;
+	this->device = device;
+	this->deviceContext = deviceContext;
+	
+	// red ball as the first target
+	std::unique_ptr<OverlayObject> overlayItem = std::make_unique<OverlayObject>(device, deviceContext, std::numeric_limits<float>::max(), RED_BALL, OVERLAY_TARGET);
+	overlaySet->AddOverlayItem(std::move(overlayItem));
 }
 
 TARGET RoundManager::GetTarget() const noexcept
@@ -70,6 +83,16 @@ void RoundManager::MemoFirstHit(BallObject* ball) noexcept
 void RoundManager::AddNewPottedBall(std::unique_ptr<BallObject>&& ball)
 {
 	ballsPottedCurrRound.push_back(std::move(ball));
+	overlaySet->KillOverlayWithTTL();
+
+	for (uint i = 0; i < ballsPottedCurrRound.size(); ++i)
+	{
+		int point = ballsPottedCurrRound[i]->GetPoint();
+		int ballResId = (point == -4) ? 7 : point - 1;
+		int spotResId = OVERLAY_POT6 - ballsPottedCurrRound.size() + 1 + i;
+		std::unique_ptr<OverlayObject> overlayItem = std::make_unique<OverlayObject>(device, deviceContext, 2 + i * 0.10f, (BALL)ballResId, (OVERLAY_SPOT)spotResId);
+		overlaySet->AddOverlayItem(std::move(overlayItem));
+	}
 }
 
 /* If all the balls are stopped we can calculate the points.
@@ -221,4 +244,9 @@ std::vector<std::unique_ptr<BallObject>> RoundManager::GetBallsToPutBack(TABLE_S
 		return b1->GetPoint() > b2->GetPoint();
 	});
 	return ballsToPutBack;
+}
+
+void RoundManager::ClearOverlay()
+{
+	overlaySet->KillOverlayWithTTL();
 }

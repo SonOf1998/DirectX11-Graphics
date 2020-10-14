@@ -6,6 +6,8 @@
 // from SnookerLogic
 #include "Player.h"
 
+class OverlaySet;
+
 enum TARGET
 {
 	RED,
@@ -16,6 +18,20 @@ enum TARGET
 	PINK,
 	BLACK
 };
+
+enum BALL
+{
+	RED_BALL,
+	YELLOW_BALL,
+	GREEN_BALL,
+	BROWN_BALL,
+	BLUE_BALL,
+	PINK_BALL,
+	BLACK_BALL,
+	WHITE_BALL,
+	NOMINATE_WARNING
+};
+
 
 enum class TABLE_STATE
 {
@@ -37,11 +53,21 @@ class RoundManager
 	std::vector<std::unique_ptr<BallObject>> ballsPottedCurrRound;
 	BallObject* firstHit = nullptr;
 
+	///////////////////////
+	// handling overlays //
+	///////////////////////
+	ID3D11Device* device;
+	ID3D11DeviceContext* deviceContext;
+	OverlaySet* overlaySet;
+	///////////////////////
+
 	RoundManager();
 
 public:
 	~RoundManager();
 	static RoundManager& GetInstance();
+
+	void InitOverlaySystem(ID3D11Device* device, ID3D11DeviceContext* deviceContext, OverlaySet* overlay);
 
 	TARGET GetTarget() const noexcept;
 	
@@ -58,5 +84,7 @@ public:
 	void AddNewPottedBall(std::unique_ptr<BallObject>&& ball);
 	void ManagePoints();
 	std::vector<std::unique_ptr<BallObject>> GetBallsToPutBack(TABLE_STATE ts);
+
+	void ClearOverlay();
 };
 

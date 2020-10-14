@@ -156,9 +156,6 @@
     <ClCompile Include="PerspectiveCamera.cpp">
       <Filter>Header Files\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="OrtographicCamera.cpp">
-      <Filter>Header Files\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="Animatable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -179,6 +176,15 @@
     </ClCompile>
     <ClCompile Include="Objects\CueObject.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\OverlayObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OverlaySet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OrthographicCamera.cpp">
+      <Filter>Header Files\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -303,9 +309,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Header Files\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="OrtographicCamera.h">
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
     <ClInclude Include="PerspectiveCamera.h">
@@ -563,6 +566,15 @@
     <ClInclude Include="Objects\CueObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Objects\OverlayObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OverlaySet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OrthographicCamera.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\FullScreenQuadPT\ps.hlsl" />
@@ -595,6 +607,8 @@
     <FxCompile Include="Shaders\BezierQuad\hs.hlsl" />
     <FxCompile Include="Shaders\BezierQuad\ps.hlsl" />
     <FxCompile Include="Shaders\BezierQuad\vs.hlsl" />
+    <FxCompile Include="Shaders\Overlay\ps.hlsl" />
+    <FxCompile Include="Shaders\Overlay\vs.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\PN-Triangles\DS_PS_transfer.hlsli">
@@ -642,5 +656,6 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="Shaders\Overlay\vs_ps_transfer.hlsli" />
   </ItemGroup>
 </Project>
