@@ -126,6 +126,17 @@ void OverlayObject::MarkForUpdate() noexcept
 	needsUpdate = true;
 }
 
+bool OverlayObject::IsTargetBallOverlay()
+{
+	return overlaySpot == OVERLAY_TARGET;
+}
+
+void OverlayObject::SetTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, BALL targetBall)
+{
+	std::shared_ptr<Texture>  overlayTexture = std::make_shared<Texture>(device, deviceContext, GetProperTextureForBall(targetBall), 0);
+	meshes[0]->SetTexture(overlayTexture);
+}
+
 void OverlayObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera, Light*)
 {
 	if (!StillLiving())

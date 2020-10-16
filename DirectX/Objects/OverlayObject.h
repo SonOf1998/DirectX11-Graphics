@@ -33,6 +33,8 @@ public:
 	bool StillLiving() const noexcept;
 	void Kill()				 noexcept;
 	void MarkForUpdate()	 noexcept;
+	bool IsTargetBallOverlay();
+	void SetTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, BALL targetBall);
 
 	void Render(ID3D11DeviceContext*, Pipeline*, Camera* = nullptr, Light* = nullptr) override;
 	void Animate(float t, float dt) override;

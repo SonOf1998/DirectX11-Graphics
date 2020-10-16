@@ -6,6 +6,7 @@
 // from SnookerLogic
 #include "Player.h"
 
+class BallSet;
 class OverlaySet;
 
 enum TARGET
@@ -33,19 +34,14 @@ enum BALL
 };
 
 
-enum class TABLE_STATE
-{
-	HAS_REDS,
-	ONLY_COLORS
-};
-
 class RoundManager
 {
 	std::unique_ptr<Player> p1;
 	std::unique_ptr<Player> p2;
 		
 	Player* currentlyPlayingPlayer;
-	TARGET target;	// target ball
+	TARGET target;			// target ball
+	TARGET newTarget;		// new target calculated in ManagePoints and is assigned to 'target' at the end of GetBallsToBack
 
 	bool roundGoing = false;
 	bool whiteMovable = true;
@@ -82,8 +78,8 @@ public:
 	void MemoFirstHit(BallObject* ball)			noexcept;
 
 	void AddNewPottedBall(std::unique_ptr<BallObject>&& ball);
-	void ManagePoints();
-	std::vector<std::unique_ptr<BallObject>> GetBallsToPutBack(TABLE_STATE ts);
+	void ManagePoints(BallSet* ballSet);
+	std::vector<std::unique_ptr<BallObject>> GetBallsToPutBack(BallSet* ballSet);
 
 	void ClearOverlay();
 };

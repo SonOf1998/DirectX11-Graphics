@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "RoundManager.h"
 
+#include "BallSet.h"
 #include "OverlayObject.h"
 #include "OverlaySet.h"
 
@@ -89,7 +90,7 @@ void RoundManager::AddNewPottedBall(std::unique_ptr<BallObject>&& ball)
 	{
 		int point = ballsPottedCurrRound[i]->GetPoint();
 		int ballResId = (point == -4) ? 7 : point - 1;
-		int spotResId = OVERLAY_POT6 - ballsPottedCurrRound.size() + 1 + i;
+		uint spotResId = OVERLAY_POT6 - ballsPottedCurrRound.size() + 1 + i;
 		std::unique_ptr<OverlayObject> overlayItem = std::make_unique<OverlayObject>(device, deviceContext, 2 + i * 0.10f, (BALL)ballResId, (OVERLAY_SPOT)spotResId);
 		overlaySet->AddOverlayItem(std::move(overlayItem));
 	}
@@ -99,7 +100,7 @@ void RoundManager::AddNewPottedBall(std::unique_ptr<BallObject>&& ball)
 *  No need to synchronize the AddNewPottedBall and this function
 *  as static state balls cannot be potted.
 */
-void RoundManager::ManagePoints()
+void RoundManager::ManagePoints(BallSet* ballSet)
 {
 	int pointsForCurrentPlayer = 0;
 	int pointsForOtherPlayer = 0;
@@ -115,6 +116,51 @@ void RoundManager::ManagePoints()
 			p2->AddPoints(pointsForCurrentPlayer);
 			p1->AddPoints(pointsForOtherPlayer);
 		}
+
+		// curr play made a successful pot
+		if (pointsForCurrentPlayer > 0)
+		{
+			// switch to next target ball
+			if (target == RED) {
+				overlaySet->ChangeTarget(NOMINATE_WARNING);
+				newTarget = YELLOW;
+				// TODO Target Set after nominating
+			}
+			else
+			{
+				if (ballSet->HasReds())
+				{
+					overlaySet->ChangeTarget(RED_BALL);
+					newTarget = RED;
+				}
+				else
+				{
+					if (target != BLACK_BALL)
+					{
+						overlaySet->ChangeTarget((BALL)(target + 1 + 1));
+						newTarget = (TARGET)(target + 1);
+					}
+					else
+					{
+						// TODO: Game end
+					}
+				}
+			}
+		}
+		// foul or current playet didn't pot anything
+		else
+		{
+			if (ballSet->HasReds())
+			{
+				overlaySet->ChangeTarget(RED_BALL);
+				newTarget = RED;
+			}
+			else
+			{
+				overlaySet->ChangeTarget((BALL)(target + 1 + 1));
+				newTarget = (TARGET)(target + 1);
+			}
+		}		
 	};
 
 
@@ -129,6 +175,31 @@ void RoundManager::ManagePoints()
 			if (firstHit->GetPoint() != target + 1)
 			{
 				pointsForOtherPlayer = vmax(4, target + 1);
+				updatePoints();
+			}
+			// correct shot, but no pot
+			// update point doesnt get called this case
+			else
+			{
+				// havent pot anything and table still has reds
+				if (ballSet->HasReds())
+				{
+					overlaySet->ChangeTarget(RED_BALL);
+					newTarget = RED;
+				}
+				// was playing for red, havent pot anything and the table has no more reds
+				// assign yellow as the target ball in this case
+				else if (target == RED && !ballSet->HasReds())
+				{
+					overlaySet->ChangeTarget(YELLOW_BALL);
+					newTarget = YELLOW;
+				}
+				// was playing for color, keep the target in this case
+				else
+				{
+					/*overlaySet->ChangeTarget((BALL)(target + 1));
+					newTarget = (TARGET)(target);*/
+				}
 			}
 		}
 		else
@@ -204,7 +275,7 @@ void RoundManager::ManagePoints()
 	updatePoints();
 }
 
-std::vector<std::unique_ptr<BallObject>> RoundManager::GetBallsToPutBack(TABLE_STATE ts)
+std::vector<std::unique_ptr<BallObject>> RoundManager::GetBallsToPutBack(BallSet* ballSet)
 {
 	std::vector<std::unique_ptr<BallObject>> ballsToPutBack;
 
@@ -212,29 +283,27 @@ std::vector<std::unique_ptr<BallObject>> RoundManager::GetBallsToPutBack(TABLE_S
 	{
 		auto& ball = ballsPottedCurrRound[i];
 
-		switch (ts)
+		if (ballSet->HasReds())
 		{
-		case TABLE_STATE::HAS_REDS:
 			if (ball->GetPoint() != 1)
 			{
 				ballsToPutBack.push_back(std::move(ball));
 			}
-			break;
-		case TABLE_STATE::ONLY_COLORS:
+		}
+		else
+		{
 			if (target + 1 != 7 && ball->GetPoint() == -4)
 			{
 				ballsToPutBack.push_back(std::move(ball));
 			}
 			if (ball->GetPoint() > target + 1)
-			{				
+			{
 				ballsToPutBack.push_back(std::move(ball));
 			}
-			break;
-		default:
-			throw std::runtime_error("Table state switch is not exhaustive in RoundManager.cpp!");
-			break;
 		}
 	}
+	
+	target = newTarget;
 
 	// we flag this round as handled
 	roundGoing = false;
