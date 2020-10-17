@@ -46,6 +46,8 @@ class RoundManager
 	bool roundGoing = false;
 	bool whiteMovable = true;
 	bool whitePlaced  = true;
+	bool canNominate = false;
+	bool isNominating = false;
 	std::vector<std::unique_ptr<BallObject>> ballsPottedCurrRound;
 	BallObject* firstHit = nullptr;
 
@@ -76,6 +78,10 @@ public:
 	bool IsRoundGoing()					const	noexcept;
 	void SetRoundGoing(bool state)				noexcept;
 	void MemoFirstHit(BallObject* ball)			noexcept;
+	bool CanNominate()					const	noexcept;
+	void DisableNomination()					noexcept;
+	void EnterNominateMode()					noexcept;
+	void ExitNominateMode()						noexcept;
 
 	void AddNewPottedBall(std::unique_ptr<BallObject>&& ball);
 	void ManagePoints(BallSet* ballSet);

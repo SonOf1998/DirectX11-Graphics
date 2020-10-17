@@ -318,7 +318,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 		{
 			LPMINMAXINFO lpMMI = (LPMINMAXINFO)lparam;
 			lpMMI->ptMinTrackSize.x = 700;
-			lpMMI->ptMinTrackSize.y = 430;
+			lpMMI->ptMinTrackSize.y = 480;
 		}
 
 		// All other messages pass to the message handler in the system class.

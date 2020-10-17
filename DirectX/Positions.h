@@ -23,6 +23,7 @@
 #define HOLE_RADIUS					0.105f	// for intersections (approximately)
 
 #define BALL_RADIUS					0.09f
+//#define ALLOWED_STICKOUT			0.005f
 #define BALL_SCALE					XMVectorSet(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS, 1)
 #define BALL_POS_Y					SNOOKER_TABLE_POS_Y + BALL_RADIUS * 1.7f
 #define PINK_BALL_Z					-2.3f

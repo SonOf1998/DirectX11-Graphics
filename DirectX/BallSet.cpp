@@ -251,8 +251,8 @@ void BallSet::Animate(float t, float dt)
 	// and round is not yet administrated
 	if (!stillMoving && rm.IsRoundGoing()) 
 	{
-		rm.ManagePoints();
-		std::vector<std::unique_ptr<BallObject>> ballsToPutBack = rm.GetBallsToPutBack(TABLE_STATE::HAS_REDS);
+		rm.ManagePoints(this);
+		std::vector<std::unique_ptr<BallObject>> ballsToPutBack = rm.GetBallsToPutBack(this);
 
 		struct BallReplacementStatus
 		{
@@ -342,24 +342,179 @@ void BallSet::Animate(float t, float dt)
 	}
 }
 
-XMVECTOR BallSet::GetClosestTargetBallToCueBall(const XMVECTOR& cueBallPos, TARGET target) const
+XMVECTOR BallSet::GetClosestColorToCueBall(const XMVECTOR& cueBallPos, TARGET* targetOutput) const
 {
 	BallObject* targetBallWithMinDist = nullptr;
 	float minDist = std::numeric_limits<float>::max();
 
 	for (uint i = 0; i < balls.size(); ++i)
 	{
-		// We haven't nominated any min dist balls
-		// Or we found another target ball closer..
-		if ((targetBallWithMinDist == nullptr && balls[i]->GetPoint() == (target + 1)) ||
-			(balls[i]->GetPoint() == (target + 1) && Length(balls[i]->GetPosition() - cueBallPos) < minDist))
+		if (balls[i]->GetPoint() < 2)
+			continue;
+
+		XMVECTOR dir = balls[i]->GetPosition() - cueBallPos;
+		float minDistTemp = Length(balls[i]->GetPosition() - cueBallPos);
+		if (targetBallWithMinDist == nullptr || minDistTemp < minDist)
 		{
-			minDist = Length(balls[i]->GetPosition() - cueBallPos);
-			targetBallWithMinDist = balls[i].get();
+			bool obstacleFound = false;
+
+			// looking for obstacles
+			for (uint j = 0; j < balls.size(); ++j)
+			{
+				if (i == j || balls[j]->GetPoint() == -4)
+					continue;
+
+				// potential obstacle as it is closer to the cue ball as the target one
+				float potentialObsDist = Length(balls[j]->GetPosition() - cueBallPos);
+				if (potentialObsDist < minDistTemp)
+				{
+					XMFLOAT2 dir2D = XMFLOAT2(XMVectorGetX(dir), XMVectorGetZ(dir));
+					XMFLOAT2 dir2DNormal = XMFLOAT2(dir2D.y, -dir2D.x);
+					XMFLOAT2 targetPos2D = XMFLOAT2(XMVectorGetX(balls[i]->GetPosition()), XMVectorGetZ(balls[i]->GetPosition()));
+
+					XMFLOAT2 whitePos2D = XMFLOAT2(XMVectorGetX(cueBallPos), XMVectorGetZ(cueBallPos));
+					XMFLOAT2 potentialObsPos = XMFLOAT2(XMVectorGetX(balls[j]->GetPosition()), XMVectorGetZ(balls[j]->GetPosition()));
+
+					// checking if obstacle completely blocks vision
+					// this is done by checking the main direction
+					// and allowing a little sticking out for the target ball
+					float t = 0;
+					while (Distance(whitePos2D + t * dir2D, whitePos2D) < potentialObsDist)
+					{
+						if (Distance(whitePos2D + t * dir2D, potentialObsPos) < 2 * BALL_RADIUS)
+						{
+							obstacleFound = true;
+							break;
+						}
+
+						t += 0.005f;
+					}
+
+					if (obstacleFound)
+					{
+						break;
+					}
+				}
+			}
+
+			if (!obstacleFound)
+			{
+				minDist = Length(balls[i]->GetPosition() - cueBallPos);
+				targetBallWithMinDist = balls[i].get();
+			}
+		}
+	}
+
+	if (targetBallWithMinDist == nullptr)
+	{
+		for (uint i = 0; i < balls.size(); ++i)
+		{
+			if (balls[i]->GetPoint() >= 2 && Length(balls[i]->GetPosition() - cueBallPos) < minDist)
+			{
+				minDist = Length(balls[i]->GetPosition() - cueBallPos);
+				targetBallWithMinDist = balls[i].get();
+			}
+		}
+	}
+
+	*targetOutput = (TARGET)(targetBallWithMinDist->GetPoint() - 1);
+	return targetBallWithMinDist->GetPosition();
+}
+
+XMVECTOR BallSet::GetClosestTargetBallToCueBall(const XMVECTOR& cueBallPos, TARGET target) const
+{
+	BallObject* targetBallWithMinDist = nullptr;
+	float minDist = std::numeric_limits<float>::max();
+
+	if (target == RED)
+	{
+		for (uint i = 0; i < balls.size(); ++i)
+		{
+			if (balls[i]->GetPoint() != 1)
+				continue;
+
+			XMVECTOR dir = balls[i]->GetPosition() - cueBallPos;
+			float minDistTemp = Length(balls[i]->GetPosition() - cueBallPos);
+			if (targetBallWithMinDist == nullptr || minDistTemp < minDist)
+			{
+				bool obstacleFound = false;
+
+				// looking for obstacles
+				for (uint j = 0; j < balls.size(); ++j)
+				{
+					if (i == j || balls[j]->GetPoint() == -4)
+						continue;
+
+					// potential obstacle as it is closer to the cue ball as the target one
+					float potentialObsDist = Length(balls[j]->GetPosition() - cueBallPos);
+					if (potentialObsDist < minDistTemp)
+					{
+						XMFLOAT2 dir2D = XMFLOAT2(XMVectorGetX(dir), XMVectorGetZ(dir));
+						XMFLOAT2 dir2DNormal = XMFLOAT2(dir2D.y, -dir2D.x);
+						XMFLOAT2 targetPos2D = XMFLOAT2(XMVectorGetX(balls[i]->GetPosition()), XMVectorGetZ(balls[i]->GetPosition()));
+						
+						XMFLOAT2 whitePos2D = XMFLOAT2(XMVectorGetX(cueBallPos), XMVectorGetZ(cueBallPos));
+						XMFLOAT2 potentialObsPos = XMFLOAT2(XMVectorGetX(balls[j]->GetPosition()), XMVectorGetZ(balls[j]->GetPosition()));
+
+						// checking if obstacle completely blocks vision
+						// this is done by checking the main direction
+						// and allowing a little sticking out for the target ball
+						float t = 0;
+						while (Distance(whitePos2D + t * dir2D, whitePos2D) < potentialObsDist)
+						{
+							if (Distance(whitePos2D + t * dir2D, potentialObsPos) < 2 * BALL_RADIUS)
+							{
+								obstacleFound = true;
+								break;
+							}
+
+							t += 0.005f;
+						}
+
+						if (obstacleFound)
+						{
+							break;
+						}
+					}
+				}
+
+				if (!obstacleFound)
+				{
+					minDist = Length(balls[i]->GetPosition() - cueBallPos);
+					targetBallWithMinDist = balls[i].get();
+				}
+			}			
+		}
+	}
+	else /* COLORED BALLS */
+	{
+		for (uint i = 0; i < balls.size(); ++i)
+		{
+			if (balls[i]->GetPoint() == (target + 1))
+			{
+				return balls[i]->GetPosition();
+			}
+		}
+	}
+
+	if (targetBallWithMinDist == nullptr)
+	{
+		for (uint i = 0; i < balls.size(); ++i)
+		{
+			if (balls[i]->GetPoint() == 1 && Length(balls[i]->GetPosition() - cueBallPos) < minDist)
+			{
+				minDist = Length(balls[i]->GetPosition() - cueBallPos);
+				targetBallWithMinDist = balls[i].get();
+			}
 		}
 	}
 
 	return targetBallWithMinDist->GetPosition();
+}
+
+XMVECTOR BallSet::GetWhiteBallPosition() const
+{
+	return whiteBallRef->GetPosition();
 }
 
 bool BallSet::IsPlaceUsed(const XMVECTOR& place, bool excludeWhite /* =false */) const
@@ -370,6 +525,33 @@ bool BallSet::IsPlaceUsed(const XMVECTOR& place, bool excludeWhite /* =false */)
 			continue;
 
 		if (Length(place - ball->GetPosition()) + 0.00001f < 2 * BALL_RADIUS)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool BallSet::HasReds() const
+{
+	for (const auto& ball : balls)
+	{
+		if (ball->GetPoint() == 1)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool BallSet::HasLower(TARGET target) const
+{
+	// white ball excluded
+	for (const auto& ball : balls)
+	{
+		if (ball->GetPoint() > 1 && ball->GetPoint() < target + 1)
 		{
 			return true;
 		}

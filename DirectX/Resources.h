@@ -66,6 +66,7 @@
 #define LIGHT_TOUCHING_SOUND				SOUNDS_ROOTDIR "light_touching.wav"
 #define CUE_SOUND							SOUNDS_ROOTDIR "cue.wav"
 #define CUE_LIGHT_SOUND						SOUNDS_ROOTDIR "cue_light.wav"
+#define NOMINATION_SOUND					SOUNDS_ROOTDIR "nomination.wav"
 
 
 // ... SHADERS ....

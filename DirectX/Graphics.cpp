@@ -195,16 +195,29 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 
+	RoundManager& rm = RoundManager::GetInstance();
 
 	ImGui::NewFrame();	
 	ImGui::SetNextWindowPos(ImVec2(static_cast<float>(screenWidth - 135), static_cast<float>(screenHeight - 380)));
 	ImGui::SetNextWindowSize(ImVec2(110, 125));
 	ImGui::Begin("Cue ball", nullptr, ImGuiWindowFlags_NoResize);
-	ImGui::Checkbox("Aim", &(WhiteBallObject::isInAimMode));
-	ImGui::Checkbox("Fine aim", &(WhiteBallObject::isInFineAimMode));
-	ImGui::Checkbox("Spin", &(WhiteBallObject::isInSpinMode));
-	ImGui::Checkbox("Shoot", &(WhiteBallObject::isInShootMode));
-	WhiteBallObject::SwitchModes();
+	
+	if (rm.IsRoundGoing())
+	{
+		const bool falseLiteral = false;
+		ImGui::Checkbox("Aim", &falseLiteral);
+		ImGui::Checkbox("Fine aim", &falseLiteral);
+		ImGui::Checkbox("Spin", &falseLiteral);
+		ImGui::Checkbox("Shoot", &falseLiteral);
+	}
+	else
+	{
+		ImGui::Checkbox("Aim", &(WhiteBallObject::isInAimMode));
+		ImGui::Checkbox("Fine aim", &(WhiteBallObject::isInFineAimMode));
+		ImGui::Checkbox("Spin", &(WhiteBallObject::isInSpinMode));
+		ImGui::Checkbox("Shoot", &(WhiteBallObject::isInShootMode));
+		WhiteBallObject::SwitchModes();
+	}	
 	ImGui::End();
 
 	ImGui::SetNextWindowPos(ImVec2(static_cast<float>(screenWidth - 140), static_cast<float>(screenHeight - 240)));
@@ -214,12 +227,19 @@ void Graphics::RenderFrame(float t, float dt)
 
 	}
 	if (ImGui::Button("Nominate", ImVec2(100, 20))) {
-
+		if (rm.CanNominate())
+		{
+			rm.EnterNominateMode();
+			SoundManager& sm = SoundManager::GetInstance();
+			XMFLOAT3 whiteBallPos;
+			XMStoreFloat3(&whiteBallPos, reinterpret_cast<BallSet*>(ballSet.get())->GetWhiteBallPosition());
+			sm.PlaySound(NOMINATION_SOUND, whiteBallPos, nullptr, nullptr);
+		}
 	}
 	ImGui::NewLine();
 	if (ImGui::Button("Concede frame", ImVec2(100, 20)))
 	{
-
+		// new game todo
 	}
 	ImGui::End();
 
@@ -290,9 +310,7 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui::Text("0");
 	ImGui::End();
 
-	RoundManager& rm = RoundManager::GetInstance();
-
-	if (rm.IsWhiteDroppedLastRound() && rm.IsWhitePlaced())
+	if (rm.IsWhiteDroppedLastRound() && rm.IsWhitePlaced() && (WhiteBallObject::isInAimMode || WhiteBallObject::isInFineAimMode))
 	{
 		ImGuiStyle & style = ImGui::GetStyle();
 		style.Colors[ImGuiCol_Button] = ImVec4(0.5f, 0.5f, 0, 0.8f);

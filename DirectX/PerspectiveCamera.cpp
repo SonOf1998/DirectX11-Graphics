@@ -205,7 +205,7 @@ void PerspectiveCamera::Animate(float t, float dt)
 		// can be adjusted by rolling the mouse's middle button
 		float len = Length(whiteBallPos - targetBallPos);
 		float distance_factor = aimModeMagnification * 0.4f / (len / 6.0f);
-		float elevation = aimModeMagnification * std::max(0.9f * (len / 6.0f), 0.5f) + extraElevation;
+		float elevation = aimModeMagnification * std::max(0.9f * (len / 6.0f), 0.5f) + aimModeMagnification * extraElevation;
 
 		XMVECTOR newDir = XMVectorSet(distance_factor * xNew, y + elevation, distance_factor * zNew, 0);
 		position = whiteBallPos + newDir;

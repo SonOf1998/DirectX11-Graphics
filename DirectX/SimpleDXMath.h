@@ -120,6 +120,21 @@ inline float Length(const XMFLOAT3& v)
 	return Length(XMLoadFloat3(&v));
 }
 
+inline float Distance(const XMFLOAT2& v1, const XMFLOAT2& v2)
+{
+	return Length(XMLoadFloat2(&v1) - XMLoadFloat2(&v2));
+}
+
+inline XMFLOAT2 operator+ (const XMFLOAT2& v1, const XMFLOAT2& v2)
+{
+	return XMFLOAT2(v1.x + v2.x, v1.y + v2.y);
+}
+
+inline XMFLOAT2 operator* (float mul, const XMFLOAT2& v)
+{
+	return XMFLOAT2(mul * v.x, mul * v.y);
+}
+
 inline XMFLOAT3 Normalize(const XMFLOAT3& a)
 {
 	assert(a != XMFLOAT3(0, 0, 0));

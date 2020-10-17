@@ -76,6 +76,26 @@ void RoundManager::MemoFirstHit(BallObject* ball) noexcept
 	firstHit = ball;
 }
 
+bool RoundManager::CanNominate() const noexcept
+{
+	return canNominate;
+}
+
+void RoundManager::DisableNomination() noexcept
+{
+	canNominate = false;
+}
+
+void RoundManager::EnterNominateMode() noexcept
+{
+	isNominating = true;
+}
+
+void RoundManager::ExitNominateMode() noexcept
+{
+	isNominating = false;
+}
+
 /* Collecting the balls potted in the current round in order!
 *
 *  As soon as the round ends (all the balls stop) this array is
@@ -95,7 +115,6 @@ void RoundManager::AddNewPottedBall(std::unique_ptr<BallObject>&& ball)
 		overlaySet->AddOverlayItem(std::move(overlayItem));
 	}
 }
-
 /* If all the balls are stopped we can calculate the points.
 *  No need to synchronize the AddNewPottedBall and this function
 *  as static state balls cannot be potted.
@@ -122,9 +141,9 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 		{
 			// switch to next target ball
 			if (target == RED) {
-				overlaySet->ChangeTarget(NOMINATE_WARNING);
-				newTarget = YELLOW;
-				// TODO Target Set after nominating
+				ballSet->GetClosestColorToCueBall(ballSet->GetWhiteBallPosition(), &newTarget);
+				overlaySet->ChangeTarget((BALL)newTarget);
+				canNominate = true;
 			}
 			else
 			{
@@ -135,9 +154,14 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 				}
 				else
 				{
-					if (target != BLACK_BALL)
+					if (ballSet->HasLower(target))
 					{
-						overlaySet->ChangeTarget((BALL)(target + 1 + 1));
+						overlaySet->ChangeTarget(YELLOW_BALL);
+						newTarget = YELLOW;
+					}
+					else if (target != BLACK_BALL)
+					{
+						overlaySet->ChangeTarget((BALL)(target + 1));
 						newTarget = (TARGET)(target + 1);
 					}
 					else
@@ -157,8 +181,16 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 			}
 			else
 			{
-				overlaySet->ChangeTarget((BALL)(target + 1 + 1));
-				newTarget = (TARGET)(target + 1);
+				if (ballSet->HasLower(target))
+				{
+					overlaySet->ChangeTarget(YELLOW_BALL);
+					newTarget = YELLOW;
+				}
+				else
+				{
+					overlaySet->ChangeTarget((BALL)(target));
+					newTarget = (TARGET)(target);
+				}
 			}
 		}		
 	};
@@ -258,6 +290,9 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 			if (pointsForCurrentPlayer == i && hit->GetPoint() == 1)
 			{
 				++pointsForCurrentPlayer;
+				ballSet->GetClosestColorToCueBall(ballSet->GetWhiteBallPosition(), &newTarget);
+				overlaySet->ChangeTarget((BALL)newTarget);
+				canNominate = true;
 			}
 			else
 			{

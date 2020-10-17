@@ -4,7 +4,10 @@
 // from DirectX
 #include "OverlayObject.h"
 
-OverlaySet::OverlaySet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+// from SnookerLogicc
+#include "RoundManager.h"
+
+OverlaySet::OverlaySet(ID3D11Device* device, ID3D11DeviceContext* deviceContext) : device(device), deviceContext(deviceContext)
 {
 }
 
@@ -21,6 +24,18 @@ void OverlaySet::KillOverlayWithTTL()
 	for (auto& overlay : overlays)
 	{
 		overlay->Kill();
+	}
+}
+
+void OverlaySet::ChangeTarget(BALL targetBall)
+{
+	for (auto& overlay : overlays)
+	{
+		if (overlay->IsTargetBallOverlay())
+		{
+			overlay->SetTexture(device, deviceContext, targetBall);
+			break;
+		}
 	}
 }
 
