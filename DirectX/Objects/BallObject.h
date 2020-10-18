@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "Positions.h"
 
+class PerspectiveCamera;
+
 class BallObject : public GameObject
 {
 public:
@@ -20,10 +22,11 @@ public:
 	
 	void SetVelocity(const XMVECTOR& velocity);
 	XMVECTOR GetVelocity() const;
-
 	XMVECTOR GetPreferredPosition() const;
 
 	int GetPoint() const noexcept { return point; }
+
+	bool IsMovingOutsideViewFrustum(Camera* camera) const;
 
 	void Render(ID3D11DeviceContext*, Pipeline*, Camera* = nullptr, Light* = nullptr) override;
 	void RenderToShadowMap(ID3D11DeviceContext*, Pipeline*, Light*) override;

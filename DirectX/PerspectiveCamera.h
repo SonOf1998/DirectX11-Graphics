@@ -26,6 +26,8 @@ class PerspectiveCamera : public Camera
 	float gyroAngle = 0.0f;
 	float extraElevation = 0.0f;
 
+	bool moveOutside = false;
+
 public:
 
 	// camera parameters given by lookAt; up vector is fixed (0,1,0)
@@ -55,6 +57,8 @@ public:
 	void GoAimMode();
 	void MagnifyAimMode(short level);
 	float GetGyroAngle()					const	noexcept;
+
+	void SetMoveOutsideFrustum(bool moveOutside)	noexcept;
 
 	void Animate(float t, float dt) override;
 };

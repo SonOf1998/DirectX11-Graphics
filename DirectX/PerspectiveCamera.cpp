@@ -160,6 +160,11 @@ float PerspectiveCamera::GetGyroAngle() const noexcept
 	return gyroAngle;
 }
 
+void PerspectiveCamera::SetMoveOutsideFrustum(bool moveOutside) noexcept
+{
+	this->moveOutside = moveOutside;
+}
+
 
 XMVECTOR PerspectiveCamera::GetPosition() const noexcept
 {
@@ -271,7 +276,21 @@ void PerspectiveCamera::Animate(float t, float dt)
 			up = XMVectorSet(0, 1, 0, 0) * rotation;
 		}
 	}
+	else if (rm.IsRoundGoing())
+	{
+		static float extraZoomoutTime = 0.0f;;
 
+		if (moveOutside)
+		{
+			position += 0.03f * newDir;
+			extraZoomoutTime = 0.6f;
+		}
+		else if (extraZoomoutTime > 0)
+		{
+			position += 0.07f * extraZoomoutTime * newDir;
+			extraZoomoutTime -= dt;
+		}
+	}
 	
 
 	XMMATRIX rotation = XMMatrixTranspose(XMMatrixRotationRollPitchYaw(pitch, yaw, roll));

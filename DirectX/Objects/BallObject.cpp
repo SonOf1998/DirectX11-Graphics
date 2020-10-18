@@ -33,6 +33,16 @@ XMVECTOR BallObject::GetPreferredPosition() const
 	return preferredPosition;
 }
 
+bool BallObject::IsMovingOutsideViewFrustum(Camera* camera) const
+{
+	XMMATRIX viewProj = camera->GetViewProjMatrix();
+	XMMATRIX viewProjInv = camera->GetViewProjMatrixInv();
+
+	aabbs[0]->RecalculateVertices(modelMatrix);
+
+	return Length(velocity) > 0 && !aabbs[0]->IsInsideViewFrustum(viewProj, viewProjInv);
+}
+
 void BallObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /* nullptr */, Light* light/* nullptr */)
 {
 	XMMATRIX viewProj = XMMatrixIdentity();

@@ -136,6 +136,7 @@ std::map<int, XMVECTOR> preferredPositions = {
 void BallSet::Animate(float t, float dt)
 {
 	RoundManager& rm = RoundManager::GetInstance();
+	camera->SetMoveOutsideFrustum(IsThereAMovingBallOutsideViewFrustum());
 
 	// Collision with balls
 	for (uint i = 0; i < balls.size(); ++i)
@@ -345,6 +346,19 @@ void BallSet::Animate(float t, float dt)
 	{
 		ball->Animate(t, dt);
 	}
+}
+
+bool BallSet::IsThereAMovingBallOutsideViewFrustum() const
+{
+	for (const auto& ball : balls)
+	{
+		if (ball->IsMovingOutsideViewFrustum(camera))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 XMVECTOR BallSet::GetClosestColorToCueBall(const XMVECTOR& cueBallPos, TARGET* targetOutput) const
