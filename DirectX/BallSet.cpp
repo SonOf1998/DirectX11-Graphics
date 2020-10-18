@@ -17,58 +17,67 @@
 // from Sounds
 #include "SoundManager.h"
 
-BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera, CueObject* cue) : camera(camera)
+BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, PerspectiveCamera* camera, CueObject* cue) : device(device), deviceContext(deviceContext), camera(camera), cue(cue)
 {
+	InitTable();
+}
+
+BallSet::~BallSet() = default;
+
+void BallSet::InitTable()
+{
+	balls.clear();
+
 	// snooker balls - common resources (shape, shininess, colors)
 	std::shared_ptr<Geometry> ballGeometry = std::make_shared<AssimpModel<P>>(device, LOW_QUALITY_SPHERE_MODEL);
 	std::shared_ptr<Material> ballMaterial = std::make_shared<Material>(XMFLOAT3(0.3f, 0.3f, 0.3f), XMFLOAT3(0.8f, 0.8f, 0.8f), 70.0f);
-	std::shared_ptr<Texture>  redBallTexture	= std::make_shared<Texture>(device, deviceContext, RED_BALL_TEXTURE, 0);
+	std::shared_ptr<Texture>  redBallTexture = std::make_shared<Texture>(device, deviceContext, RED_BALL_TEXTURE, 0);
 	std::shared_ptr<Texture>  yellowBallTexture = std::make_shared<Texture>(device, deviceContext, YELLOW_BALL_TEXTURE, 0);
-	std::shared_ptr<Texture>  greenBallTexture	= std::make_shared<Texture>(device, deviceContext, GREEN_BALL_TEXTURE, 0);
-	std::shared_ptr<Texture>  brownBallTexture	= std::make_shared<Texture>(device, deviceContext, BROWN_BALL_TEXTURE, 0);
-	std::shared_ptr<Texture>  blueBallTexture	= std::make_shared<Texture>(device, deviceContext, BLUE_BALL_TEXTURE, 0);
-	std::shared_ptr<Texture>  pinkBallTexture	= std::make_shared<Texture>(device, deviceContext, PINK_BALL_TEXTURE, 0);
-	std::shared_ptr<Texture>  blackBallTexture	= std::make_shared<Texture>(device, deviceContext, BLACK_BALL_TEXTURE, 0);
-	std::shared_ptr<Texture>  whiteBallTexture	= std::make_shared<Texture>(device, deviceContext, WHITE_BALL_TEXTURE, 0);
+	std::shared_ptr<Texture>  greenBallTexture = std::make_shared<Texture>(device, deviceContext, GREEN_BALL_TEXTURE, 0);
+	std::shared_ptr<Texture>  brownBallTexture = std::make_shared<Texture>(device, deviceContext, BROWN_BALL_TEXTURE, 0);
+	std::shared_ptr<Texture>  blueBallTexture = std::make_shared<Texture>(device, deviceContext, BLUE_BALL_TEXTURE, 0);
+	std::shared_ptr<Texture>  pinkBallTexture = std::make_shared<Texture>(device, deviceContext, PINK_BALL_TEXTURE, 0);
+	std::shared_ptr<Texture>  blackBallTexture = std::make_shared<Texture>(device, deviceContext, BLACK_BALL_TEXTURE, 0);
+	std::shared_ptr<Texture>  whiteBallTexture = std::make_shared<Texture>(device, deviceContext, WHITE_BALL_TEXTURE, 0);
 
 	Mesh ballMesh(ballGeometry, ballMaterial);
-	
+
 	// YELLOW BALL
 	std::unique_ptr<BallObject> yellowBall = std::make_unique<BallObject>(device, deviceContext, 2, YELLOW_BALL_POS);
 	ballMesh.SetTexture(yellowBallTexture);
 	yellowBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(yellowBall));
-	
+
 	// GREEN BALL
 	std::unique_ptr<BallObject> greenBall = std::make_unique<BallObject>(device, deviceContext, 3, GREEN_BALL_POS);
 	ballMesh.SetTexture(greenBallTexture);
 	greenBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(greenBall));
-	
+
 	// BROWN BALL
 	std::unique_ptr<BallObject> brownBall = std::make_unique<BallObject>(device, deviceContext, 4, BROWN_BALL_POS);
 	ballMesh.SetTexture(brownBallTexture);
 	brownBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(brownBall));
-	
+
 	// BLUE BALL
 	std::unique_ptr<BallObject> blueBall = std::make_unique<BallObject>(device, deviceContext, 5, BLUE_BALL_POS);
 	ballMesh.SetTexture(blueBallTexture);
 	blueBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(blueBall));
-	
+
 	// PINK BALL
 	std::unique_ptr<BallObject> pinkBall = std::make_unique<BallObject>(device, deviceContext, 6, PINK_BALL_POS);
 	ballMesh.SetTexture(pinkBallTexture);
 	pinkBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(pinkBall));
-	
+
 	// BLACK BALL
 	std::unique_ptr<BallObject> blackBall = std::make_unique<BallObject>(device, deviceContext, 7, BLACK_BALL_POS);
 	ballMesh.SetTexture(blackBallTexture);
 	blackBall->CopyAndAddMesh(ballMesh);
 	balls.push_back(std::move(blackBall));
-	
+
 	// RED BALLS
 	XMFLOAT4 firstRedTranslation(0, BALL_POS_Y, PINK_BALL_Z - 2 * BALL_RADIUS, 0.0f);
 	float deltaTranslate = 2 * BALL_RADIUS + 0.003f;	// added epsilon, so it will not report intersection (collision) right after launching
@@ -81,14 +90,14 @@ BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, Persp
 			translate.z -= i * deltaTranslate * 0.85f;
 			translate.x = x0 + powf(-1, j + 1.0f) * j * deltaTranslate;
 			x0 = translate.x;
-	
+
 			std::unique_ptr<BallObject> redBall = std::make_unique<BallObject>(device, deviceContext, 1, XMLoadFloat4(&translate));
 			ballMesh.SetTexture(redBallTexture);
 			redBall->CopyAndAddMesh(ballMesh);
 			balls.push_back(std::move(redBall));
 		}
 	}
-	
+
 	// WHITE BALL
 	std::unique_ptr<WhiteBallObject> whiteBall = std::make_unique<WhiteBallObject>(device, deviceContext, -4, camera, this, WHITE_BALL_PREFERRED_POS);
 	ballMesh.SetTexture(whiteBallTexture);
@@ -96,11 +105,7 @@ BallSet::BallSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext, Persp
 	whiteBallRef = whiteBall.get();
 	cue->InitWhiteBall(whiteBall.get());
 	balls.push_back(std::move(whiteBall));
-
-	
 }
-
-BallSet::~BallSet() = default;
 
 void BallSet::Render(ID3D11DeviceContext* device, Pipeline* pipeline, Camera* camera /* = nullptr */, Light* light /* = nullptr */)
 {
@@ -515,6 +520,14 @@ XMVECTOR BallSet::GetClosestTargetBallToCueBall(const XMVECTOR& cueBallPos, TARG
 XMVECTOR BallSet::GetWhiteBallPosition() const
 {
 	return whiteBallRef->GetPosition();
+}
+
+void BallSet::MakeWhiteMovable()
+{
+	whiteBallRef->SetPosition(WHITE_BALL_PREFERRED_POS);
+	RoundManager& rm = RoundManager::GetInstance();
+	rm.SetWhiteDropped(true);
+	rm.SetWhitePlaced(true);
 }
 
 bool BallSet::IsPlaceUsed(const XMVECTOR& place, bool excludeWhite /* =false */) const

@@ -239,7 +239,11 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui::NewLine();
 	if (ImGui::Button("Concede frame", ImVec2(100, 20)))
 	{
-		// new game todo
+		if (!rm.IsRoundGoing())
+		{
+			reinterpret_cast<BallSet*>(ballSet.get())->InitTable();
+			rm.DeclareWinner(true);
+		}
 	}
 	ImGui::End();
 

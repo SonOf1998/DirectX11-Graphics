@@ -5,6 +5,18 @@
 #include "OverlayObject.h"
 #include "OverlaySet.h"
 
+Player* RoundManager::GetOtherPlayer() const
+{
+	Player* otherPlayer;
+
+	if (currentlyPlayingPlayer == p1.get())
+		otherPlayer = p2.get();
+	else
+		otherPlayer = p1.get();
+
+	return otherPlayer;
+}
+
 RoundManager::RoundManager()
 {
 	p1 = std::make_unique<Player>("Player 1");
@@ -88,6 +100,7 @@ void RoundManager::DisableNomination() noexcept
 
 void RoundManager::EnterNominateMode() noexcept
 {
+	overlaySet->ChangeTarget(NOMINATE_WARNING);
 	isNominating = true;
 }
 
@@ -162,20 +175,15 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 	int pointsForOtherPlayer = 0;
 
 	auto updatePoints = [&] () {
-		if (p1.get() == currentlyPlayingPlayer)
-		{
-			p1->AddPoints(pointsForCurrentPlayer);
-			p2->AddPoints(pointsForOtherPlayer);
-		}
-		else
-		{
-			p2->AddPoints(pointsForCurrentPlayer);
-			p1->AddPoints(pointsForOtherPlayer);
-		}
+
+		currentlyPlayingPlayer->AddPoints(pointsForCurrentPlayer);
+		GetOtherPlayer()->AddPoints(pointsForOtherPlayer);
 
 		// curr play made a successful pot
 		if (pointsForCurrentPlayer > 0)
 		{
+			currentlyPlayingPlayer->AddBreakPoints(pointsForCurrentPlayer);
+
 			// switch to next target ball
 			if (target == RED) {
 				ballSet->GetClosestColorToCueBall(ballSet->GetWhiteBallPosition(), &newTarget);
@@ -203,7 +211,18 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 					}
 					else
 					{
-						// TODO: Game end
+						if (currentlyPlayingPlayer->GetPoints() == GetOtherPlayer()->GetPoints())
+						{
+							target = PINK; // hack GetBallsToPutBack function
+							newTarget = BLACK;
+
+							ballSet->MakeWhiteMovable();
+						}
+						else
+						{
+							DeclareWinner();
+							ballSet->InitTable();
+						}
 					}
 				}
 			}
@@ -212,10 +231,7 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 		else
 		{
 			currentlyPlayingPlayer->ResetBreak();
-			if (currentlyPlayingPlayer == p1.get())
-				currentlyPlayingPlayer = p2.get();
-			else
-				currentlyPlayingPlayer = p1.get();
+			currentlyPlayingPlayer = GetOtherPlayer();
 
 			if (ballSet->HasReds())
 			{
@@ -260,12 +276,7 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 			else
 			{
 				currentlyPlayingPlayer->ResetBreak();
-				if (currentlyPlayingPlayer == p1.get())
-					currentlyPlayingPlayer = p2.get();				
-				else
-					currentlyPlayingPlayer = p1.get();
-				
-					
+				currentlyPlayingPlayer = GetOtherPlayer();
 
 				// havent pot anything and table still has reds
 				if (ballSet->HasReds())
@@ -320,7 +331,7 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 	if (firstPot->GetPoint() != target + 1)
 	{
 		// minimum penalty is 4
-		pointsForOtherPlayer = vmax(pointsForOtherPlayer, firstPot->GetPoint(), target + 1);
+		pointsForOtherPlayer = vmax(pointsForOtherPlayer, std::abs(firstPot->GetPoint()), target + 1);
 
 		// maximum penalty, we can break out early from the function in this case
 		if (pointsForOtherPlayer == 7)
@@ -368,7 +379,7 @@ std::vector<std::unique_ptr<BallObject>> RoundManager::GetBallsToPutBack(BallSet
 {
 	std::vector<std::unique_ptr<BallObject>> ballsToPutBack;
 
-	for (int i = 0; i < ballsPottedCurrRound.size(); ++i)
+	for (int i = 0; i < ballsPottedCurrRound.size() && !isRestarted; ++i)
 	{
 		auto& ball = ballsPottedCurrRound[i];
 
@@ -398,11 +409,43 @@ std::vector<std::unique_ptr<BallObject>> RoundManager::GetBallsToPutBack(BallSet
 	roundGoing = false;
 	firstHit = nullptr;
 	ballsPottedCurrRound.clear();
+	isRestarted = false;
 
 	std::sort(ballsToPutBack.begin(), ballsToPutBack.end(), [] (std::unique_ptr<BallObject>& b1, std::unique_ptr<BallObject>& b2) {
 		return b1->GetPoint() > b2->GetPoint();
 	});
 	return ballsToPutBack;
+}
+
+void RoundManager::DeclareWinner(bool concede) 
+{
+	Player* otherPlayer = GetOtherPlayer();
+
+	if (concede)
+	{
+		otherPlayer->IncrementWonFrames();
+	}
+	else
+	{
+		assert(currentlyPlayingPlayer->GetPoints() != otherPlayer->GetPoints(), "Missed black ball game");
+
+		if (currentlyPlayingPlayer->GetPoints() > otherPlayer->GetPoints())
+		{
+			currentlyPlayingPlayer->IncrementWonFrames();
+		}
+		else
+		{
+			otherPlayer->IncrementWonFrames();
+		}
+	}
+
+	currentlyPlayingPlayer->ResetBreak();
+	currentlyPlayingPlayer->ResetPoints();
+	otherPlayer->ResetBreak();
+	otherPlayer->ResetPoints();
+	isRestarted = true;
+	newTarget = RED;
+	overlaySet->ChangeTarget((BALL)newTarget);
 }
 
 void RoundManager::ClearOverlay()

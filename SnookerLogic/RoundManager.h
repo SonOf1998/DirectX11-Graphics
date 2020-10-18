@@ -55,6 +55,9 @@ class RoundManager
 	std::vector<std::unique_ptr<BallObject>> ballsPottedCurrRound;
 	BallObject* firstHit = nullptr;
 
+	// handling game end //
+	bool isRestarted = false;
+
 	///////////////////////
 	// handling overlays //
 	///////////////////////
@@ -63,6 +66,7 @@ class RoundManager
 	OverlaySet* overlaySet;
 	///////////////////////
 
+	Player* GetOtherPlayer() const;
 	RoundManager();
 
 public:
@@ -94,6 +98,8 @@ public:
 	void AddNewPottedBall(std::unique_ptr<BallObject>&& ball);
 	void ManagePoints(BallSet* ballSet);
 	std::vector<std::unique_ptr<BallObject>> GetBallsToPutBack(BallSet* ballSet);
+	void DeclareWinner(bool concede = false);
+
 
 	void ClearOverlay();
 };
