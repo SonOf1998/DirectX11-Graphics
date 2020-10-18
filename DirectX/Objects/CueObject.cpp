@@ -60,7 +60,7 @@ void CueObject::InitWhiteBall(WhiteBallObject* whiteBall)
 void CueObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /* nullptr */, Light* light/* nullptr */)
 {
 	RoundManager& rm = RoundManager::GetInstance();
-	if (!rm.IsWhitePlaced() || rm.IsRoundGoing())
+	if (!rm.IsWhitePlaced() || rm.IsRoundGoing() || rm.IsInWalkMode())
 		return;
 
 
@@ -104,10 +104,23 @@ void CueObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, C
 void CueObject::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Light* light)
 {
 	RoundManager& rm = RoundManager::GetInstance();
-	if (!rm.IsWhitePlaced() || rm.IsRoundGoing())
+	if (!rm.IsWhitePlaced() || rm.IsRoundGoing() || rm.IsInWalkMode())
 		return;
+	
+	/*DirLightVP dirLightVP;
+	dirLightVP.GetData().viewProj = Transpose(light->GetViewProjMatrix());
 
-	// Todo, similarly as BallObject
+	M m;
+	m.GetData().model = Transpose(modelMatrix);
+	pipeline->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+	pipeline->SetCBuffer(&m, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+
+	pipeline->Use();
+	for (auto& mesh : meshes)
+	{
+		mesh->GetGeometry()->Draw(deviceContext);
+	}*/
+	// works but ugly visuals!
 }
 
 struct Thrust

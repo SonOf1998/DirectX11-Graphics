@@ -212,11 +212,13 @@ void Graphics::RenderFrame(float t, float dt)
 	}
 	else
 	{
-		ImGui::Checkbox("Aim", &(WhiteBallObject::isInAimMode));
-		ImGui::Checkbox("Fine aim", &(WhiteBallObject::isInFineAimMode));
-		ImGui::Checkbox("Spin", &(WhiteBallObject::isInSpinMode));
-		ImGui::Checkbox("Shoot", &(WhiteBallObject::isInShootMode));
-		WhiteBallObject::SwitchModes();
+		bool b = false;
+		b |= ImGui::Checkbox("Aim", &(WhiteBallObject::isInAimMode));
+		b |= ImGui::Checkbox("Fine aim", &(WhiteBallObject::isInFineAimMode));
+		b |= ImGui::Checkbox("Spin", &(WhiteBallObject::isInSpinMode));
+		b |= ImGui::Checkbox("Shoot", &(WhiteBallObject::isInShootMode));
+		if (b)
+			WhiteBallObject::SwitchModes();
 	}	
 	ImGui::End();
 
@@ -224,7 +226,14 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui::SetNextWindowSize(ImVec2(120, 120));
 	ImGui::Begin("Control", nullptr, ImGuiWindowFlags_NoResize);
 	if (ImGui::Button("Walk around", ImVec2(100, 20))) {
-
+		if (!rm.IsRoundGoing())
+		{
+			rm.EnterWalkMode();
+			WhiteBallObject::isInAimMode = false;
+			WhiteBallObject::isInFineAimMode = false;
+			WhiteBallObject::isInShootMode = false;
+			WhiteBallObject::isInSpinMode = false;
+		}
 	}
 	if (ImGui::Button("Nominate", ImVec2(100, 20))) {
 		if (rm.CanNominate())

@@ -166,15 +166,14 @@ XMVECTOR PerspectiveCamera::GetPosition() const noexcept
 	return position;
 }
 
-
+XMVECTOR newDir = XMVectorSet(0, 0, 1, 0);
 void PerspectiveCamera::Animate(float t, float dt)
 {
 	RoundManager& rm = RoundManager::GetInstance();
-
-	if ((WhiteBallObject::isInAimMode || WhiteBallObject::isInFineAimMode) && !rm.IsRoundGoing())
+	if ((WhiteBallObject::isInAimMode || WhiteBallObject::isInFineAimMode || WhiteBallObject::isInShootMode || WhiteBallObject::isInSpinMode) && !rm.IsRoundGoing())
 	{
 		POINT cursorMove = InputClass::GetCursorMove();
-		if (InputClass::LeftMBDown())
+		if (InputClass::LeftMBDown() && (WhiteBallObject::isInAimMode || WhiteBallObject::isInFineAimMode))
 		{
 			float gyroStep = 0;
 			float elevationStep = 0.008f;
@@ -207,37 +206,53 @@ void PerspectiveCamera::Animate(float t, float dt)
 		float distance_factor = aimModeMagnification * 0.4f / (len / 6.0f);
 		float elevation = aimModeMagnification * std::max(0.9f * (len / 6.0f), 0.5f) + aimModeMagnification * extraElevation;
 
-		XMVECTOR newDir = XMVectorSet(distance_factor * xNew, y + elevation, distance_factor * zNew, 0);
+		newDir = XMVectorSet(distance_factor * xNew, y + elevation, distance_factor * zNew, 0);
 		position = whiteBallPos + newDir;
 		SetLookAt(whiteBallPos);
 		
 	}
 	// walk mode
-	else
+	else if (rm.IsInWalkMode())
 	{
-		XMVECTOR velocity = XMVectorSet(0, 0, -1, 0);
-		XMVECTOR sideVelocity = XMVectorSet(1, 0, 0, 0);
+		while (std::fabsf(XMVectorGetX(position)) < CUSHION_X_BORDER + WALL_THICKNESS &&
+			   std::fabsf(XMVectorGetZ(position)) < CUSHION_Z_BORDER + WALL_THICKNESS)
+		{
+			position += 0.1f * newDir;
+		}
+		position = XMVectorSetY(position, 2.0f);
+
+		XMVECTOR ahead2D = ahead;
+		ahead2D = XMVectorSetY(ahead2D, 0);
+		ahead2D = XMVector3Normalize(ahead2D);
+
+		XMVECTOR prevPos = position;
 
 		if (InputClass::IsKeyDown('W'))
 		{
-			position += ahead * dt;
+			position += ahead2D * dt * 2;
 		}
 		if (InputClass::IsKeyDown('S'))
 		{
-			position -= ahead * dt;
+			position -= ahead2D * dt * 2;
 		}
 		if (InputClass::IsKeyDown('A'))
 		{
-			position -= right * dt;
+			position -= right * dt * 2;
 		}
 		if (InputClass::IsKeyDown('D'))
 		{
-			position += right * dt;
+			position += right * dt * 2;
+		}
+
+		if (std::fabsf(XMVectorGetX(position)) < CUSHION_X_BORDER + WALL_THICKNESS &&
+			std::fabsf(XMVectorGetZ(position)) < CUSHION_Z_BORDER + WALL_THICKNESS) {
+
+			position = prevPos;
 		}
 
 
 		POINT cursorMove = InputClass::GetCursorMove();
-		if (InputClass::RightMBDown())
+		if (InputClass::RightMBDown() || InputClass::LeftMBDown())
 		{
 			yaw -= cursorMove.x * 0.002f;
 			pitch -= cursorMove.y * 0.002f;

@@ -14,6 +14,9 @@
 
 void WhiteBallObject::SwitchModes()
 {
+	RoundManager& rm = RoundManager::GetInstance();
+	rm.ExitWalkMode();
+
 	auto disableAll = [&]() {
 		isInAimMode = false;
 		isInFineAimMode = false;

@@ -4,6 +4,7 @@
 #include "BallSet.h"
 #include "OverlayObject.h"
 #include "OverlaySet.h"
+#include "WhiteBallObject.h"
 
 Player* RoundManager::GetOtherPlayer() const
 {
@@ -24,6 +25,7 @@ RoundManager::RoundManager()
 
 	currentlyPlayingPlayer = p1.get();
 	target = TARGET::RED;
+	ResetFlags();
 }
 
 RoundManager::~RoundManager() = default;
@@ -107,6 +109,21 @@ void RoundManager::EnterNominateMode() noexcept
 void RoundManager::ExitNominateMode() noexcept
 {
 	isNominating = false;
+}
+
+void RoundManager::EnterWalkMode() noexcept
+{
+	isInWalkMode = true;
+}
+
+void RoundManager::ExitWalkMode() noexcept
+{
+	isInWalkMode = false;
+}
+
+bool RoundManager::IsInWalkMode() const noexcept
+{
+	return isInWalkMode;
 }
 
 std::string RoundManager::GetPlayerDisplayName(PLAYER id) const
@@ -443,7 +460,9 @@ void RoundManager::DeclareWinner(bool concede)
 	currentlyPlayingPlayer->ResetPoints();
 	otherPlayer->ResetBreak();
 	otherPlayer->ResetPoints();
-	isRestarted = true;
+	WhiteBallObject::isInAimMode = true;
+	WhiteBallObject::SwitchModes();
+	ResetFlags();
 	newTarget = RED;
 	overlaySet->ChangeTarget((BALL)newTarget);
 }

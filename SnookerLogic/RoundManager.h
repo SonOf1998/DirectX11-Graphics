@@ -47,16 +47,22 @@ class RoundManager
 	TARGET target;			// target ball
 	TARGET newTarget;		// new target calculated in ManagePoints and is assigned to 'target' at the end of GetBallsToBack
 
-	bool roundGoing = false;
-	bool whiteMovable = true;
-	bool whitePlaced  = true;
-	bool canNominate = false;
-	bool isNominating = false;
+	bool roundGoing;
+	bool whiteMovable;
+	bool whitePlaced;
+
+	// nomination //
+	bool canNominate;
+	bool isNominating;
+	
+	// walkmode //
+	bool isInWalkMode;
+	
 	std::vector<std::unique_ptr<BallObject>> ballsPottedCurrRound;
 	BallObject* firstHit = nullptr;
 
 	// handling game end //
-	bool isRestarted = false;
+	bool isRestarted;
 
 	///////////////////////
 	// handling overlays //
@@ -65,6 +71,17 @@ class RoundManager
 	ID3D11DeviceContext* deviceContext;
 	OverlaySet* overlaySet;
 	///////////////////////
+
+	void ResetFlags() {
+		roundGoing = false;
+		whiteMovable = true;
+		whitePlaced = true;
+		canNominate = false;
+		isNominating = false;
+		isInWalkMode = false;
+		firstHit = nullptr;
+	}
+
 
 	Player* GetOtherPlayer() const;
 	RoundManager();
@@ -78,7 +95,6 @@ public:
 	TARGET GetTarget() const noexcept;
 	
 
-	// handling dropped white ball
 	bool IsWhiteDroppedLastRound()		const	noexcept;
 	void SetWhiteDropped(bool dropped)			noexcept;
 	bool IsWhitePlaced()				const	noexcept;
@@ -90,6 +106,9 @@ public:
 	void DisableNomination()					noexcept;
 	void EnterNominateMode()					noexcept;
 	void ExitNominateMode()						noexcept;
+	void EnterWalkMode()						noexcept;
+	void ExitWalkMode()							noexcept;
+	bool IsInWalkMode()					const	noexcept;
 
 	std::string GetPlayerDisplayName(PLAYER)			const;
 	const std::unique_ptr<Player>& GetPlayer(PLAYER)	const;
