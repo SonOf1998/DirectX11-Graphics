@@ -33,6 +33,10 @@ enum BALL
 	NOMINATE_WARNING
 };
 
+enum PLAYER
+{
+	PL1, PL2
+};
 
 class RoundManager
 {
@@ -82,6 +86,10 @@ public:
 	void DisableNomination()					noexcept;
 	void EnterNominateMode()					noexcept;
 	void ExitNominateMode()						noexcept;
+
+	std::string GetPlayerDisplayName(PLAYER)			const;
+	const std::unique_ptr<Player>& GetPlayer(PLAYER)	const;
+
 
 	void AddNewPottedBall(std::unique_ptr<BallObject>&& ball);
 	void ManagePoints(BallSet* ballSet);

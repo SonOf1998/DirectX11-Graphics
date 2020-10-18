@@ -280,7 +280,7 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui::SetColumnWidth(3, 5);
 	ImGui::SetColumnWidth(4, 70);
 	ImGui::SetColumnWidth(5, 60);
-	ImGui::Text("Player1");
+	ImGui::Text(rm.GetPlayerDisplayName(PL1).c_str());
 	ImGui::NextColumn();
 	ImGui::Text("Break");
 	ImGui::NewLine();
@@ -288,14 +288,14 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui::NewLine();
 	ImGui::Text("Frames");
 	ImGui::NextColumn();
-	ImGui::Text("0");
+	ImGui::Text(std::to_string(rm.GetPlayer(PL1)->GetBreak()).c_str());
 	ImGui::NewLine();
-	ImGui::Text("0");
+	ImGui::Text(std::to_string(rm.GetPlayer(PL1)->GetPoints()).c_str());
 	ImGui::NewLine();
-	ImGui::Text("0");
+	ImGui::Text(std::to_string(rm.GetPlayer(PL1)->GetWonFrame()).c_str());
 	ImGui::NextColumn();
 	ImGui::NextColumn();
-	ImGui::Text("Player2");
+	ImGui::Text(rm.GetPlayerDisplayName(PL2).c_str());
 	ImGui::NextColumn();
 	ImGui::Text("Break");
 	ImGui::NewLine();
@@ -303,11 +303,11 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui::NewLine();
 	ImGui::Text("Frames");
 	ImGui::NextColumn();
-	ImGui::Text("0");
+	ImGui::Text(std::to_string(rm.GetPlayer(PL2)->GetBreak()).c_str());
 	ImGui::NewLine();
-	ImGui::Text("0");
+	ImGui::Text(std::to_string(rm.GetPlayer(PL2)->GetPoints()).c_str());
 	ImGui::NewLine();
-	ImGui::Text("0");
+	ImGui::Text(std::to_string(rm.GetPlayer(PL2)->GetWonFrame()).c_str());
 	ImGui::End();
 
 	if (rm.IsWhiteDroppedLastRound() && rm.IsWhitePlaced() && (WhiteBallObject::isInAimMode || WhiteBallObject::isInFineAimMode))

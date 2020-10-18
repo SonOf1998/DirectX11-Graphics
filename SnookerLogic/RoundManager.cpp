@@ -96,6 +96,43 @@ void RoundManager::ExitNominateMode() noexcept
 	isNominating = false;
 }
 
+std::string RoundManager::GetPlayerDisplayName(PLAYER id) const
+{
+	Player* player;
+	std::string additionalData;
+
+	switch (id)
+	{
+	case PL1:
+		player = p1.get();
+		break;
+	case PL2:
+		player = p2.get();
+		break;
+	default:
+		throw std::runtime_error("Switch is not exhaustive in RoundManager::GetPlayerDisplayName()");
+	}
+	
+	if (player == currentlyPlayingPlayer)
+		additionalData = "'";
+
+	std::string outString = player->GetName() + additionalData;
+	return outString;
+}
+
+const std::unique_ptr<Player>& RoundManager::GetPlayer(PLAYER id) const
+{
+	switch (id)
+	{
+	case PL1:
+		return p1;
+	case PL2:
+		return p2;
+	default:
+		throw std::runtime_error("Switch is not exhaustive in RoundManager::GetPlayer()");
+	}
+}
+
 /* Collecting the balls potted in the current round in order!
 *
 *  As soon as the round ends (all the balls stop) this array is
@@ -174,6 +211,12 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 		// foul or current playet didn't pot anything
 		else
 		{
+			currentlyPlayingPlayer->ResetBreak();
+			if (currentlyPlayingPlayer == p1.get())
+				currentlyPlayingPlayer = p2.get();
+			else
+				currentlyPlayingPlayer = p1.get();
+
 			if (ballSet->HasReds())
 			{
 				overlaySet->ChangeTarget(RED_BALL);
@@ -192,7 +235,10 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 					newTarget = (TARGET)(target);
 				}
 			}
-		}		
+		}
+
+		pointsForCurrentPlayer = 0;
+		pointsForOtherPlayer = 0;
 	};
 
 
@@ -206,13 +252,21 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 			// which fails to hit the target ball first
 			if (firstHit->GetPoint() != target + 1)
 			{
-				pointsForOtherPlayer = vmax(4, target + 1);
+				pointsForOtherPlayer = vmax(4, firstHit->GetPoint());
 				updatePoints();
 			}
 			// correct shot, but no pot
 			// update point doesnt get called this case
 			else
 			{
+				currentlyPlayingPlayer->ResetBreak();
+				if (currentlyPlayingPlayer == p1.get())
+					currentlyPlayingPlayer = p2.get();				
+				else
+					currentlyPlayingPlayer = p1.get();
+				
+					
+
 				// havent pot anything and table still has reds
 				if (ballSet->HasReds())
 				{
@@ -342,6 +396,7 @@ std::vector<std::unique_ptr<BallObject>> RoundManager::GetBallsToPutBack(BallSet
 
 	// we flag this round as handled
 	roundGoing = false;
+	firstHit = nullptr;
 	ballsPottedCurrRound.clear();
 
 	std::sort(ballsToPutBack.begin(), ballsToPutBack.end(), [] (std::unique_ptr<BallObject>& b1, std::unique_ptr<BallObject>& b2) {
