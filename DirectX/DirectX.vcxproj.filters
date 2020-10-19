@@ -186,6 +186,9 @@
     <ClCompile Include="OrthographicCamera.cpp">
       <Filter>Header Files\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="ArrowSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -575,6 +578,9 @@
     <ClInclude Include="OrthographicCamera.h">
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="ArrowSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\FullScreenQuadPT\ps.hlsl" />
@@ -609,6 +615,9 @@
     <FxCompile Include="Shaders\BezierQuad\vs.hlsl" />
     <FxCompile Include="Shaders\Overlay\ps.hlsl" />
     <FxCompile Include="Shaders\Overlay\vs.hlsl" />
+    <FxCompile Include="Shaders\Billboard\gs.hlsl" />
+    <FxCompile Include="Shaders\Billboard\ps.hlsl" />
+    <FxCompile Include="Shaders\Billboard\vs.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\PN-Triangles\DS_PS_transfer.hlsli">
@@ -657,5 +666,7 @@
     </None>
     <None Include="packages.config" />
     <None Include="Shaders\Overlay\vs_ps_transfer.hlsli" />
+    <None Include="Shaders\Billboard\gs_ps_transfer.hlsli" />
+    <None Include="Shaders\Billboard\vs_gs_transfer.hlsli" />
   </ItemGroup>
 </Project>

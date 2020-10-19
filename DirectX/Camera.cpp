@@ -11,6 +11,11 @@ XMVECTOR Camera::GetPosition() const noexcept
 	return position;
 }
 
+XMMATRIX Camera::GetProjMatrix() const noexcept
+{
+	return projection;
+}
+
 XMMATRIX Camera::GetViewProjMatrix() const noexcept
 {
 	return viewProjMatrix;

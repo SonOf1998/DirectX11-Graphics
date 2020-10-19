@@ -2,6 +2,7 @@
 #include "Graphics.h"
 
 // from DirectX
+#include "ArrowSet.h"
 #include "ArmchairSet.h"
 #include "HResultException.h"
 #include "BallSet.h"
@@ -72,6 +73,7 @@ void Graphics::RenderInitalization()
 	std::unique_ptr<GameObject> snookerTable = std::make_unique<SnookerTableObject>(dev.Get(), devcon.Get());
 	armchairSet = std::make_unique<ArmchairSet>(dev.Get(), devcon.Get());
 	chairSet = std::make_unique<ChairSet>(dev.Get(), devcon.Get());
+	arrowSet = std::make_unique<ArrowSet>(dev.Get(), devcon.Get(), camera.get(), reinterpret_cast<BallSet*>(ballSet.get()));
 
 	std::unique_ptr<GameObject> plane = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(25, 25, 1, 1), XMVectorSet(1, 0, 0, 0), -XM_PI / 2);
 	std::shared_ptr<Texture> planeTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/pavement.jpg", 0);
@@ -103,6 +105,7 @@ void Graphics::RenderInitalization()
 	pipelineLoDTess.reset(Pipeline::Create<InputLayoutP>(dev.Get(), devcon.Get(), BALL_HWTESS_LOD_VS, BALL_HWTESS_LOD_PS, nullptr, BALL_HWTESS_LOD_HS, BALL_HWTESS_LOD_DS));
 	pipelineBezierQuad.reset(Pipeline::Create<InputLayoutPNT>(dev.Get(), devcon.Get(), BEZIER_QUAD_VS, BEZIER_QUAD_PS, nullptr, BEZIER_QUAD_HS, BEZIER_QUAD_DS));
 	pipelineOverlay.reset(Pipeline::Create<InputLayoutPT>(dev.Get(), devcon.Get(), OVERLAY_VS, OVERLAY_PS));
+	pipelineBillboard.reset(Pipeline::Create<InputLayoutP>(dev.Get(), devcon.Get(), BILLBOARD_VS, BILLBOARD_PS, BILLBOARD_GS));
 }
 
 
@@ -183,6 +186,12 @@ void Graphics::RenderFrame(float t, float dt)
 	pipelineLoDTess->Use();
 	ballSet->Animate(t, dt);
 	ballSet->Render(devcon.Get(), pipelineLoDTess.get(), camera.get());
+
+
+	// TODO
+	/*pipelineBillboard->Use();
+	arrowSet->Animate(t, dt);
+	arrowSet->Render(devcon.Get(), pipelineBillboard.get(), camera.get());*/
 
 	devcon->OMSetBlendState(overlayBlendState.Get(), nullptr, 0xFFFFFF);
 	pipelineOverlay->Use();

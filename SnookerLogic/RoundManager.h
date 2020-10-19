@@ -106,6 +106,7 @@ public:
 	void DisableNomination()					noexcept;
 	void EnterNominateMode()					noexcept;
 	void ExitNominateMode()						noexcept;
+	bool IsInNominateMode()				const	noexcept;
 	void EnterWalkMode()						noexcept;
 	void ExitWalkMode()							noexcept;
 	bool IsInWalkMode()					const	noexcept;

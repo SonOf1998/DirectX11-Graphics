@@ -111,6 +111,11 @@ void RoundManager::ExitNominateMode() noexcept
 	isNominating = false;
 }
 
+bool RoundManager::IsInNominateMode() const noexcept
+{
+	return isNominating;
+}
+
 void RoundManager::EnterWalkMode() noexcept
 {
 	isInWalkMode = true;
@@ -444,7 +449,8 @@ void RoundManager::DeclareWinner(bool concede)
 	}
 	else
 	{
-		assert(currentlyPlayingPlayer->GetPoints() != otherPlayer->GetPoints(), "Missed black ball game");
+		// missed black ball game assert
+		assert(currentlyPlayingPlayer->GetPoints() != otherPlayer->GetPoints());
 
 		if (currentlyPlayingPlayer->GetPoints() > otherPlayer->GetPoints())
 		{

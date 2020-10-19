@@ -129,6 +129,38 @@ struct MVP : public CBufferDataType
 	}
 };
 
+struct BB : public CBufferDataType
+{
+	struct BBData
+	{
+		XMVECTOR rightVector;
+		XMVECTOR upVector;
+	} data;
+
+
+	BB() : CBufferDataType("BB")
+	{
+
+	}
+
+	void FillCBufferWithData(D3D11_MAPPED_SUBRESOURCE& mappedResource) override
+	{
+		BBData* cbufferData = reinterpret_cast<BBData*>(mappedResource.pData);
+		cbufferData->rightVector = data.rightVector;
+		cbufferData->upVector = data.upVector;
+	}
+
+	UINT GetDataSize()
+	{
+		return sizeof(data);
+	}
+
+	BBData& GetData()
+	{
+		return data;
+	}
+};
+
 // will be used for instancing
 template <size_t size = 1>
 struct MMInv : public CBufferDataType
@@ -221,6 +253,34 @@ struct VP : public CBufferDataType
 	}
 
 	VPData& GetData()
+	{
+		return data;
+	}
+};
+
+struct Proj : public CBufferDataType
+{
+	struct ProjData
+	{
+		XMMATRIX proj;
+	} data;
+
+	Proj() : CBufferDataType("P")
+	{
+	}
+
+	void FillCBufferWithData(D3D11_MAPPED_SUBRESOURCE& mappedResource)
+	{
+		ProjData* cbufferData = reinterpret_cast<ProjData*>(mappedResource.pData);
+		cbufferData->proj = data.proj;
+	}
+
+	UINT GetDataSize()
+	{
+		return sizeof(data);
+	}
+
+	ProjData& GetData()
 	{
 		return data;
 	}

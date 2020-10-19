@@ -38,5 +38,7 @@ public:
 	bool IsPlaceUsed(const XMVECTOR& place, bool excludeWhite = false)					const;
 	bool HasReds()																		const;
 	bool HasLower(TARGET target)														const;
+
+	BallObject* GetColor(TARGET ballColor)													const;
 };
 

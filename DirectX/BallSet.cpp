@@ -586,3 +586,15 @@ bool BallSet::HasLower(TARGET target) const
 
 	return false;
 }
+
+BallObject* BallSet::GetColor(TARGET ballColor) const
+{
+	for (const auto& ball : balls)
+	{
+		if (ball->GetPoint() == ballColor + 1)
+			return ball.get();
+	}
+
+	DebugBreak();
+	return nullptr;
+}

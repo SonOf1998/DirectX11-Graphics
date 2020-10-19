@@ -16,11 +16,13 @@ std::unique_ptr<Pipeline>				pipelineShadowMap;			\
 std::unique_ptr<Pipeline>				pipelineLoDTess;			\
 std::unique_ptr<Pipeline>				pipelineBezierQuad;			\
 std::unique_ptr<Pipeline>				pipelineOverlay;			\
+std::unique_ptr<Pipeline>				pipelineBillboard;			\
 																	\
 std::unique_ptr<Renderable>				ballSet;					\
 std::unique_ptr<Renderable>				armchairSet;				\
 std::unique_ptr<Renderable>				chairSet;					\
 std::unique_ptr<Renderable>				overlaySet;					\
+std::unique_ptr<Renderable>				arrowSet;					\
 
 
 

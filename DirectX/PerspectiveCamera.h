@@ -54,6 +54,9 @@ public:
 	XMFLOAT3 GetForward()					noexcept;
 	XMFLOAT3 GetUp()						const	noexcept;
 
+	XMVECTOR GetUpVector()					const	noexcept;
+	XMVECTOR GetRightVector()				const	noexcept;
+
 	void GoAimMode();
 	void MagnifyAimMode(short level);
 	float GetGyroAngle()					const	noexcept;

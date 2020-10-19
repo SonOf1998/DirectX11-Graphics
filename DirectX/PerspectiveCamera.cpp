@@ -112,6 +112,16 @@ XMFLOAT3 PerspectiveCamera::GetUp() const noexcept
 	return XMFLOAT3(0, 1, 0);
 }
 
+XMVECTOR PerspectiveCamera::GetUpVector() const noexcept
+{
+	return up;
+}
+
+XMVECTOR PerspectiveCamera::GetRightVector() const noexcept
+{
+	return right;
+}
+
 void PerspectiveCamera::GoAimMode()
 {
 	XMFLOAT3 wbp;
@@ -278,7 +288,7 @@ void PerspectiveCamera::Animate(float t, float dt)
 	}
 	else if (rm.IsRoundGoing())
 	{
-		static float extraZoomoutTime = 0.0f;;
+		static float extraZoomoutTime = 0.0f;
 
 		if (moveOutside)
 		{
@@ -297,7 +307,7 @@ void PerspectiveCamera::Animate(float t, float dt)
 	XMMATRIX invTranslate = XMMatrixTranslationFromVector(-position);
 
 	XMMATRIX view = invTranslate * rotation;
-	XMMATRIX projection = XMMatrixPerspectiveFovRH(fovy, aspectRatio, zNear, zFar);
+	projection = XMMatrixPerspectiveFovRH(fovy, aspectRatio, zNear, zFar);
 
 	viewProjMatrix = XMMatrixMultiply(view, projection);
 	viewProjMatrixInv = XMMatrixInverse(nullptr, viewProjMatrix);

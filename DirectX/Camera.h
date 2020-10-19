@@ -8,6 +8,7 @@ class Camera : public Animatable
 protected:
 
 	XMVECTOR position;
+	XMMATRIX projection;
 	XMMATRIX viewProjMatrix;
 	XMMATRIX viewProjMatrixInv;
 
@@ -20,6 +21,7 @@ protected:
 public:
 		
 	XMVECTOR GetPosition()		    const noexcept;
+	XMMATRIX GetProjMatrix()		const noexcept;
 	XMMATRIX GetViewProjMatrix()    const noexcept;
 	XMMATRIX GetViewProjMatrixInv() const noexcept;
 	void SetWhiteBallPos(const XMVECTOR& v) noexcept;
