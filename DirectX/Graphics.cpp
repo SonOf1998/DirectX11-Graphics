@@ -187,13 +187,11 @@ void Graphics::RenderFrame(float t, float dt)
 	ballSet->Animate(t, dt);
 	ballSet->Render(devcon.Get(), pipelineLoDTess.get(), camera.get());
 
-
-	// TODO
-	/*pipelineBillboard->Use();
-	arrowSet->Animate(t, dt);
-	arrowSet->Render(devcon.Get(), pipelineBillboard.get(), camera.get());*/
-
 	devcon->OMSetBlendState(overlayBlendState.Get(), nullptr, 0xFFFFFF);
+	pipelineBillboard->Use();
+	arrowSet->Animate(t, dt);
+	arrowSet->Render(devcon.Get(), pipelineBillboard.get(), camera.get());
+
 	pipelineOverlay->Use();
 	overlaySet->Animate(t, dt);
 	overlaySet->Render(devcon.Get(), pipelineOverlay.get(), overlayCamera.get());

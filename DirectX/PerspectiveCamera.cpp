@@ -87,6 +87,11 @@ void PerspectiveCamera::SetLookAt(const XMVECTOR& lookAt)
 
 	pitch = asinf(dir.y);
 	yaw = atan2f(-dir.x, -dir.z);
+
+	XMMATRIX rotation = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+	ahead = XMVectorSet(0, 0, -1, 0) * rotation;
+	right = XMVectorSet(1, 0, 0, 0) * rotation;
+	up = XMVectorSet(0, 1, 0, 0) * rotation;
 }
 
 void PerspectiveCamera::SetAspectRatio(float newAspectRatio) noexcept

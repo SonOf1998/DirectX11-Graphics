@@ -7,13 +7,16 @@ class BallObject;
 class BallSet;
 class Camera;
 class PerspectiveCamera;
+class Texture;
 class Light;
 
 class ArrowSet : public Renderable
 {
 	class ArrowObject : public GameObject
 	{
-		bool isHovered = false;
+		bool isCurrentlyHovered = false;
+		std::shared_ptr<Texture> grayArrow;
+		std::shared_ptr<Texture> blueArrow;
 
 	public:
 		ArrowObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
@@ -21,8 +24,7 @@ class ArrowSet : public Renderable
 		void Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera = nullptr, Light* light = nullptr) override;
 		void Animate(float t, float dt) override;
 
-		void SetHovered(bool hovered) noexcept { isHovered = hovered; }
-		bool IsHovered() const noexcept { return isHovered;  }
+		void MakeHovered(bool hovered);
 	};
 	
 	BallSet* ballSet;

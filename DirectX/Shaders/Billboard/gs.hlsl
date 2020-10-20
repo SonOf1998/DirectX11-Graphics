@@ -1,9 +1,9 @@
 #include "vs_gs_transfer.hlsli"
 #include "gs_ps_transfer.hlsli"
 
-cbuffer P : register(b0)
+cbuffer VP : register(b0)
 {
-    matrix projMatrix;
+    matrix viewProj;
 };
 
 cbuffer BB : register(b1)
@@ -15,8 +15,8 @@ cbuffer BB : register(b1)
 [maxvertexcount(4)]
 void main(point GS_IN gin[1], uint primID : SV_PrimitiveID, inout TriangleStream<GS_OUT> tristream)
 {
-    float billboardWidth = 0.05f;
-    float billboardHeight = 0.1f;
+    float billboardWidth = 0.1f;
+    float billboardHeight = 0.17f;
     
     float4 v[4];
     v[0] = float4(gin[0].position + billboardWidth * rightVector - billboardHeight * upVector, 1.0f); // jobb also
@@ -35,7 +35,7 @@ void main(point GS_IN gin[1], uint primID : SV_PrimitiveID, inout TriangleStream
     [unroll]
     for (int i = 0; i < 4; i++)
     {
-        gout.position = mul(v[i], projMatrix);
+        gout.position = mul(v[i], viewProj);
         gout.texcoord = t[i];
 
         tristream.Append(gout);

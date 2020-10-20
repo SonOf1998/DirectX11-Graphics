@@ -20,6 +20,7 @@ struct Geometry
 
 	virtual ~Geometry() = default;
 
+	virtual void DrawUnindexed(ID3D11DeviceContext*, D3D11_PRIMITIVE_TOPOLOGY = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) = 0;
 	virtual void Draw(ID3D11DeviceContext*, D3D11_PRIMITIVE_TOPOLOGY = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) = 0;
 	virtual void DrawInstanced(ID3D11DeviceContext*, UINT instanceCount, D3D11_PRIMITIVE_TOPOLOGY = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) = 0;
 };
@@ -45,7 +46,7 @@ protected:
 
 
 	virtual void GenerateVertexData() = 0;
-	void CreateBuffers(ID3D11Device* dev)
+	void CreateBuffers(ID3D11Device* dev, bool indexed = true)
 	{
 		// vertex buffer
 		D3D11_BUFFER_DESC vertexBufferDesc		= {};
@@ -65,27 +66,50 @@ protected:
 		HRESULT result;
 		THROW_IF_HRESULT_FAILED(dev->CreateBuffer(&vertexBufferDesc, &vertexBufferData, vertexBuffer.GetAddressOf()));
 
+		if (indexed)
+		{
+			// index buffer
+			D3D11_BUFFER_DESC indexBufferDesc = {};
+			D3D11_SUBRESOURCE_DATA indexBufferData = {};
 
-		// index buffer
-		D3D11_BUFFER_DESC indexBufferDesc		= {};
-		D3D11_SUBRESOURCE_DATA indexBufferData	= {};
+			indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+			indexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(unsigned short) * indices.size());
+			indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+			indexBufferDesc.CPUAccessFlags = 0;
+			indexBufferDesc.MiscFlags = 0;
+			indexBufferDesc.StructureByteStride = sizeof(unsigned short);
 
-		indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-		indexBufferDesc.ByteWidth = static_cast<UINT>(sizeof(unsigned short) * indices.size());
-		indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		indexBufferDesc.CPUAccessFlags = 0;
-		indexBufferDesc.MiscFlags = 0;
-		indexBufferDesc.StructureByteStride = sizeof(unsigned short);
+			indexBufferData.pSysMem = indices.data();
+			indexBufferData.SysMemPitch = 0;
+			indexBufferData.SysMemSlicePitch = 0;
 
-		indexBufferData.pSysMem = indices.data();
-		indexBufferData.SysMemPitch = 0;
-		indexBufferData.SysMemSlicePitch = 0;
-
-		THROW_IF_HRESULT_FAILED(dev->CreateBuffer(&indexBufferDesc, &indexBufferData, indexBuffer.GetAddressOf()));
+			THROW_IF_HRESULT_FAILED(dev->CreateBuffer(&indexBufferDesc, &indexBufferData, indexBuffer.GetAddressOf()));
+		}		
 	}
 	
 
 public:		
+
+	void DrawUnindexed(ID3D11DeviceContext* deviceContext, D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) override
+	{
+		UINT stride = static_cast<UINT>(DATA_TYPE::GetSizeInBytes());
+		UINT offset = 0;
+
+		deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+		deviceContext->IASetPrimitiveTopology(topology);
+
+		UINT vertsToDraw;
+		if (topology == D3D11_PRIMITIVE_TOPOLOGY_POINTLIST)
+		{
+			vertsToDraw = 1;
+		}
+		else
+		{
+			vertsToDraw = static_cast<UINT>(vertices.size());
+		}
+
+		deviceContext->Draw(vertsToDraw, 0);
+	}
 
 	void Draw(ID3D11DeviceContext* deviceContext, D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) override
 	{

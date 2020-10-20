@@ -13,16 +13,20 @@ class AssimpModel : public GeometryDerived<DATA_TYPE>
 
 public:
 
-	AssimpModel(ID3D11Device* device, const char* filename, UINT meshIndex = 0)
+	AssimpModel(ID3D11Device* device, const char* filename, UINT meshIndex = 0, bool indexed = true)
 	{
-		GenerateVertexData(filename, meshIndex);
-		this->CreateBuffers(device);
+		GenerateVertexData(filename, meshIndex, indexed);
+		this->CreateBuffers(device, indexed);
 	}
 
-	void GenerateVertexData(const char* fileName, unsigned int meshIndex)
+	void GenerateVertexData(const char* fileName, unsigned int meshIndex, bool indexed)
 	{
 		Assimp::Importer importer;
-		auto model = importer.ReadFile(fileName, aiProcess_JoinIdenticalVertices | aiProcess_FlipWindingOrder | aiProcess_PreTransformVertices);
+		auto flags = aiProcess_JoinIdenticalVertices | aiProcess_FlipWindingOrder | aiProcess_PreTransformVertices;
+		if (!indexed)
+			flags = 0;
+
+		auto model = importer.ReadFile(fileName, flags);
 		auto mesh = model->mMeshes[meshIndex];
 
 		this->vertices.reserve(mesh->mNumVertices);
@@ -81,15 +85,18 @@ public:
 			this->vertices.push_back(vertexData.GetData());
 		}
 
-		uint topologyVertexCount = mesh->mFaces[0].mNumIndices;
-		this->indices.reserve(mesh->mNumFaces * topologyVertexCount);
-		for (uint j = 0; j < mesh->mNumFaces; ++j)
+		if (indexed)
 		{
-			auto face = mesh->mFaces[j];
-			for (uint k = 0; k < topologyVertexCount; ++k)
+			uint topologyVertexCount = mesh->mFaces[0].mNumIndices;
+			this->indices.reserve(mesh->mNumFaces * topologyVertexCount);
+			for (uint j = 0; j < mesh->mNumFaces; ++j)
 			{
-				this->indices.push_back(face.mIndices[k]);
+				auto face = mesh->mFaces[j];
+				for (uint k = 0; k < topologyVertexCount; ++k)
+				{
+					this->indices.push_back(face.mIndices[k]);
+				}
 			}
-		}
+		}		
 	}
 };

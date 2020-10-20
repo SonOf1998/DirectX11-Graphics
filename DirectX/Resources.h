@@ -13,6 +13,7 @@
 #define CHAIR_MODEL							MODEL_ROOTDIR "chair.fbx"
 #define CUE_MODEL							MODEL_ROOTDIR "cue.fbx"
 #define QUAD_MODEL							MODEL_ROOTDIR "quad.obj"
+#define POINT_MODEL							MODEL_ROOTDIR "point.obj"
 
 // ... TEXTURES ...
 
@@ -54,6 +55,9 @@
 #define CUE_FLANGE_TEXTURE					TEXTURE_ROOTDIR "cue_flange.jpg"
 #define CUE_LIGHTWOOD_TEXTURE				TEXTURE_ROOTDIR "cue_upper_panel.jpg"
 #define CUE_DARKWOOD_TEXTURE				TEXTURE_ROOTDIR "cue_lower_panel.jpg"
+
+#define GRAY_ARROW_TEXTURE					TEXTURE_ROOTDIR "gray_arr.png"
+#define BLUE_ARROW_TEXTURE					TEXTURE_ROOTDIR "blue_arr.png"
 
 // ... SOUNDS ...
 

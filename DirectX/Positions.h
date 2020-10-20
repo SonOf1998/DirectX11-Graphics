@@ -18,6 +18,8 @@
 #define CUSHION_Z_BORDER			5.34f
 #define WALL_THICKNESS				0.5f
 
+#define ARROW_DY					0.35f
+
 // 1.0 -> no energy loss on hit
 #define BALL_COLLISION_ENERGY_LOSS_FACTOR 0.9f
 
