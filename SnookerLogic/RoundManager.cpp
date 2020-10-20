@@ -106,14 +106,24 @@ void RoundManager::EnterNominateMode() noexcept
 	isNominating = true;
 }
 
-void RoundManager::ExitNominateMode() noexcept
+void RoundManager::ExitNominateMode(bool successful /* true */) noexcept
 {
 	isNominating = false;
+
+	// check if nominate mode is done by an actual nomination
+	// or only because we hit the white ball
+	if (successful)
+		madeOneNomination = true;
 }
 
 bool RoundManager::IsInNominateMode() const noexcept
 {
 	return isNominating;
+}
+
+bool RoundManager::AlreadyMadeOneNomination() const noexcept
+{
+	return madeOneNomination;
 }
 
 void RoundManager::EnterWalkMode() noexcept
@@ -193,6 +203,10 @@ void RoundManager::AddNewPottedBall(std::unique_ptr<BallObject>&& ball)
 */
 void RoundManager::ManagePoints(BallSet* ballSet)
 {
+	// terrible, needs refactor
+	// see more @ bs declaration
+	bs = ballSet;
+
 	int pointsForCurrentPlayer = 0;
 	int pointsForOtherPlayer = 0;
 
@@ -432,6 +446,7 @@ std::vector<std::unique_ptr<BallObject>> RoundManager::GetBallsToPutBack(BallSet
 	firstHit = nullptr;
 	ballsPottedCurrRound.clear();
 	isRestarted = false;
+	madeOneNomination = false;
 
 	std::sort(ballsToPutBack.begin(), ballsToPutBack.end(), [] (std::unique_ptr<BallObject>& b1, std::unique_ptr<BallObject>& b2) {
 		return b1->GetPoint() > b2->GetPoint();
@@ -477,6 +492,16 @@ void RoundManager::UpdateTarget(BallSet* ballSet, BALL t)
 {
 	target = (TARGET)t;
 	overlaySet->ChangeTarget(t);
+}
+
+void RoundManager::UpdateTarget(XMVECTOR s, XMVECTOR dir)
+{
+	BallObject* rayHitBall = bs->GetFirstColorHitByRay(s, dir);
+	if (rayHitBall != nullptr)
+	{
+		target = (TARGET)(rayHitBall->GetPoint() - 1);
+		overlaySet->ChangeTarget((BALL)(target));
+	}
 }
 
 void RoundManager::ClearOverlay()

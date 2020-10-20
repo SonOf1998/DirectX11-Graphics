@@ -54,6 +54,7 @@ class RoundManager
 	// nomination //
 	bool canNominate;
 	bool isNominating;
+	bool madeOneNomination;
 	
 	// walkmode //
 	bool isInWalkMode;
@@ -63,6 +64,11 @@ class RoundManager
 
 	// handling game end //
 	bool isRestarted;
+
+	// terrible !! needs refactor //
+	// as RoundMan is not responsible for doing anything with the ballset //
+	// also it is set through a function that uses ballset firstly during runtime //
+	BallSet* bs;
 
 	///////////////////////
 	// handling overlays //
@@ -79,6 +85,7 @@ class RoundManager
 		canNominate = false;
 		isNominating = false;
 		isInWalkMode = false;
+		madeOneNomination = false;
 		firstHit = nullptr;
 	}
 
@@ -105,8 +112,9 @@ public:
 	bool CanNominate()					const	noexcept;
 	void DisableNomination()					noexcept;
 	void EnterNominateMode()					noexcept;
-	void ExitNominateMode()						noexcept;
+	void ExitNominateMode(bool successful=true)	noexcept;
 	bool IsInNominateMode()				const	noexcept;
+	bool AlreadyMadeOneNomination()		const	noexcept;
 	void EnterWalkMode()						noexcept;
 	void ExitWalkMode()							noexcept;
 	bool IsInWalkMode()					const	noexcept;
@@ -120,7 +128,7 @@ public:
 	std::vector<std::unique_ptr<BallObject>> GetBallsToPutBack(BallSet* ballSet);
 	void DeclareWinner(bool concede = false);
 	void UpdateTarget(BallSet* ballSet, BALL t);
-
+	void UpdateTarget(XMVECTOR s, XMVECTOR dir);
 
 	void ClearOverlay();
 };

@@ -224,12 +224,16 @@ void PerspectiveCamera::Animate(float t, float dt)
 		// can be adjusted by rolling the mouse's middle button
 		float len = Length(whiteBallPos - targetBallPos);
 		float distance_factor = aimModeMagnification * 0.4f / (len / 6.0f);
-		float elevation = aimModeMagnification * std::max(0.9f * (len / 6.0f), 0.5f) + aimModeMagnification * extraElevation;
+		float elevation = aimModeMagnification * std::max(0.75f * (len / 6.0f), 0.5f) + aimModeMagnification * extraElevation;
 
 		newDir = XMVectorSet(distance_factor * xNew, y + elevation, distance_factor * zNew, 0);
 		position = whiteBallPos + newDir;
 		SetLookAt(whiteBallPos);
 		
+		if (!rm.AlreadyMadeOneNomination() && rm.CanNominate())
+		{
+			rm.UpdateTarget(XMVectorSetY(position, BALL_POS_Y ), XMVectorSet(-xNew, 0, -zNew, 0));
+		}
 	}
 	// walk mode
 	else if (rm.IsInWalkMode())
@@ -264,8 +268,11 @@ void PerspectiveCamera::Animate(float t, float dt)
 			position += right * dt * 2;
 		}
 
-		if (std::fabsf(XMVectorGetX(position)) < CUSHION_X_BORDER + WALL_THICKNESS &&
-			std::fabsf(XMVectorGetZ(position)) < CUSHION_Z_BORDER + WALL_THICKNESS) {
+		if ((std::fabsf(XMVectorGetX(position)) < CUSHION_X_BORDER + WALL_THICKNESS &&
+			std::fabsf(XMVectorGetZ(position)) < CUSHION_Z_BORDER + WALL_THICKNESS) ||
+			(std::fabsf(XMVectorGetX(position)) > CUSHION_X_BORDER + 15 * WALL_THICKNESS ||
+			 std::fabsf(XMVectorGetZ(position)) > CUSHION_Z_BORDER + 8 * WALL_THICKNESS
+			)) {
 
 			position = prevPos;
 		}

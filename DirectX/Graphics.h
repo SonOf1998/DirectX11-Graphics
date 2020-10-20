@@ -49,6 +49,7 @@ private:
 	std::unique_ptr<PerspectiveCamera>			camera;
 	std::unique_ptr<OrthographicCamera>			overlayCamera;
 	std::vector<std::unique_ptr<GameObject>>	gameObjects;
+	std::vector<std::unique_ptr<GameObject>>	environmentParts;
 
 	PIPELINES_AND_OBJECTS
 

@@ -38,6 +38,7 @@ float Timer::GetDt() const noexcept
 	float dt = static_cast<float>(deltaT);
 	dt /= frequency.QuadPart;
 
+	dt = std::min(dt, 0.1f);
 	return dt;
 	//return dt > 1 ? dt : 0f;		// huge dt values are signaled with stutters in objects' movement
 }

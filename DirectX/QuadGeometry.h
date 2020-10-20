@@ -5,6 +5,8 @@
 template <typename DATA_TYPE>
 class QuadGeometry : public GeometryDerived<DATA_TYPE>
 {
+	float texFreq;
+
 	void GenerateVertexData() override
 	{
 		DATA_TYPE vertexData;
@@ -28,10 +30,10 @@ class QuadGeometry : public GeometryDerived<DATA_TYPE>
 
 		XMFLOAT2 texcoordUV[vertexCount]
 		{
-			XMFLOAT2(0.0, 50.0),
+			XMFLOAT2(0.0, texFreq),
 			XMFLOAT2(0.0, 0.0),
-			XMFLOAT2(50.0, 50.0),
-			XMFLOAT2(50.0, 0.0)
+			XMFLOAT2(texFreq, texFreq),
+			XMFLOAT2(texFreq, 0.0)
 		};
 
 		for (int i = 0; i < vertexCount; ++i)
@@ -57,7 +59,7 @@ class QuadGeometry : public GeometryDerived<DATA_TYPE>
 
 public:
 
-	QuadGeometry(ID3D11Device* device) : GeometryDerived<DATA_TYPE>()
+	QuadGeometry(ID3D11Device* device, float texFreq) : texFreq(texFreq), GeometryDerived<DATA_TYPE>()
 	{
 		GenerateVertexData();
 		this->CreateBuffers(device);

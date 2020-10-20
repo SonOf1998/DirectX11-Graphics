@@ -134,7 +134,7 @@ void WhiteBallObject::InitiateShot(CueObject* cue, float speedFactor, const XMVE
 	rm.ClearOverlay();
 	rm.SetRoundGoing(true);			// start the round
 	rm.SetWhiteDropped(false);		// white is not yet dropped
-	rm.ExitNominateMode();
+	rm.ExitNominateMode(false);
 	rm.DisableNomination();
 	isInAimMode = true;				// next shot should start in aim mode
 	SwitchModes();

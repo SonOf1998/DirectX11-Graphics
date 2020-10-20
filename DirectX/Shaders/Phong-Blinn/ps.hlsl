@@ -18,7 +18,7 @@ cbuffer Camera : register(b1)
 
 float4 main(PS_IN input) : SV_TARGET
 {    
-    float3 lightDir = float3(6, 8, 3);
+    float3 lightDir = float3(0, 10, 5);
     lightDir = normalize(lightDir);
     
     float3 viewDir = cameraPosition - input.worldPos;

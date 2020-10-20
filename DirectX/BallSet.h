@@ -39,6 +39,7 @@ public:
 	bool HasReds()																		const;
 	bool HasLower(TARGET target)														const;
 
-	BallObject* GetColor(TARGET ballColor)													const;
+	BallObject* GetFirstColorHitByRay(XMVECTOR s, XMVECTOR dir)							const;
+	BallObject* GetColor(TARGET ballColor)												const;
 };
 

@@ -587,6 +587,23 @@ bool BallSet::HasLower(TARGET target) const
 	return false;
 }
 
+BallObject* BallSet::GetFirstColorHitByRay(XMVECTOR s, XMVECTOR dir) const
+{
+	for (float t = 0.0f; t < 10.0f; t += 0.01f)
+	{
+		XMVECTOR rayPos = s + t * dir;
+		for (const auto& ball : balls)
+		{
+			if (ball->GetPoint() > 1 && Length(ball->GetPosition() - rayPos) < BALL_RADIUS)
+			{
+				return ball.get();
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 BallObject* BallSet::GetColor(TARGET ballColor) const
 {
 	for (const auto& ball : balls)

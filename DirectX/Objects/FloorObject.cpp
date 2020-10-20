@@ -48,6 +48,8 @@ void FloorObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 
 void FloorObject::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Light* light)
 {
+	return;
+
 	DirLightVP dirLightVP;
 	dirLightVP.GetData().viewProj = Transpose(light->GetViewProjMatrix());
 

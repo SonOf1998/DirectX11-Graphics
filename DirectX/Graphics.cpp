@@ -75,14 +75,33 @@ void Graphics::RenderInitalization()
 	chairSet = std::make_unique<ChairSet>(dev.Get(), devcon.Get());
 	arrowSet = std::make_unique<ArrowSet>(dev.Get(), devcon.Get(), camera.get(), reinterpret_cast<BallSet*>(ballSet.get()));
 
-	std::unique_ptr<GameObject> plane = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(25, 25, 1, 1), XMVectorSet(1, 0, 0, 0), -XM_PI / 2);
+	std::unique_ptr<GameObject> plane = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, -1, 0, 0), XMVectorSet(35, 40, 1, 1), XMVectorSet(1, 0, 0, 0), -XM_PI / 2);
 	std::shared_ptr<Texture> planeTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/pavement.jpg", 0);
-	std::shared_ptr<Geometry> planeGeometry = std::make_shared<QuadGeometry<PNT>>(dev.Get());
+	std::shared_ptr<Geometry> planeGeometry = std::make_shared<QuadGeometry<PNT>>(dev.Get(), 30);
 	std::shared_ptr<Material> planeMaterial = std::make_shared<Material>(XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT3(0, 0, 0), 1.0f);
-
 	Mesh* planeMesh = new Mesh(planeGeometry, planeMaterial);
 	planeMesh->SetTexture(planeTexture);
 	plane->AddMesh(planeMesh);
+	   
+
+	std::shared_ptr<Texture> wallTexture = std::make_shared<Texture>(dev.Get(), devcon.Get(), L"Textures/wall.jpg", 0);
+	std::shared_ptr<Geometry> wallGeometry = std::make_shared<QuadGeometry<PNT>>(dev.Get(), 1.35f);
+	std::shared_ptr<Material> wallMaterial = std::make_shared<Material>(XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(1, 1, 1), 1.0f);
+	Mesh wallMesh(wallGeometry, wallMaterial);
+	wallMesh.SetTexture(wallTexture);
+
+	std::unique_ptr<GameObject> wall1 = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, -20, 0), XMVectorSet(50, 25, 0, 0));
+	std::unique_ptr<GameObject> wall2 = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 20, 0), XMVectorSet(50, 25, 0, 0), XMVectorSet(0, 1, 0, 0), XM_PI);
+	std::unique_ptr<GameObject> wall3 = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(-20, 0, 0, 0), XMVectorSet(50, 25, 0, 0), XMVectorSet(0, 1, 0, 0), XM_PI / 2);
+	std::unique_ptr<GameObject> wall4 = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(20, 0, 0, 0), XMVectorSet(50, 25, 0, 0), XMVectorSet(0, 1, 0, 0), 3 * XM_PI / 2);
+	std::unique_ptr<GameObject> wall5 = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 13, 0, 0), XMVectorSet(50, 50, 0, 0), XMVectorSet(1, 0, 0, 0), XM_PI / 2);
+
+
+	wall1->CopyAndAddMesh(wallMesh);
+	wall2->CopyAndAddMesh(wallMesh);
+	wall3->CopyAndAddMesh(wallMesh);
+	wall4->CopyAndAddMesh(wallMesh);
+	wall5->CopyAndAddMesh(wallMesh);
 	
 
 	std::unique_ptr<GameObject> fullScreenQuad = std::make_unique<FullScreenQuadObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 0, 1), XMVectorSet(1, 1, 1, 1));
@@ -91,7 +110,13 @@ void Graphics::RenderInitalization()
 	fullScreenQuad->AddMesh(std::move(fullScreenMesh));
 	mirror = std::move(fullScreenQuad);
 
-	gameObjects.push_back(std::move(plane));
+
+	environmentParts.push_back(std::move(plane));
+	environmentParts.push_back(std::move(wall1));
+	environmentParts.push_back(std::move(wall2));
+	environmentParts.push_back(std::move(wall3));
+	environmentParts.push_back(std::move(wall4));
+	environmentParts.push_back(std::move(wall5));
 	gameObjects.push_back(std::move(snookerTable));
 	gameObjects.push_back(std::move(cue));
 
@@ -177,6 +202,11 @@ void Graphics::RenderFrame(float t, float dt)
 	{
 		gameObject->Animate(t, dt);
 		gameObject->Render(devcon.Get(), pipelinePhongBlinn.get(), camera.get(), dirLight.get());
+	}
+	for (auto& part : environmentParts)
+	{
+		part->Animate(t, dt);
+		part->Render(devcon.Get(), pipelinePhongBlinn.get(), camera.get(), dirLight.get());
 	}
 	
 	pipelineBezierQuad->Use();

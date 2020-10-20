@@ -118,7 +118,7 @@ namespace COLOR
 	constexpr float SM_WHITE[4] = { 100000, 100000, 100000, 1 };
 	constexpr float WHITE[4] = { 1, 1, 1, 1 };
 	constexpr float BLACK[4] = { 0, 0, 0, 1 };
-	constexpr float GRAY[4] = { 0.3f, 0.3f, 0.3f, 1 };
+	constexpr float GRAY[4] = { 0.1f, 0.1f, 0.1f, 1 };
 }
 
 // ... STRING RESOURCES FOR THE UI ...
