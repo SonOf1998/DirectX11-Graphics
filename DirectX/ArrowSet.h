@@ -25,6 +25,7 @@ class ArrowSet : public Renderable
 		void Animate(float t, float dt) override;
 
 		void MakeHovered(bool hovered);
+		bool IsHovered() const noexcept;
 	};
 	
 	BallSet* ballSet;

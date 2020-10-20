@@ -290,7 +290,7 @@ void RoundManager::ManagePoints(BallSet* ballSet)
 			// which fails to hit the target ball first
 			if (firstHit->GetPoint() != target + 1)
 			{
-				pointsForOtherPlayer = vmax(4, firstHit->GetPoint());
+				pointsForOtherPlayer = vmax(4, firstHit->GetPoint(), target + 1);
 				updatePoints();
 			}
 			// correct shot, but no pot
@@ -471,6 +471,12 @@ void RoundManager::DeclareWinner(bool concede)
 	ResetFlags();
 	newTarget = RED;
 	overlaySet->ChangeTarget((BALL)newTarget);
+}
+
+void RoundManager::UpdateTarget(BallSet* ballSet, BALL t)
+{
+	target = (TARGET)t;
+	overlaySet->ChangeTarget(t);
 }
 
 void RoundManager::ClearOverlay()

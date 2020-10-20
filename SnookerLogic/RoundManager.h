@@ -119,6 +119,7 @@ public:
 	void ManagePoints(BallSet* ballSet);
 	std::vector<std::unique_ptr<BallObject>> GetBallsToPutBack(BallSet* ballSet);
 	void DeclareWinner(bool concede = false);
+	void UpdateTarget(BallSet* ballSet, BALL t);
 
 
 	void ClearOverlay();

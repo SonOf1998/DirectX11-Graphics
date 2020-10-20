@@ -135,6 +135,16 @@ inline XMFLOAT2 operator* (float mul, const XMFLOAT2& v)
 	return XMFLOAT2(mul * v.x, mul * v.y);
 }
 
+/*inline XMFLOAT3 operator+ (const XMFLOAT3& v1, const XMFLOAT3& v2)
+{
+	return XMFLOAT3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+}*/
+
+inline XMFLOAT3 operator* (float mul, const XMFLOAT3& v)
+{
+	return XMFLOAT3(mul * v.x, mul * v.y, mul * v.z);
+}
+
 inline XMFLOAT3 Normalize(const XMFLOAT3& a)
 {
 	assert(a != XMFLOAT3(0, 0, 0));
