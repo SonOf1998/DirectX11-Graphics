@@ -230,9 +230,9 @@ void PerspectiveCamera::Animate(float t, float dt)
 		position = whiteBallPos + newDir;
 		SetLookAt(whiteBallPos);
 		
-		if (!rm.AlreadyMadeOneNomination() && rm.CanNominate())
+		if (!rm.AlreadyMadeOneNomination() && rm.CanNominate() && !rm.IsInNominateMode())
 		{
-			rm.UpdateTarget(XMVectorSetY(position, BALL_POS_Y ), XMVectorSet(-xNew, 0, -zNew, 0));
+			rm.UpdateTarget(whiteBallPos, XMVectorSet(-xNew, 0, -zNew, 0));
 		}
 	}
 	// walk mode

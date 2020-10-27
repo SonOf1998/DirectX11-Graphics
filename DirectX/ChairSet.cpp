@@ -24,7 +24,7 @@ ChairSet::ChairSet(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 			float angle0    = (toRad(115.0f + i * 2.5f));
 			float angle     = angle0 - j * angleStep;
 
-			XMVECTOR translation = XMVectorSet(distance * cosf(angle), i * CHAIR_ELEVATION, -distance * sinf(angle), 1);
+			XMVECTOR translation = XMVectorSet(distance * cosf(angle), /*i * CHAIR_ELEVATION*/ - 2 * CHAIR_ELEVATION, -distance * sinf(angle), 1);
 
 			XMMATRIX rotationMatrix = XMMatrixRotationAxis(Y_AXIS, angle - toRad(90));
 			XMMATRIX translationMatrix = XMMatrixTranslationFromVector(translation);
@@ -133,5 +133,20 @@ void ChairSet::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Ca
 
 void ChairSet::RenderToShadowMap(ID3D11DeviceContext * deviceContext, Pipeline * pipeline, Light * light)
 {
-	// TODO
+	/*DirLightVP dirLightVP;
+	dirLightVP.GetData().viewProj = Transpose(light->GetViewProjMatrix());
+
+	for (auto& modelMatrix : modelMatrices)
+	{
+		M m;
+		m.GetData().model = Transpose(modelMatrix);
+		pipeline->SetCBuffer(&dirLightVP, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+		pipeline->SetCBuffer(&m, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+
+		pipeline->Use();
+		for (auto& mesh : meshes)
+		{
+			mesh->GetGeometry()->Draw(deviceContext);
+		}
+	}*/
 }

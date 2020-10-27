@@ -5,11 +5,13 @@
 enum BALL;
 
 class OverlayObject;
+class SpinOverlayObject;
 class OrthographicCamera;
 
 class OverlaySet : public Renderable
 {
 	std::deque<std::unique_ptr<OverlayObject>> overlays;
+	std::unique_ptr<SpinOverlayObject> spinOverlay;
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
 

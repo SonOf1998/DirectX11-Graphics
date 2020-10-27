@@ -7,6 +7,7 @@
 #include "Graphics.h"
 #include "Pipeline.h"
 #include "Resources.h"
+#include "WhiteBallObject.h"
 
 // from SnookerLogic
 #include "RoundManager.h"
@@ -52,7 +53,7 @@ XMVECTOR GetPositionFromSpot(OVERLAY_SPOT spot)
 	}
 	else if (spot == OVERLAY_SPIN)
 	{
-		// todo
+		pos = 2 * XMVectorSet(0.5, 1 - (40 / y), 0.02f, 0) + XMVectorSet(-1, -1, 0, 0);
 	}
 	else
 	{
@@ -76,7 +77,7 @@ float GetSizeFromSpot(OVERLAY_SPOT spot)
 
 	if (spot == OVERLAY_SPIN)
 	{
-		// todo
+		size = 2.5f * SIZE;
 	}
 	else
 	{
@@ -109,6 +110,7 @@ OverlayObject::OverlayObject(ID3D11Device* device, ID3D11DeviceContext* deviceCo
 	overlayMesh->SetTexture(overlayTexture);	
 	AddMesh(std::move(overlayMesh));
 }
+
 
 bool OverlayObject::StillLiving() const noexcept
 {
@@ -164,7 +166,6 @@ void OverlayObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipelin
 		pipeline->SetTexture(mesh->GetTexture());
 		mesh->GetGeometry()->Draw(deviceContext, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
-
 }
 
 void OverlayObject::Animate(float t, float dt)
@@ -187,4 +188,91 @@ void OverlayObject::Animate(float t, float dt)
 	if (!rm.IsRoundGoing())
 		ttl -= dt;
 
+}
+
+// spin overlay...
+
+SpinOverlayObject::SpinOverlayObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+{
+	overlaySpot = OVERLAY_SPIN;
+	ttl = std::numeric_limits<float>::max();
+
+	float x = static_cast<float>(Graphics::screenWidth);
+	float y = static_cast<float>(Graphics::screenHeight);
+	float size = GetSizeFromSpot(overlaySpot);
+	scale = XMVectorSet(size / x, size / y, 1, 1);
+	position = GetPositionFromSpot(overlaySpot);
+	XMMATRIX scaleMatrix = XMMatrixScalingFromVector(scale);
+	XMMATRIX translationMatrix = XMMatrixTranslationFromVector(position);
+	modelMatrix = scaleMatrix * translationMatrix;
+
+	XMVECTOR tickScale = XMVectorSet(size / 7 / x, size / 7 / y, 1, 1);
+	tickScaleMatrix = XMMatrixScalingFromVector(tickScale);
+	tickOGPosition = position - XMVectorSet(0, 0, 0.001f, 0);
+	XMMATRIX scaleTranslationMatrix = XMMatrixTranslationFromVector(tickOGPosition);
+	tickModelMatrix = tickScaleMatrix * scaleTranslationMatrix;
+
+	std::shared_ptr<Geometry> overlayGeometry = std::make_shared<AssimpModel<PT>>(device, QUAD_MODEL);
+	std::shared_ptr<Texture>  overlayTexture = std::make_shared<Texture>(device, deviceContext, SPIN_OVERLAY_TEXTURE, 0);
+	std::shared_ptr<Texture>  tickTexture = std::make_shared<Texture>(device, deviceContext, SPIN_OVERLAY_TICK_TEXTURE, 0);
+	Mesh overlayMesh(overlayGeometry);
+	overlayMesh.SetTexture(overlayTexture);
+	CopyAndAddMesh(overlayMesh);
+	overlayMesh.SetTexture(tickTexture);
+	CopyAndAddMesh(overlayMesh);
+}
+
+void SpinOverlayObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera, Light*)
+{
+	if (!WhiteBallObject::isInSpinMode)
+		return;
+
+	XMMATRIX viewProj = XMMatrixIdentity();
+	//XMMATRIX viewProjInv = XMMatrixIdentity();
+	if (camera != nullptr)
+	{
+		//viewProj = camera->GetViewProjMatrix();
+		//viewProjInv = camera->GetViewProjMatrixInv();
+	}
+
+
+	MVP mvp;
+	mvp.GetData().viewProj = Transpose(viewProj);
+
+	pipeline->SetSampler(FILTERING::NEAREST, 0);
+
+
+	mvp.GetData().model = Transpose(modelMatrix);
+	pipeline->SetCBuffer(&mvp, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+	pipeline->SetTexture(meshes[0]->GetTexture());
+	meshes[0]->GetGeometry()->Draw(deviceContext, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	mvp.GetData().model = Transpose(tickModelMatrix);
+	pipeline->SetCBuffer(&mvp, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
+	pipeline->SetTexture(meshes[1]->GetTexture());
+	meshes[1]->GetGeometry()->Draw(deviceContext, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+}
+
+void SpinOverlayObject::Animate(float t, float dt)
+{
+	if (!WhiteBallObject::isInSpinMode)
+		return;
+	
+	float x = static_cast<float>(Graphics::screenWidth);
+	float y = static_cast<float>(Graphics::screenHeight);
+	float size = GetSizeFromSpot(overlaySpot);
+	scale = XMVectorSet(size / x, size / y, 1, 1);
+	position = GetPositionFromSpot(overlaySpot);
+	XMMATRIX scaleMatrix = XMMatrixScalingFromVector(scale);
+	XMMATRIX translationMatrix = XMMatrixTranslationFromVector(position);
+	modelMatrix = scaleMatrix * translationMatrix;
+
+
+	XMVECTOR tickScale = XMVectorSet(size / 7 / x, size / 7 / y, 1, 1);
+	tickScaleMatrix = XMMatrixScalingFromVector(tickScale);
+	tickOGPosition = position - XMVectorSet(0, 0, 0.001f, 0);
+	XMMATRIX scaleTranslationMatrix = XMMatrixTranslationFromVector(tickOGPosition);
+	tickModelMatrix = tickScaleMatrix * XMMatrixTranslationFromVector(tickOGPosition + XMVectorSet(dx / 3.0f / x, dy / 3.0f / y, 0, 0));	
 }

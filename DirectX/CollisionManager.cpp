@@ -112,14 +112,14 @@ Curvature curvature[12] = {
 	Curvature {XMFLOAT2(2.8825f, -0.24776f),  2.45f * BALL_RADIUS},
 	Curvature {XMFLOAT2(2.8825f, 0.24776f),   2.45f * BALL_RADIUS},
 	// corner pockets
-	Curvature {XMFLOAT2(2.5f, 5.616f),   2.7f * BALL_RADIUS},
-	Curvature {XMFLOAT2(2.5f, -5.616f),  2.7f * BALL_RADIUS},
-	Curvature {XMFLOAT2(-2.5f, 5.616f),  2.7f * BALL_RADIUS},
-	Curvature {XMFLOAT2(-2.5f, -5.616f), 2.7f * BALL_RADIUS},
-	Curvature {XMFLOAT2(2.9f, 5.232f),   2.7f * BALL_RADIUS},
-	Curvature {XMFLOAT2(-2.9f, 5.232f),  2.7f * BALL_RADIUS},
-	Curvature {XMFLOAT2(2.9f, -5.232f),  2.7f * BALL_RADIUS},
-	Curvature {XMFLOAT2(-2.9f, -5.232f), 2.7f * BALL_RADIUS}
+	Curvature {XMFLOAT2(2.5f, 5.616f),   2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(2.5f, -5.616f),  2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(-2.5f, 5.616f),  2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(-2.5f, -5.616f), 2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(2.9f, 5.232f),   2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(-2.9f, 5.232f),  2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(2.9f, -5.232f),  2.4f * BALL_RADIUS},
+	Curvature {XMFLOAT2(-2.9f, -5.232f), 2.4f * BALL_RADIUS}
 };
 
 

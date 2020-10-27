@@ -43,6 +43,9 @@
 #define PINK_BALL_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "pink_overlay_item.png"
 #define BLACK_BALL_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "black_overlay_item.png"
 #define NOMINATE_OVERLAY_TEXTURE			TEXTURE_ROOTDIR "nominate_overlay_item.png"
+#define SPIN_OVERLAY_TEXTURE				TEXTURE_ROOTDIR "spin_overlay_item.png"
+#define SPIN_OVERLAY_TICK_TEXTURE			TEXTURE_ROOTDIR "spin_tick_overlay_item.png"
+
 
 #define ARMCHAIR_PILLOW_TEXTURE				TEXTURE_ROOTDIR "pillow.jpg"
 #define ARMCHAIR_BUMP_TEXTURE				TEXTURE_ROOTDIR "bump.png"

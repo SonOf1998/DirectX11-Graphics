@@ -18,8 +18,12 @@ enum OVERLAY_SPOT
 	OVERLAY_POT6
 };
 
+
+
 class OverlayObject : public GameObject
 {
+
+protected:
 	float ttl;		// time to live
 	BALL ball;
 	OVERLAY_SPOT overlaySpot;
@@ -28,6 +32,7 @@ class OverlayObject : public GameObject
 
 public:
 	OverlayObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, float ttl, BALL ball, OVERLAY_SPOT overlaySpot);
+	OverlayObject() = default;
 	~OverlayObject() = default;
 
 	bool StillLiving() const noexcept;
@@ -35,6 +40,24 @@ public:
 	void MarkForUpdate()	 noexcept;
 	bool IsTargetBallOverlay();
 	void SetTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, BALL targetBall);
+
+	void Render(ID3D11DeviceContext*, Pipeline*, Camera* = nullptr, Light* = nullptr) override;
+	void Animate(float t, float dt) override;
+};
+
+class SpinOverlayObject : public OverlayObject
+{
+public:
+	inline static float dx = 0;
+	inline static float dy = 0;
+
+private:
+	XMMATRIX tickModelMatrix;
+	XMMATRIX tickScaleMatrix;
+	XMVECTOR tickOGPosition;
+
+public:
+	SpinOverlayObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 
 	void Render(ID3D11DeviceContext*, Pipeline*, Camera* = nullptr, Light* = nullptr) override;
 	void Animate(float t, float dt) override;

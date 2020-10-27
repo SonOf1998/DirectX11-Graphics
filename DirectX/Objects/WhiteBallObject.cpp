@@ -6,6 +6,7 @@
 #include "Graphics.h"
 #include "BallSet.h"
 #include "PerspectiveCamera.h"
+#include "OverlayObject.h"
 #include "Positions.h"
 
 // from SnookerLogic
@@ -139,6 +140,9 @@ void WhiteBallObject::InitiateShot(CueObject* cue, float speedFactor, const XMVE
 	isInAimMode = true;				// next shot should start in aim mode
 	SwitchModes();
 	cue->ResetCDF();				// reset cue and wb distance
+
+	SpinOverlayObject::dx = 0;
+	SpinOverlayObject::dy = 0;
 
 	velocity = speedFactor * dir;
 }

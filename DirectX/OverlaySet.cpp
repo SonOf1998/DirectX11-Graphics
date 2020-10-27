@@ -3,12 +3,15 @@
 
 // from DirectX
 #include "OverlayObject.h"
+#include "WhiteBallObject.h"
 
 // from SnookerLogicc
 #include "RoundManager.h"
 
 OverlaySet::OverlaySet(ID3D11Device* device, ID3D11DeviceContext* deviceContext) : device(device), deviceContext(deviceContext)
 {
+	// spin overlay element
+	spinOverlay = std::make_unique<SpinOverlayObject>(device, deviceContext);
 }
 
 OverlaySet::~OverlaySet() = default;
@@ -53,6 +56,8 @@ void OverlaySet::Render(ID3D11DeviceContext * device, Pipeline * pipeline, Camer
 	{
 		overlay->Render(device, pipeline, camera, light);
 	}
+
+	spinOverlay->Render(device, pipeline, camera, light);
 }
 
 void OverlaySet::Animate(float t, float dt)
@@ -61,6 +66,8 @@ void OverlaySet::Animate(float t, float dt)
 	{
 		overlay->Animate(t, dt);
 	}
+
+	spinOverlay->Animate(t, dt);
 
 	auto newEnd = std::remove_if(overlays.begin(), overlays.end(), [](std::unique_ptr<OverlayObject>& obj) { return !obj->StillLiving();  });
 	overlays.erase(newEnd, overlays.end());

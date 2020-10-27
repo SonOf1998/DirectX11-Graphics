@@ -6,8 +6,10 @@
 #include "Camera.h"
 #include "CBufferDataType.h"
 #include "QuadGeometry.h"
+#include "OverlayObject.h"
 #include "PerspectiveCamera.h"
 #include "Pipeline.h"
+#include "Graphics.h"
 #include "Mesh.h"
 #include "Light.h"
 #include "Resources.h"
@@ -144,6 +146,7 @@ void CueObject::Animate(float t, float dt)
 	dir2D = XMVector3Normalize(dir2D);
 	XMFLOAT3 dir2DF;
 	XMStoreFloat3(&dir2DF, dir2D);
+	XMFLOAT3 dir2DFNormal = XMFLOAT3(-dir2DF.z, 0, dir2DF.x);
 
 	float angle = acosf(XMVectorGetX(XMVector3Dot(dir2D, orientation)));
 	//Logger::print(std::to_string(XMVectorGetX(XMVector3Dot(dir2D, orientation))));
@@ -198,7 +201,25 @@ void CueObject::Animate(float t, float dt)
 		}
 	}
 
-	position = XMVectorSet(whitePosF.x - cdf * dir2DF.x, SNOOKER_TABLE_POS_Y + BALL_RADIUS, whitePosF.z - cdf * dir2DF.z, 0);
+	float spinx = 0;
+	float spiny = 0;
+
+	if (!rm.IsRoundGoing() && WhiteBallObject::isInSpinMode && InputClass::LeftMBDown()) {
+		POINT curMove = InputClass::GetCursorMove();
+		float dx = curMove.x;
+		float dy = curMove.y;
+
+		if ((SpinOverlayObject::dx + dx) * (SpinOverlayObject::dx + dx) + (SpinOverlayObject::dy - dy) * (SpinOverlayObject::dy - dy) <= 160 * 160)
+		{
+			SpinOverlayObject::dx += dx;
+			SpinOverlayObject::dy -= dy;
+		}			
+	}
+
+	spinx = SpinOverlayObject::dx / 2.0f / Graphics::screenWidth;
+	spiny = SpinOverlayObject::dy / 3.0f / Graphics::screenHeight;
+
+	position = XMVectorSet(whitePosF.x - cdf * dir2DF.x + dir2DFNormal.x * spinx, SNOOKER_TABLE_POS_Y + BALL_RADIUS + spiny, whitePosF.z - cdf * dir2DF.z + dir2DFNormal.z * spinx, 0);
 	//Logger::print(std::to_string(cameraPosF.x - dir2DF.x));
 
 	modelMatrix = XMMatrixScalingFromVector(scale) * XMMatrixRotationAxis(XMVectorSet(0, 1, 0, 0), -angle) * XMMatrixTranslationFromVector(position);

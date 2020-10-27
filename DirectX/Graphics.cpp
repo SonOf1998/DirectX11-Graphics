@@ -189,7 +189,7 @@ void Graphics::RenderFrame(float t, float dt)
 	}
 	ballSet->Animate(t, dt);
 	ballSet->RenderToShadowMap(devcon.Get(), pipelineShadowMap.get(), dirLight.get());
-
+	chairSet->RenderToShadowMap(devcon.Get(), pipelineShadowMap.get(), dirLight.get());
 
 	// Rendering to backbuffer //
 	SetRenderTargetToBackBuffer();
@@ -263,7 +263,7 @@ void Graphics::RenderFrame(float t, float dt)
 	ImGui::SetNextWindowSize(ImVec2(120, 120));
 	ImGui::Begin("Control", nullptr, ImGuiWindowFlags_NoResize);
 	if (ImGui::Button("Walk around", ImVec2(100, 20))) {
-		if (!rm.IsRoundGoing())
+		if (!rm.IsRoundGoing() && !WhiteBallObject::isInSpinMode)
 		{
 			rm.EnterWalkMode();
 			WhiteBallObject::isInAimMode = false;
