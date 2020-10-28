@@ -279,6 +279,27 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		}
 		messageHandled = true;
 	}
+	if (umsg == WM_NCLBUTTONDBLCLK)
+	{
+		DefWindowProc(hwnd, umsg, wparam, lparam);
+
+		RECT rect;
+		if (GetClientRect(hwnd, &rect) && graphics != nullptr)
+		{
+			int newWidth = rect.right - rect.left;
+			int newHeight = rect.bottom - rect.top;
+
+			try
+			{
+				graphics->Resize(newWidth, newHeight);
+			}
+			catch (const HResultException& e)
+			{
+				MessageBox(hwnd, e.GetErrorMsg(), L"RuntimeError", MB_OK);
+			}
+		}
+		messageHandled = true;
+	}
 	
 
 	if (!messageHandled)

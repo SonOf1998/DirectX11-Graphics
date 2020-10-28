@@ -200,10 +200,7 @@ void CueObject::Animate(float t, float dt)
 			whiteBall->InitiateShot(this, speedFactor, dir2D);
 		}
 	}
-
-	float spinx = 0;
-	float spiny = 0;
-
+	
 	if (!rm.IsRoundGoing() && WhiteBallObject::isInSpinMode && InputClass::LeftMBDown()) {
 		POINT curMove = InputClass::GetCursorMove();
 		float dx = curMove.x;
@@ -216,8 +213,8 @@ void CueObject::Animate(float t, float dt)
 		}			
 	}
 
-	spinx = SpinOverlayObject::dx / 2.0f / Graphics::screenWidth;
-	spiny = SpinOverlayObject::dy / 3.0f / Graphics::screenHeight;
+	float spinx = SpinOverlayObject::dx / 2.0f / Graphics::screenWidth;
+	float spiny = SpinOverlayObject::dy / 3.0f / Graphics::screenHeight;
 
 	position = XMVectorSet(whitePosF.x - cdf * dir2DF.x + dir2DFNormal.x * spinx, SNOOKER_TABLE_POS_Y + BALL_RADIUS + spiny, whitePosF.z - cdf * dir2DF.z + dir2DFNormal.z * spinx, 0);
 	//Logger::print(std::to_string(cameraPosF.x - dir2DF.x));

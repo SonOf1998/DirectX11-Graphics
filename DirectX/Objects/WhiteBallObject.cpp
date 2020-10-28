@@ -141,6 +141,7 @@ void WhiteBallObject::InitiateShot(CueObject* cue, float speedFactor, const XMVE
 	SwitchModes();
 	cue->ResetCDF();				// reset cue and wb distance
 
+	SetSpinParams(SpinOverlayObject::dx, SpinOverlayObject::dy);
 	SpinOverlayObject::dx = 0;
 	SpinOverlayObject::dy = 0;
 

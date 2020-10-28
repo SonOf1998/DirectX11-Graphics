@@ -123,6 +123,14 @@ void BallSet::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pi
 	}
 }
 
+static int sign(float f)
+{
+	if (f < 0)
+		return -1;
+
+	return 1;
+}
+
 std::map<int, XMVECTOR> preferredPositions = {
 	{-4, WHITE_BALL_PREFERRED_POS},
 	{2, YELLOW_BALL_POS},
@@ -156,7 +164,17 @@ void BallSet::Animate(float t, float dt)
 					rm.MemoFirstHit(balls[i].get());
 				}
 				
-				// TODO spin!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				float spinxi, spinyi;
+				float spinxj, spinyj;
+
+				balls[i]->GetSpinParams(spinxi, spinyi);
+				balls[i]->SetSpinParams(0, 0);
+				balls[j]->GetSpinParams(spinxj, spinyj);
+				balls[j]->SetSpinParams(0, 0);
+				spinxi /= 160;
+				spinyi /= 160;
+				spinxj /= 160;
+				spinyj /= 160;
 
 				XMVECTOR normal = XMVector3Normalize(balls[i]->GetPosition() - balls[j]->GetPosition());
 				XMVECTOR tangent = XMVectorSet(-XMVectorGetZ(normal), 0, XMVectorGetX(normal), 0);
@@ -166,11 +184,11 @@ void BallSet::Animate(float t, float dt)
 				XMVECTOR v2n = XMVector3Dot(balls[j]->GetVelocity(), normal);	   // float scalars, only magnitudes
 				XMVECTOR v2t = XMVector3Dot(balls[j]->GetVelocity(), tangent);	   // float scalars, only magnitudes
 
-				XMVECTOR v1n_new = XMVectorMultiply(v2n, normal);
-				XMVECTOR v1t_new = XMVectorMultiply(v1t, tangent);
-				XMVECTOR v2n_new = XMVectorMultiply(v1n, normal);
-				XMVECTOR v2t_new = XMVectorMultiply(v2t, tangent);
-
+				XMVECTOR v1n_new = XMVectorMultiply(v2n, normal) + spinyi / 2 * XMVectorMultiply(v1n, normal);
+				XMVECTOR v1t_new = XMVectorMultiply(v1t, tangent) + spinxi / 2 * XMVectorMultiply(v1t, tangent);
+				XMVECTOR v2n_new = XMVectorMultiply(v1n, normal)  + spinyj / 2 * XMVectorMultiply(v2n, normal);
+				XMVECTOR v2t_new = XMVectorMultiply(v2t, tangent) + spinxj / 2 * XMVectorMultiply(v2t, tangent);
+							   
 				float centerDiff = Length(balls[i]->GetPosition() - balls[j]->GetPosition());
 				float overlapDistance = 0.5f * (2 * BALL_RADIUS - centerDiff);
 
@@ -199,16 +217,33 @@ void BallSet::Animate(float t, float dt)
 		XMFLOAT2 dummyNormal;
 		if (CollisionManager::IntersectsWall(balls[i].get(), normal))
 		{
+			float spinxi, spinyi;
+
+			balls[i]->GetSpinParams(spinxi, spinyi);
+			balls[i]->SetSpinParams(0, 0);
+			spinxi /= 160;
+			spinyi /= 160;
+
+
 			XMVECTOR normalV = XMVectorSet(normal.x, 0, normal.y, 0);
 			XMVECTOR velocity = balls[i]->GetVelocity();
+			XMFLOAT3 velocityF;
+			XMStoreFloat3(&velocityF, velocity);
+			XMVECTOR vNorm = XMVectorSet(-velocityF.z, 0, velocityF.x, 0);
 
-			// TODO needs urgent refactor as it can freeze the game totally
+			// TODO needs urgent refactor as it can freeze the game totally - resolved
 			do {
-				balls[i]->SetPosition(balls[i]->GetPosition() - velocity * 0.01f * dt);
+				balls[i]->SetPosition(balls[i]->GetPosition() + normalV * 0.01f * dt);
 			} while (CollisionManager::IntersectsWall(balls[i].get(), dummyNormal));
 
 			XMVECTOR reflectedVelocity = XMVector3Reflect(velocity, normalV);
-			balls[i]->SetVelocity(reflectedVelocity * BALL_COLLISION_ENERGY_LOSS_FACTOR);
+			float len = Length(reflectedVelocity);
+			reflectedVelocity = XMVector3Normalize(reflectedVelocity);
+			vNorm = XMVector3Normalize(vNorm);
+
+
+			XMVECTOR weightedReflect = len * ((spinxi / 4) * vNorm + (1 - spinxi / 4) * reflectedVelocity);
+			balls[i]->SetVelocity(weightedReflect * BALL_COLLISION_ENERGY_LOSS_FACTOR);
 			SoundManager& sm = SoundManager::GetInstance();
 			XMFLOAT3 collisionCenter;
 			XMStoreFloat3(&collisionCenter, balls[i]->GetPosition() + XMVector3Normalize(velocity) * BALL_RADIUS);

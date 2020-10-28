@@ -122,3 +122,15 @@ void BallObject::Animate(float t, float dt)
 
 	modelMatrix = XMMatrixScalingFromVector(scale) * XMMatrixRotationAxis(XMVectorSet(1, 0, -1, 0), 0 /* TODO ? */) * XMMatrixTranslationFromVector(position);
 }
+
+void BallObject::SetSpinParams(float sx, float sy) noexcept
+{
+	spinx = sx;
+	spiny = sy;
+}
+
+void BallObject::GetSpinParams(float& sx, float& sy) const noexcept
+{
+	sx = spinx;
+	sy = spiny;
+}

@@ -48,6 +48,21 @@ void ArrowSet::Animate(float t, float dt)
 	RoundManager& rm = RoundManager::GetInstance();
 	if (rm.IsInNominateMode())
 	{
+		for (auto& color : colors)
+		{
+			if (color->GetPoint() > 7 || color->GetPoint() < 1)
+			{
+				int k = 0;
+				for (int j = YELLOW; j <= BLACK; ++j)
+				{
+					colors[k++] = ballSet->GetColor((TARGET)j);
+				}
+
+				Logger::print("ArrowSet - self repairing called");
+				break;
+			}
+		}
+
 		bool anyHovered = false;
 		for (int i = 0; i < 6; ++i)
 		{
