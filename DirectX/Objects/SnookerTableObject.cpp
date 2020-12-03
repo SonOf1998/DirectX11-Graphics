@@ -75,7 +75,6 @@ void SnookerTableObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pi
 	mpvminv.GetData().viewProj = Transpose(viewProj);
 	mpvminv.GetData().modelInv = Inverse(modelMatrix);
 
-	pipeline->SetSampler(FILTERING::ANISOTROPIC_X4, 0);
 	pipeline->SetCBuffer(&mpvminv, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 
 
@@ -94,6 +93,13 @@ void SnookerTableObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pi
 		}
 		else
 		{
+			if (i == 3 /* id of table surface*/)
+				pipeline->SetSampler(FILTERING::ANISOTROPIC_X4, 0);
+			else if (i == 0)
+				pipeline->SetSampler(FILTERING::NEAREST, 0);
+			else 
+				pipeline->SetSampler(FILTERING::TRILINEAR, 0);
+
 			std::unique_ptr<Mesh>& mesh = meshes[i];
 			pipeline->SetTexture(mesh->GetTexture());
 			pipeline->SetCBuffer(mesh->GetMaterial(), CBUFFER_LOCATION::PIXEL_SHADER_CBUFFER);

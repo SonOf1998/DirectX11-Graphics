@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "FloorObject.h"
+#include "WallObject.h"
 
 
 #include "Camera.h"
@@ -10,7 +10,7 @@
 #include "Mesh.h"
 #include "Light.h"
 
-void FloorObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /* nullptr */, Light* light /* nullptr */)
+void WallObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Camera* camera /* nullptr */, Light* light /* nullptr */)
 {
 	XMMATRIX viewProj = XMMatrixIdentity();
 	if (camera != nullptr)
@@ -30,7 +30,7 @@ void FloorObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 	mpvminv.GetData().viewProj = Transpose(viewProj);
 	mpvminv.GetData().modelInv = Inverse(modelMatrix);
 
-	pipeline->SetSampler(FILTERING::ANISOTROPIC_X4, 0);
+	pipeline->SetSampler(FILTERING::BILINEAR, 0);
 	pipeline->SetCBuffer(&mpvminv, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 
 	CameraCBuffer cameraCBuffer;
@@ -46,7 +46,7 @@ void FloorObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline,
 	}
 }
 
-void FloorObject::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Light* light)
+void WallObject::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, Light* light)
 {
 	return;
 
@@ -65,8 +65,7 @@ void FloorObject::RenderToShadowMap(ID3D11DeviceContext* deviceContext, Pipeline
 	}
 }
 
-void FloorObject::Animate(float t, float st)
+void WallObject::Animate(float t, float st)
 {
 
 }
-

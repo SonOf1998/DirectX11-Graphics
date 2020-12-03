@@ -86,7 +86,7 @@ void CueObject::Render(ID3D11DeviceContext* deviceContext, Pipeline* pipeline, C
 	mpvminv.GetData().viewProj = Transpose(viewProj);
 	mpvminv.GetData().modelInv = Inverse(modelMatrix);
 
-	pipeline->SetSampler(FILTERING::ANISOTROPIC_X4, 0);
+	pipeline->SetSampler(FILTERING::BILINEAR, 0);
 	pipeline->SetCBuffer(&mpvminv, CBUFFER_LOCATION::VERTEX_SHADER_CBUFFER);
 
 
