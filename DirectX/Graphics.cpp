@@ -19,6 +19,7 @@
 #include "GameObject.h"
 #include "BallObject.h"
 #include "WhiteBallObject.h"
+#include "WallObject.h"
 #include "FloorObject.h"
 #include "Pipeline.h"
 #include "PerspectiveCamera.h"
@@ -90,11 +91,11 @@ void Graphics::RenderInitalization()
 	Mesh wallMesh(wallGeometry, wallMaterial);
 	wallMesh.SetTexture(wallTexture);
 
-	std::unique_ptr<GameObject> wall1 = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, -20, 0), XMVectorSet(50, 25, 0, 0));
-	std::unique_ptr<GameObject> wall2 = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 20, 0), XMVectorSet(50, 25, 0, 0), XMVectorSet(0, 1, 0, 0), XM_PI);
-	std::unique_ptr<GameObject> wall3 = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(-20, 0, 0, 0), XMVectorSet(50, 25, 0, 0), XMVectorSet(0, 1, 0, 0), XM_PI / 2);
-	std::unique_ptr<GameObject> wall4 = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(20, 0, 0, 0), XMVectorSet(50, 25, 0, 0), XMVectorSet(0, 1, 0, 0), 3 * XM_PI / 2);
-	std::unique_ptr<GameObject> wall5 = std::make_unique<FloorObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 13, 0, 0), XMVectorSet(50, 50, 0, 0), XMVectorSet(1, 0, 0, 0), XM_PI / 2);
+	std::unique_ptr<GameObject> wall1 = std::make_unique<WallObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, -20, 0), XMVectorSet(50, 25, 0, 0));
+	std::unique_ptr<GameObject> wall2 = std::make_unique<WallObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 0, 20, 0), XMVectorSet(50, 25, 0, 0), XMVectorSet(0, 1, 0, 0), XM_PI);
+	std::unique_ptr<GameObject> wall3 = std::make_unique<WallObject>(dev.Get(), devcon.Get(), XMVectorSet(-20, 0, 0, 0), XMVectorSet(50, 25, 0, 0), XMVectorSet(0, 1, 0, 0), XM_PI / 2);
+	std::unique_ptr<GameObject> wall4 = std::make_unique<WallObject>(dev.Get(), devcon.Get(), XMVectorSet(20, 0, 0, 0), XMVectorSet(50, 25, 0, 0), XMVectorSet(0, 1, 0, 0), 3 * XM_PI / 2);
+	std::unique_ptr<GameObject> wall5 = std::make_unique<WallObject>(dev.Get(), devcon.Get(), XMVectorSet(0, 13, 0, 0), XMVectorSet(50, 50, 0, 0), XMVectorSet(1, 0, 0, 0), XM_PI / 2);
 
 
 	wall1->CopyAndAddMesh(wallMesh);

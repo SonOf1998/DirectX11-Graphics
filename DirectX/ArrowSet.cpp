@@ -175,7 +175,7 @@ void ArrowSet::ArrowObject::Render(ID3D11DeviceContext* deviceContext, Pipeline*
 	m.GetData().model = Transpose(modelMatrix);
 
 	BB bb;
-	bb.GetData().rightVector = XMVectorSetY(reinterpret_cast<PerspectiveCamera*>(camera)->GetRightVector(), 0);
+	bb.GetData().rightVector = reinterpret_cast<PerspectiveCamera*>(camera)->GetRightVector();
 	bb.GetData().upVector = XMVectorSetZ(XMVectorSetX(reinterpret_cast<PerspectiveCamera*>(camera)->GetUpVector(), 0), 0);
 
 	pipeline->SetSampler(FILTERING::NEAREST, 0);

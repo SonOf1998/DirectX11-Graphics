@@ -90,7 +90,7 @@ float GetSizeFromSpot(OVERLAY_SPOT spot)
 
 OverlayObject::OverlayObject(ID3D11Device* device, ID3D11DeviceContext* deviceContext, float ttl, BALL ball, OVERLAY_SPOT overlaySpot) : 
 	GameObject(),
-	ttl(1000*ttl),
+	ttl(ttl),
 	ball(ball),
 	overlaySpot(overlaySpot)
 {
