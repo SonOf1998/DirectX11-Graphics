@@ -6,4 +6,4 @@ dear imgui for UI
 Needed from NuGet store:
 directxtk_desktop_win10
 
-![](https://user-images.githubusercontent.com/40013370/96354183-0b157980-10d4-11eb-939b-3d9f4b373e66.png)
+![](https://user-images.githubusercontent.com/40013370/101110131-a1e0bb80-35d8-11eb-8d93-e0b39c21d495.PNG)
